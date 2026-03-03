@@ -543,17 +543,17 @@ function generateQR() {
 //  8. SEND ORDER → GAS → LINE (พุ่งเข้าแชทร้าน @282ovoyd โดยตรง)
 // ═══════════════════════════════════════════════════════════
 async function sendOrderToLINE() {
-    const name     = document.getElementById("cust-name").value.trim();
-    const tel      = document.getElementById("cust-tel").value.trim();
-    const gpsLink  = document.getElementById("cust-address").value.trim();
-    const lat      = document.getElementById("cust-lat").value;
-    const lng      = document.getElementById("cust-lng").value;
+    const name = document.getElementById("cust-name").value.trim();
+    const tel = document.getElementById("cust-tel").value.trim();
+    const gpsLink = document.getElementById("cust-address").value.trim();
+    const lat = document.getElementById("cust-lat").value;
+    const lng = document.getElementById("cust-lng").value;
     const landmark = document.getElementById("cust-landmark").value.trim();
-    const slot     = document.getElementById("cust-slot").value;
-    const note     = document.getElementById("cust-note")?.value.trim() || "";
-    const total    = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const slot = document.getElementById("cust-slot").value;
+    const note = document.getElementById("cust-note")?.value.trim() || "";
+    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const orderItems = cart.map((i) => `- ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`).join("\n");
-    const itemNames  = cart.map((i) => `${i.name} ×${i.qty}`).join(", ");
+    const itemNames = cart.map((i) => `${i.name} ×${i.qty}`).join(", ");
 
     if (!name || !tel || !slot || !gpsLink) {
         showToast("⚠️ กรุณากรอกข้อมูลให้ครบก่อนส่ง");
@@ -573,22 +573,22 @@ async function sendOrderToLINE() {
 
     const payload = {
         customerName: name,
-        phone:        tel,
-        address:      landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
-        latitude:     lat,
-        longitude:    lng,
+        phone: tel,
+        address: landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
+        latitude: lat,
+        longitude: lng,
         deliverySlot: slot,
         orderDetails: itemNames,
-        totalAmount:  total,
-        note:         note,
-        source:       "web",
+        totalAmount: total,
+        note: note,
+        source: "web",
     };
 
     try {
         // 1. บันทึกลง Google Sheets ก่อนเพื่อให้เรามีข้อมูล [cite: 2026-02-26]
         await fetch(CONFIG.GAS_URL, {
             method: "POST",
-            mode:   "no-cors",
+            mode: "no-cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         });
@@ -609,22 +609,23 @@ async function sendOrderToLINE() {
             `⚠️ จัดส่งวันถัดไป | แนบสลิปด้านล่าง 👇`
         ].filter(Boolean).join("\n");
 
-        // 3. 🚀 จุดตาย! เปลี่ยน URL เป็นแบบพุ่งเข้าแชท OA โดยตรง [cite: 2026-02-26]
-        // ใช้โครงสร้าง: https://line.me/R/oaMessage/{LINE_ID}/?{message}
-        const lineId  = "282ovoyd"; // ระบุ ID ร้านโดยตรง (ไม่มี @) เพื่อความแม่นยำ [cite: 2026-02-26]
-        const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(lineMsg)}`;
+        // 1. ระบุ ID ร้าน (ไม่มี @)
+        const lineId = "282ovoyd";
+
+        // 2. ⚠️ จุดสำคัญ: ต้องมีคำว่า text= ก่อน encodeURIComponent นะคะ [cite: 2026-02-26]
+        const lineUrl = `https://line.me/R/oaMessage/${lineId}/?text=${encodeURIComponent(lineMsg)}`;
 
         showToast("✅ บันทึกแล้ว! กำลังเปิดแชทร้าน...");
 
-        // 4. สั่งพุ่งตัวไปที่ LINE ทันที [cite: 2026-02-26]
+        // 3. สั่งเด้ง [cite: 2026-02-26]
         setTimeout(() => {
             window.location.href = lineUrl;
-        }, 1000);
-        
+        }, 800);
+
     } catch (err) {
         console.error("Error:", err);
         btn.innerHTML = originalContent;
-        btn.disabled  = false;
+        btn.disabled = false;
         btn.classList.remove("opacity-70", "cursor-wait");
         showToast("❌ ระบบขัดข้อง กรุณาลองใหม่นะคะ");
     }
