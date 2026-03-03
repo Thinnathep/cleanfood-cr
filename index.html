@@ -31,12 +31,16 @@
                         <span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
                             <i class="fa-solid fa-leaf text-white text-sm"></i>
                         </span>
-                        Clean Food
-                        <span class="text-emerald-600 hidden sm:inline">Chiang Rai</span>
+                        Clean Food <span class="text-emerald-600 hidden sm:inline">Chiang Rai</span>
                     </h1>
-                    <span id="datetime-display" class="text-[10px] text-slate-400 font-mono mt-1 hidden sm:block">
-                        <i class="fa-regular fa-clock"></i> Loading...
-                    </span>
+
+                    <div class="flex items-center gap-2 mt-1 hidden sm:flex">
+                        <span id="datetime-display" class="text-[10px] text-slate-400 font-mono leading-none">
+                            <i class="fa-regular fa-clock"></i> Loading...
+                        </span>
+                        <span id="shop-status-badge"
+                            class="text-[9px] px-2 py-0.5 rounded-full font-bold leading-none"></span>
+                    </div>
                 </div>
 
                 <div class="hidden md:flex flex-1 max-w-sm mx-8 relative">
@@ -66,16 +70,14 @@
         </div>
     </header>
 
-    <div class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center">
-        <p class="text-[11px] text-amber-800 font-medium">
-            🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวด่วน?
-            <a href="https://food.grab.com/th/th/restaurant/clean-food-chiang-rai-ชื่อร้านจริงของคุณ" target="_blank"
-                class="underline font-bold text-emerald-600">
-                สั่ง Grab ทันที
-            </a>
-            (10:00–19:00 น.) | 📦 ส่งฟรีในเขตเมืองเชียงราย
-        </p>
-    </div>
+<div id="top-announcement" class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center transition-all duration-500">
+    <p id="announcement-text" class="text-[11px] text-amber-800 font-medium">
+        🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวจนทนไม่ไหว?
+        <a href="https://food.grab.com/th/th/search/?search=Clean%20Food%20Chiang%20Rai" target="_blank"
+            class="underline font-bold text-emerald-600"> สั่งเลย Grab  </a> 📦
+         | ส่งในเขตเมืองเชียงราย
+    </p>
+</div>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
@@ -168,6 +170,14 @@
                     </div>
 
                     <div class="flex flex-col gap-1">
+
+                        <select id="cust-zone" onchange="updateCartUI()"
+                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors font-bold text-emerald-700">
+                            <option value="5">🛵 ในเขตเมืองเชียงราย (+5฿)</option>
+                            <!-- <option value="15">🛵 นอกเขตเมือง/รอบนอก (+15฿)</option> -->
+                        </select>
+                        <p class="text-[10px] text-slate-400 px-1">*ตรวจสอบพื้นที่จัดส่งกับแอดมินได้ทาง LINE</p>
+
                         <select id="cust-slot"
                             class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
                             <option value="">-- เลือกรอบจัดส่ง (วันพรุ่งนี้) --</option>
@@ -208,7 +218,8 @@
 
                 <!-- Back button (mobile/tablet) -->
                 <button id="back-to-cart-btn" onclick="backToCart()"
-                    class="hidden self-start flex items-center gap-2 text-slate-500 hover:text-emerald-600 text-xs font-semibold px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors">
+                    class="self-start flex items-center gap-2 text-slate-500 hover:text-emerald-600 text-xs font-semibold px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors"
+                    style="display:none;">
                     <i class="fa-solid fa-arrow-left text-[10px]"></i> ย้อนกลับแก้ไข
                 </button>
 
@@ -244,6 +255,21 @@
                     class="line-btn w-full text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shadow-lg">
                     <i class="fa-brands fa-line text-lg"></i> โอนแล้ว → ส่งสลิปยืนยันที่ LINE
                 </button>
+            </div>
+
+            <div id="shop-close-banner" class="hidden mb-4 p-4 bg-rose-50 border-2 border-rose-200 rounded-2xl">
+                <div class="flex items-center gap-3 text-rose-600">
+                    <div
+                        class="w-10 h-10 bg-rose-500 text-white rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                        <i class="fa-solid fa-moon"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm">ขณะนี้ร้านปิดรับออเดอร์แล้ว</h4>
+                        <p class="text-[11px] leading-relaxed opacity-80">ร้านเปิดรับออเดอร์เวลา 10:00 – 20:00 น.
+                            <br>แวะมาดูเมนูไว้ก่อน แล้วพรุ่งนี้มาสั่งกันใหม่นะคะ 😊
+                        </p>
+                    </div>
+                </div>
             </div>
 
             <!-- ── CHECKOUT BUTTON ── -->
@@ -430,7 +456,7 @@
             <div>
                 <h3 class="text-white font-bold text-sm mb-3">เวลาทำการ</h3>
                 <div class="text-sm space-y-1">
-                    <p>🕙 รับออเดอร์: 10:00–23:00 น.</p>
+                    <p>🕙 รับออเดอร์: 10:00–20:00 น.</p>
                     <p>🚀 จัดส่งรอบเที่ยง: 11:00–13:00 น.</p>
                     <p>🌅 จัดส่งรอบเย็น: 16:00–18:00 น.</p>
                 </div>
