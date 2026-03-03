@@ -349,7 +349,10 @@ function pushToCart(newItem) {
 function editCartQty(index, change) {
     const newQty = cart[index].qty + change;
     if (newQty <= 0) {
-        removeCartItem(index);
+        // ถามยืนยันก่อนลบออกเพราะกดจนเหลือ 0
+        if (confirm("ยืนยันการลบเมนูนี้ออกจากตะกร้า? 🗑️")) {
+            removeCartItem(index);
+        }
     } else {
         cart[index].qty = newQty;
         updateCartUI();
@@ -357,9 +360,12 @@ function editCartQty(index, change) {
 }
 
 function removeCartItem(index) {
-    cart.splice(index, 1);
-    updateCartUI();
-    showToast("ลบเมนูออกจากตะกร้าแล้ว");
+    // ถามยืนยันก่อนกดถังขยะ
+    if (confirm("ยืนยันการลบเมนูนี้ออกจากตะกร้า? 🗑️")) {
+        cart.splice(index, 1);
+        updateCartUI();
+        showToast("ลบเมนูออกจากตะกร้าแล้ว");
+    }
 }
 
 function updateCartUI() {
@@ -493,7 +499,7 @@ function toggleCart() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  7. CHECKOUT — Generate QR
+//  7. CHECKOUT — Generate QR (สำหรับ Make by KBank)
 // ═══════════════════════════════════════════════════════════
 function generateQR() {
     const name    = document.getElementById("cust-name").value.trim();
@@ -507,9 +513,13 @@ function generateQR() {
     if (!pdpa)                  { showToast("⚠️ กรุณายอมรับนโยบาย PDPA");       return; }
     if (cart.length === 0)      { showToast("⚠️ ยังไม่มีสินค้าในตะกร้า");        return; }
 
+    // ยืนยันก่อนสร้าง QR ว่าข้อมูลถูกต้อง
+    if (!confirm(`ตรวจสอบออเดอร์ให้ถูกต้องนะคะคุณ ${name}\n\n⚠️ ทางร้านจะจัดส่งใน "วันถัดไป" ยืนยันเพื่อชำระเงิน?`)) return;
+
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const qrImg = document.getElementById("promptpay-qr");
-    qrImg.src = `https://promptpay.io/${CONFIG.PROMPTPAY}/${total}.png`;
+    
+    // ใส่ตัวเลขยอดรวมให้ลูกค้าเห็นเด่นๆ เพื่อนำไปพิมพ์ใน Make
+    document.getElementById("qr-total-amount").innerText = total.toLocaleString();
 
     document.getElementById("qr-container").classList.remove("hidden");
     document.getElementById("qr-container").style.display = "flex";
@@ -519,7 +529,7 @@ function generateQR() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  8. SEND ORDER → GAS → LINE
+//  8. SEND ORDER → GAS → LINE (พร้อมระบบ Loading 1-2 นาที)
 // ═══════════════════════════════════════════════════════════
 async function sendOrderToLINE() {
     const name     = document.getElementById("cust-name").value.trim();
@@ -539,15 +549,22 @@ async function sendOrderToLINE() {
         return;
     }
 
-    const btn = document.querySelector('button[onclick="sendOrderToLINE()"]');
-    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก...`;
-    btn.disabled  = true;
+    // 🛡️ ยืนยันการโอนเงิน (Confirmation ก่อนยิงข้อมูล)
+    if (!confirm("คุณลูกค้าโอนเงินและเซฟสลิปไว้เรียบร้อยแล้วใช่ไหมคะ?\n\n⏳ ระบบกำลังจะบันทึกข้อมูล กรุณากด 'ตกลง' แล้วรอ 1-2 นาทีนะคะ")) {
+        return;
+    }
 
-    // ─── Payload ที่ส่งไป Google Sheets ────────────────────
+    // ⏳ เปลี่ยนปุ่มเป็น Loading State 
+    const btn = document.getElementById("submit-order-btn");
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-lg"></i> กำลังบันทึกข้อมูล... รอ 1-2 นาที`;
+    btn.disabled  = true;
+    btn.classList.add("opacity-70", "cursor-wait"); // ทำให้ปุ่มดูจางลงและเมาส์เป็นรูปนาฬิกาทราย
+
+    // Payload ที่ส่งไป Google Sheets 
     const payload = {
         customerName:  name,
         phone:         tel,
-        address:       landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
+        address:       landmark ? `${landmark} | ${gpsLink}` : gpsLink,
         latitude:      lat,
         longitude:     lng,
         deliverySlot:  slot,
@@ -583,7 +600,7 @@ async function sendOrderToLINE() {
             note ? `📝 หมายเหตุ: ${note}` : "",
             `──────────────────────`,
             `⚠️ ลูกค้ารับทราบ: จัดส่งวันถัดไป`,
-            `📎 กรุณาแนบสลิปโอนเงินด้วยนะคะ`,
+            `📎 กรุณาแนบสลิป Make KBank ด้วยนะคะ 👇`,
         ].filter(Boolean).join("\n");
 
         window.open(`https://line.me/R/msg/text/?${encodeURIComponent(lineMsg)}`, "_blank");
@@ -592,8 +609,10 @@ async function sendOrderToLINE() {
 
     } catch (err) {
         console.error("sendOrderToLINE error:", err);
-        btn.innerHTML = `<i class="fa-brands fa-line text-lg"></i> ลองอีกครั้ง`;
+        // หากล้มเหลว คืนค่าปุ่มให้กดใหม่ได้
+        btn.innerHTML = `<i class="fa-brands fa-line text-lg"></i> เกิดข้อผิดพลาด ลองส่งใหม่อีกครั้ง`;
         btn.disabled  = false;
+        btn.classList.remove("opacity-70", "cursor-wait");
         showToast("❌ เกิดข้อผิดพลาด กรุณาลองใหม่");
     }
 }
