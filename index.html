@@ -16,6 +16,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body class="flex flex-col min-h-screen">
@@ -66,7 +69,7 @@
     <div class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center">
         <p class="text-[11px] text-amber-800 font-medium">
             🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวด่วน?
-            <a href="grab://open?screenType=SEARCH&searchKeyword=Clean%20Food%20Chiang%20Rai"
+            <a href="https://food.grab.com/th/th/restaurant/clean-food-chiang-rai-ชื่อร้านจริงของคุณ" target="_blank"
                 class="underline font-bold text-emerald-600">
                 สั่ง Grab ทันที
             </a>
@@ -74,62 +77,24 @@
         </p>
     </div>
 
-    <!-- ═══════════════════════════ HERO / PROMO ═══════════════════════════ -->
-    <!-- <div class="hero-banner text-white py-6 sm:py-8 px-4 cursor-pointer hover:opacity-95 transition-opacity"
-    onclick="openSubscriptionModal()">
- 
-    <div class="hero-orb w-72 h-72 bg-emerald-300" style="top:-60px;right:-40px;"></div>
-    <div class="hero-orb w-48 h-48 bg-teal-400" style="bottom:-30px;left:10%;"></div>
-
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 relative z-10">
-        <div class="flex items-center gap-4">
-            <div class="w-14 h-14 bg-white/15 rounded-2xl flex items-center justify-center text-3xl backdrop-blur-sm border border-white/20 shadow-lg">
-                🍱
-            </div>
-            <div>
-                <div class="section-label text-emerald-300 mb-0.5">โปรโมชั่นพิเศษ</div>
-                <h3 class="font-bold text-lg sm:text-xl leading-snug">แพ็กเกจผูกปิ่นโต Pre-order</h3>
-                <p class="text-white/70 text-sm">ประหยัดกว่า · ส่งฟรี 2 รอบ/สัปดาห์ · ไม่ต้องคิด</p>
-            </div>
-        </div>
-        <div class="flex items-center gap-3 bg-white text-emerald-700 px-6 py-3 rounded-2xl font-bold shadow-2xl text-sm whitespace-nowrap">
-            <span>เริ่มต้น ฿1,290</span>
-            <span class="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center">
-                <i class="fa-solid fa-arrow-right text-xs"></i>
-            </span>
-        </div>
-    </div>
-</div> -->
-
-    <!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-
-        <!-- STATS BAR -->
-        <!-- <div class="grid grid-cols-3 gap-3 mb-8">
-        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-sm text-center">
-            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">10+</div>
-            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5">เมนูสุขภาพ</div>
-        </div>
-        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-sm text-center">
-            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">2x</div>
-            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5">รอบส่งต่อวัน</div>
-        </div>
-        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-sm text-center">
-            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">0%</div>
-            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5">น้ำมันทอด</div>
-        </div>
-    </div> -->
-
-
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
             <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold" data-filter="all">
                 <i class="fa-solid fa-border-all mr-1"></i> ทั้งหมด
             </button>
+
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="chicken">🍗
                 อกไก่</button>
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="fish">🐟 ปลา</button>
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="shrimp">🦐
+                กุ้ง</button>
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="beef">🥩 เนื้อ</button>
+
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="salad">🥗 สลัด</button>
+            <!-- <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="snack">🥨
+                ทานเล่น</button>
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="drink">🥤
+                เครื่องดื่ม</button> -->
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="menu-grid"></div>
@@ -238,26 +203,50 @@
                 <span class="text-2xl font-extrabold text-emerald-600" id="cart-total-price">฿0</span>
             </div>
 
-            <div id="qr-container" class="hidden flex-col items-center mb-4 p-5">
-                <p class="text-sm font-extrabold text-emerald-800 mb-3 flex items-center gap-2">
+            <!-- ── QR PAYMENT AREA ── -->
+            <div id="qr-container" class="hidden flex-col items-center mb-4 p-4 gap-3">
+
+                <!-- Back button (mobile/tablet) -->
+                <button id="back-to-cart-btn" onclick="backToCart()"
+                    class="hidden self-start flex items-center gap-2 text-slate-500 hover:text-emerald-600 text-xs font-semibold px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i> ย้อนกลับแก้ไข
+                </button>
+
+                <p class="text-sm font-extrabold text-emerald-800 flex items-center gap-2">
                     <i class="fa-solid fa-qrcode"></i> สแกนจ่ายผ่าน Make by KBank
                 </p>
+
                 <div
-                    class="bg-rose-50 text-rose-600 px-5 py-2 rounded-full font-extrabold text-sm mb-4 border border-rose-200 shadow-sm">
+                    class="bg-rose-50 text-rose-600 px-5 py-2 rounded-full font-extrabold text-sm border border-rose-200 shadow-sm text-center">
                     กรุณาระบุยอดเงิน: <span id="qr-total-amount" class="text-xl">0</span> บาท
                 </div>
+
                 <div
-                    class="bg-white p-2 rounded-2xl shadow-sm border border-emerald-100 mb-3 w-48 h-48 flex items-center justify-center overflow-hidden">
+                    class="bg-white p-2 rounded-2xl shadow-sm border border-emerald-100 w-48 h-48 flex items-center justify-center overflow-hidden">
                     <img id="make-qr" src="Img/make-qr.jpg" alt="Make QR" class="w-full h-full object-cover">
                 </div>
-                <p class="text-[10px] text-slate-500 mt-1 text-center font-medium">สแกนจ่ายแล้ว → กดปุ่มด้านล่าง →
-                    ส่งหลักฐานใน LINE</p>
+
+                <!-- Step guide -->
+                <div
+                    class="w-full bg-slate-50 rounded-2xl p-3 border border-slate-100 text-[11px] text-slate-600 space-y-1.5">
+                    <div class="flex items-center gap-2"><span
+                            class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">1</span>
+                        เปิดแอปธนาคาร แล้วสแกน QR ด้านบน</div>
+                    <div class="flex items-center gap-2"><span
+                            class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">2</span>
+                        โอนเงินตามยอดที่แสดง แล้วบันทึกสลิป</div>
+                    <div class="flex items-center gap-2"><span
+                            class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">3</span>
+                        กดปุ่มด้านล่าง เพื่อส่งสลิปยืนยันที่ LINE</div>
+                </div>
+
                 <button id="submit-order-btn" onclick="sendOrderToLINE()"
-                    class="line-btn w-full mt-4 text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2">
-                    <i class="fa-brands fa-line text-lg"></i> ส่งสลิปและยืนยันออเดอร์
+                    class="line-btn w-full text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shadow-lg">
+                    <i class="fa-brands fa-line text-lg"></i> โอนแล้ว → ส่งสลิปยืนยันที่ LINE
                 </button>
             </div>
 
+            <!-- ── CHECKOUT BUTTON ── -->
             <button id="checkout-btn" onclick="generateQR()"
                 class="w-full btn-primary text-white py-4 rounded-xl font-bold text-sm flex justify-center items-center gap-2 opacity-40 cursor-not-allowed transition-all"
                 disabled>
