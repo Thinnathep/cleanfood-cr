@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clean Food Chiang Rai | Premium App</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+    <!-- <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #10b981;
+            border-radius: 10px;
+        }
+
+        /* Hardware Acceleration & Optimization */
+        .menu-card {
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+            will-change: transform, opacity;
+            cursor: pointer;
+            transform: translateZ(0);
+        }
+
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-card:active {
+            transform: scale(0.97);
+        }
+
+        .food-img {
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+
+        .menu-card:hover .food-img {
+            transform: scale(1.08);
+        }
+
+        /* UI Elements */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        #modal-backdrop {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .progress-bar-bg {
+            background: #e2e8f0;
+            border-radius: 999px;
+            height: 6px;
+            width: 100%;
+            overflow: hidden;
+            transform: translateZ(0);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Cart Drawer */
+        #cart-drawer {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #cart-drawer.open {
+            transform: translateX(0);
+        }
+    </style> -->
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+    <header class="glass-panel shadow-sm sticky top-0 z-40 border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex flex-col">
+                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-leaf text-emerald-500"></i> Clean Food <span
+                            class="text-emerald-500 hidden sm:inline">Chiang Rai</span>
+                    </h1>
+                    <span id="datetime-display" class="text-xs text-slate-400 font-mono mt-1"><i
+                            class="fa-regular fa-clock"></i> Loading...</span>
+                </div>
+
+                <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
+                    <input type="text" id="search-desktop" placeholder="ค้นหาเมนู (เช่น แซลมอน, อกไก่)..."
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full border-transparent focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all outline-none">
+                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+
+                <button onclick="toggleCart()"
+                    class="relative p-2 text-slate-600 hover:text-emerald-500 transition-colors group bg-slate-100 rounded-full w-12 h-12 flex items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-basket-shopping text-xl group-hover:scale-110 transition-transform"></i>
+                    <span id="cart-count"
+                        class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold h-6 w-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm transition-all">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 sm:px-6 lg:px-8 cursor-pointer hover:opacity-95 transition-opacity"
+        onclick="openSubscriptionModal()">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div
+                    class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-2xl">
+                    🍱</div>
+                <div>
+                    <h3 class="font-bold text-lg leading-tight">โปรโมชั่นผูกปิ่นโตรายสัปดาห์ (10 มื้อ)</h3>
+                    <p class="text-emerald-100 text-sm">ประหยัดกว่า คุมแคลอรี่ได้เป๊ะ จัดส่งฟรี 2 รอบ/สัปดาห์</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 bg-white text-emerald-600 px-5 py-2 rounded-full font-bold shadow-lg">
+                <span class="line-through text-slate-400 text-sm">฿1,590</span>
+                <span>฿1,290</span>
+                <i class="fa-solid fa-cart-plus ml-1"></i>
+            </div>
+        </div>
+    </div> -->
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <div class="flex flex-wrap justify-center gap-2 mb-10" id="filter-container">
+            <button
+                class="filter-btn active px-6 py-2 rounded-full text-sm font-medium bg-slate-800 text-white shadow-md transition-all"
+                data-filter="all">ทั้งหมด</button>
+            <button
+                class="filter-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all"
+                data-filter="chicken">อกไก่</button>
+            <button
+                class="filter-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all"
+                data-filter="fish">ปลา</button>
+            <button
+                class="filter-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all"
+                data-filter="beef">เนื้อ</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="menu-grid">
+        </div>
+    </main>
+
+    <footer class="bg-slate-900 text-slate-300 mt-auto">
+        <div
+            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-leaf text-emerald-500"></i> Clean
+                    Food Chiang Rai</h2>
+                <p class="text-sm text-slate-400">อร่อย สุขภาพดี ส่งตรงถึงบ้านคุณ</p>
+            </div>
+            <div class="flex gap-4">
+                <a href="#"
+                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"><i
+                        class="fa-brands fa-facebook-f"></i></a>
+                <a href="#"
+                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"><i
+                        class="fa-brands fa-line"></i></a>
+                <a href="#"
+                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"><i
+                        class="fa-solid fa-motorcycle"></i></a>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+            &copy; <span id="year"></span> Clean Food Chiang Rai. All rights reserved. Designed with ❤️
+        </div>
+    </footer>
+
+    <div id="cart-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden opacity-0 transition-opacity"
+        onclick="toggleCart()"></div>
+    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white z-50 shadow-2xl flex flex-col">
+
+        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shadow-sm z-10">
+            <h2 class="text-xl font-bold text-slate-800"><i
+                    class="fa-solid fa-basket-shopping text-emerald-500 mr-2"></i>ตะกร้าของคุณ</h2>
+            <button onclick="toggleCart()"
+                class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-rose-500 hover:bg-rose-50 flex items-center justify-center shadow-sm"><i
+                    class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="flex-grow overflow-y-auto flex flex-col">
+            <div id="cart-items" class="p-5 flex flex-col gap-4">
+                <div class="text-center text-slate-400 mt-10" id="empty-cart-msg">
+                    <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i><br>ตะกร้าว่างเปล่า
+                    ลองเลือกเมนูสุขภาพสิ!
+                </div>
+            </div>
+
+            <div id="checkout-form-container" class="hidden px-5 pb-5">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
+                    <h3 class="font-bold text-slate-800 text-sm"><i
+                            class="fa-solid fa-motorcycle text-emerald-500 mr-1"></i> ข้อมูลจัดส่ง</h3>
+                    <input type="text" id="cust-name" placeholder="ชื่อ-นามสกุล"
+                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors">
+                    <input type="tel" id="cust-tel" placeholder="เบอร์โทรศัพท์"
+                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors">
+                    <textarea id="cust-address" placeholder="ที่อยู่ (สามารถแปะลิงก์ Google Maps ได้)"
+                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors h-16"></textarea>
+                    <select id="cust-slot"
+                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors">
+                        <option value="">-- เลือกรอบจัดส่ง --</option>
+                        <option value="11:00-13:00">รอบเที่ยง (11:00 - 13:00 น.)</option>
+                        <option value="16:00-18:00">รอบเย็น (16:00 - 18:00 น.)</option>
+                    </select>
+
+                    <label class="flex items-start gap-2 text-[11px] text-slate-500 mt-2 cursor-pointer">
+                        <input type="checkbox" id="pdpa-consent" class="accent-emerald-500 w-4 h-4 mt-0.5 shrink-0">
+                        <span class="leading-relaxed">
+                            ข้าพเจ้ายินยอมให้ Clean Food Chiang Rai เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร
+                            และที่อยู่) เพื่อการจัดส่งอาหารและติดต่อเรื่องออเดอร์เท่านั้น ทั้งนี้เป็นไปตาม
+                            <a href="javascript:void(0)" onclick="openPDPAModal()"
+                                class="text-emerald-600 font-bold underline hover:text-emerald-700">นโยบายคุ้มครองข้อมูลส่วนบุคคล
+                                (Privacy Policy)</a>
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-5 border-t border-slate-100 bg-white z-10 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-slate-500 font-medium">ยอดรวมทั้งหมด</span>
+                <span class="text-2xl font-bold text-emerald-600" id="cart-total-price">฿0</span>
+            </div>
+
+            <div id="qr-container"
+                class="hidden flex-col items-center mb-4 p-4 border-2 border-dashed border-emerald-200 rounded-2xl bg-emerald-50">
+                <p class="text-xs font-bold text-emerald-700 mb-2">สแกนจ่ายผ่านพร้อมเพย์ (ยอดเป๊ะ)</p>
+                <img id="promptpay-qr" src="" alt="PromptPay QR" class="w-48 h-48 rounded-xl shadow-sm bg-white p-2">
+                <p class="text-[10px] text-slate-500 mt-2 text-center font-medium">สแกนจ่ายแล้วกดปุ่มด้านล่าง
+                    เพื่อส่งหลักฐานทาง LINE</p>
+                <button onclick="sendOrderToLINE()"
+                    class="w-full mt-3 bg-[#00B900] text-white py-3 rounded-xl text-sm font-bold hover:bg-[#009900] shadow-lg shadow-[#00B900]/30 transition-all flex justify-center items-center gap-2">
+                    <i class="fa-brands fa-line text-lg"></i> ส่งสลิปและยืนยันออเดอร์
+                </button>
+            </div>
+
+            <button id="checkout-btn" onclick="generateQR()"
+                class="w-full bg-emerald-500 text-white py-4 rounded-xl font-bold hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/30 flex justify-center items-center gap-2 opacity-50 cursor-not-allowed"
+                disabled>
+                <i class="fa-solid fa-qrcode"></i> กรอกข้อมูลครบแล้ว สร้าง QR Code
+            </button>
+        </div>
+    </div>
+
+    <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+        <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/40 opacity-0 cursor-pointer"
+            onclick="closeModal()"></div>
+
+        <div id="modal-content"
+            class="bg-white rounded-3xl shadow-2xl w-[90%] max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative opacity-0 scale-95 transform">
+            <button onclick="closeModal()"
+                class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/50 backdrop-blur-md rounded-full flex items-center justify-center text-slate-800 hover:bg-rose-500 hover:text-white transition-colors shadow-sm">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="w-full md:w-1/2 h-64 md:h-auto relative">
+                <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden"></div>
+                <div id="modal-badge"
+                    class="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col overflow-y-auto">
+                <div class="flex justify-between items-start mb-2">
+                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-slate-800 leading-tight"></h2>
+                </div>
+                <div class="text-3xl font-bold text-emerald-600 mb-4" id="modal-price"></div>
+                <p id="modal-desc" class="text-sm text-slate-500 mb-6 leading-relaxed"></p>
+
+                <div class="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100" id="nutrition-box">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="font-bold text-slate-700 flex items-center gap-2"><i
+                                class="fa-solid fa-fire text-rose-500"></i> <span id="modal-kcal"></span> Kcal</span>
+                        <span class="text-xs text-slate-400">โภชนาการต่อ 1 เสิร์ฟ</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4" id="macros-grid">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span
+                                    class="font-medium text-slate-600">โปรตีน</span><span id="modal-pro"
+                                    class="text-blue-600 font-bold"></span></div>
+                            <div class="progress-bar-bg">
+                                <div id="bar-pro" class="progress-bar-fill bg-blue-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span
+                                    class="font-medium text-slate-600">คาร์บ</span><span id="modal-carb"
+                                    class="text-amber-600 font-bold"></span></div>
+                            <div class="progress-bar-bg">
+                                <div id="bar-carb" class="progress-bar-fill bg-amber-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-xs mb-1"><span
+                                    class="font-medium text-slate-600">ไขมัน</span><span id="modal-fat"
+                                    class="text-rose-600 font-bold"></span></div>
+                            <div class="progress-bar-bg">
+                                <div id="bar-fat" class="progress-bar-fill bg-rose-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-auto">
+                    <h4 class="font-bold text-slate-800 mb-2 text-sm" id="ingredients-title"><i
+                            class="fa-solid fa-basket-wheat text-emerald-500"></i> ส่วนประกอบหลัก:</h4>
+                    <div id="modal-ingredients" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="mt-8 flex gap-4">
+                    <div class="flex items-center bg-slate-100 rounded-xl px-2" id="qty-selector">
+                        <button onclick="updateQty(-1)" class="w-10 h-10 text-slate-600 hover:text-rose-500"><i
+                                class="fa-solid fa-minus"></i></button>
+                        <span id="modal-qty" class="w-8 text-center font-bold text-slate-800">1</span>
+                        <button onclick="updateQty(1)" class="w-10 h-10 text-slate-600 hover:text-emerald-500"><i
+                                class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <button onclick="confirmAddToCart()"
+                        class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg hover:shadow-emerald-500/30 flex justify-center items-center gap-2">
+                        <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"
+        class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 z-50 pointer-events-none">
+        <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center"><i
+                class="fa-solid fa-check text-xs"></i></div>
+        <span id="toast-msg" class="font-medium text-sm">เพิ่มลงตะกร้าแล้ว</span>
+    </div>
+
+    <div id="pdpa-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-lg p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300"
+            id="pdpa-content">
+            <button onclick="closePDPAModal()"
+                class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-rose-500 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-lg font-bold text-slate-800 mb-4"><i
+                    class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i>นโยบายคุ้มครองข้อมูลส่วนบุคคล</h3>
+            <div class="text-xs text-slate-600 space-y-3 h-64 overflow-y-auto pr-2">
+                <p><strong>1. วัตถุประสงค์การเก็บข้อมูล:</strong> ร้าน Clean Food Chiang Rai จะเก็บรวบรวมข้อมูล ชื่อ,
+                    เบอร์โทรศัพท์ และที่อยู่ ของท่าน เพื่อใช้ในการยืนยันคำสั่งซื้อ จัดส่งอาหาร
+                    และติดต่อประสานงานที่เกี่ยวข้องกับออเดอร์เท่านั้น</p>
+                <p><strong>2. การรักษาความปลอดภัย:</strong> ข้อมูลของท่านจะถูกเก็บรักษาไว้อย่างปลอดภัย
+                    และจะไม่มีการนำไปขาย แลกเปลี่ยน หรือส่งต่อให้บุคคลที่สาม (Third-party)
+                    ที่ไม่มีส่วนเกี่ยวข้องกับการจัดส่งเด็ดขาด</p>
+                <p><strong>3. ระยะเวลาการเก็บรักษา:</strong>
+                    ร้านจะเก็บข้อมูลของท่านไว้เป็นฐานข้อมูลลูกค้าเพื่อความสะดวกในการสั่งซื้อครั้งต่อไป
+                    หากท่านไม่มีการเคลื่อนไหวเกิน 1 ปี ข้อมูลจะถูกทำลาย</p>
+                <p><strong>4. สิทธิของเจ้าของข้อมูล:</strong> ท่านมีสิทธิ์ขอดู แก้ไข
+                    หรือแจ้งให้ทางร้านลบข้อมูลส่วนบุคคลของท่านออกจากระบบได้ตลอดเวลา ผ่านช่องทาง LINE Official ของทางร้าน
+                </p>
+            </div>
+            <button onclick="closePDPAModal()"
+                class="w-full mt-5 bg-emerald-500 text-white py-3 rounded-xl font-bold hover:bg-emerald-600 transition-colors">
+                รับทราบและปิดหน้าต่าง
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
