@@ -5,7 +5,7 @@
 
 // ─── CONFIG ────────────────────────────────────────────────
 const CONFIG = {
-    PROMPTPAY: "0962386554",
+    // PROMPTPAY: "0962386554",
     LINE_OA: "@282ovoyd",
     GAS_URL: "https://script.google.com/macros/s/AKfycbwkXzOY2q5Pdc0mDxt6U17OesiWFo_ryhXpdfr9DRFESMCWjO91RqoQYo4ovEQwRSTk/exec",
     CHIANG_RAI: [19.9071, 99.8310],
@@ -35,6 +35,9 @@ let cart = [];
 let currentModalItem = null;
 let tempQty = 1;
 let map, marker;
+let checkoutLockedCart = [];
+let checkoutTotal = 0;
+let isCheckoutMode = false;
 
 // ═══════════════════════════════════════════════════════════
 //  SWAL THEME — ปรับ SweetAlert2 ให้เข้ากับ Clean Food
@@ -319,11 +322,18 @@ function updateQty(change) {
 }
 
 function confirmAddToCart() {
+
     pushToCart({ ...currentModalItem, qty: tempQty });
     closeModal();
 }
 
 function pushToCart(newItem) {
+
+       if (isCheckoutMode) {
+        SwalWarning("กำลังอยู่ในขั้นตอนชำระเงิน", "กรุณากดย้อนกลับก่อนแก้ไขรายการ");
+        return;
+    }
+
     const existing = cart.find(i => i.id === newItem.id);
     if (existing) existing.qty += newItem.qty;
     else cart.push({ ...newItem });
@@ -332,6 +342,12 @@ function pushToCart(newItem) {
 }
 
 function editCartQty(index, change) {
+
+       if (isCheckoutMode) {
+        SwalWarning("กำลังอยู่ในขั้นตอนชำระเงิน", "กรุณากดย้อนกลับก่อนแก้ไขรายการ");
+        return;
+    }
+
     const newQty = cart[index].qty + change;
     if (newQty <= 0) {
         const removedName = cart[index].name;
@@ -345,6 +361,12 @@ function editCartQty(index, change) {
 }
 
 function removeCartItem(index) {
+
+       if (isCheckoutMode) {
+        SwalWarning("กำลังอยู่ในขั้นตอนชำระเงิน", "กรุณากดย้อนกลับก่อนแก้ไขรายก  าร");
+        return;
+    }
+
     const removedName = cart[index].name;
     cart.splice(index, 1);
     updateCartUI();
@@ -479,22 +501,31 @@ function toggleCart() {
 //  7. GENERATE QR — พร้อม SweetAlert confirm
 // ═══════════════════════════════════════════════════════════
 function generateQR() {
-    const name = document.getElementById("cust-name").value.trim();
+ const name = document.getElementById("cust-name").value.trim();
     const tel = document.getElementById("cust-tel").value.trim();
     const address = document.getElementById("cust-address").value.trim();
     const slot = document.getElementById("cust-slot").value;
     const pdpa = document.getElementById("pdpa-consent").checked;
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const orderSummary = cart.map(i => `• ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`).join("<br>");
 
     clearFieldErrors();
     let hasError = false;
+
     if (!name) { setFieldError("cust-name", "กรุณากรอกชื่อ-นามสกุล"); hasError = true; }
     if (!isValidThaiPhone(tel)) { setFieldError("cust-tel", "กรุณากรอกเบอร์โทรให้ถูกต้อง (10 หลัก)"); hasError = true; }
     if (!slot) { setFieldError("cust-slot", "กรุณาเลือกรอบจัดส่ง"); hasError = true; }
-    if (!address) { SwalWarning("ยังไม่ได้ปักหมุด", "กรุณาแตะหรือลากหมุดในแผนที่เพื่อระบุจุดจัดส่งก่อนนะคะ"); hasError = true; }
-    if (!pdpa) { SwalWarning("ยังไม่ได้ยอมรับ PDPA", "กรุณาอ่านและยอมรับนโยบายความเป็นส่วนตัวก่อนดำเนินการต่อค่ะ"); hasError = true; }
+    if (!address) { SwalWarning("ยังไม่ได้ปักหมุด", "กรุณาปักหมุดแผนที่ก่อน"); hasError = true; }
+    if (!pdpa) { SwalWarning("ยังไม่ได้ยอมรับ PDPA", "กรุณายอมรับนโยบายก่อน"); hasError = true; }
+
     if (hasError) return;
+
+    // 🔒 ล็อกตะกร้า ณ วินาทีนี้
+    checkoutLockedCart = JSON.parse(JSON.stringify(cart));
+    checkoutTotal = checkoutLockedCart.reduce((s, i) => s + i.price * i.qty, 0);
+    isCheckoutMode = true;
+
+       const orderSummary = checkoutLockedCart
+        .map(i => `• ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`)
+        .join("<br>");
 
     // ── SweetAlert ยืนยันออเดอร์ก่อนแสดง QR ──────────────
     SwalBase.fire({
@@ -508,12 +539,12 @@ function generateQR() {
                 </div>
                 <div style="margin-bottom:10px">${orderSummary}</div>
                 <div style="background:#fef9c3; border-radius:10px; padding:10px 12px; font-size:12px; border:1px solid #fde047;">
-                    ⚠️ กรุณาตรวจสอบให้ถูกต้องก่อนชำระเงิน<br>
+                    ⚠️ กรุณาตรวจสอบให้ถูกต้องก่อนชำระเงิน<br>  
                     หลังโอนแล้วจะแก้ไขออเดอร์ไม่ได้นะคะ
                 </div>
             </div>
             <div style="margin-top:14px; background:#ecfdf5; border-radius:12px; padding:10px; font-size:18px; font-weight:800; color:#15803d; border:2px solid #86efac;">
-                💰 ยอดชำระ: ฿${total.toLocaleString()}
+                💰 ยอดชำระ: ฿${checkoutTotal.toLocaleString()}
             </div>`,
         confirmButtonText: 'ถูกต้องและไปชำระเงิน',
         cancelButtonText: 'แก้ไขออเดอร์',
@@ -524,7 +555,7 @@ function generateQR() {
 
         // แสดง QR
         const amountEl = document.getElementById("qr-total-amount");
-        if (amountEl) amountEl.innerText = total.toLocaleString();
+        if (amountEl) amountEl.innerText = checkoutTotal.toLocaleString();
         document.getElementById("qr-container").classList.remove("hidden");
         document.getElementById("qr-container").style.display = "flex";
         document.getElementById("checkout-btn").classList.add("hidden");
@@ -537,6 +568,9 @@ function generateQR() {
 
 // ─── ย้อนกลับจากหน้า QR ──────────────────────────────────
 function backToCart() {
+    isCheckoutMode = false;
+    checkoutLockedCart = [];
+    checkoutTotal = 0;
     document.getElementById("qr-container").classList.add("hidden");
     document.getElementById("qr-container").style.display = "none";
     document.getElementById("checkout-btn").classList.remove("hidden");
@@ -557,9 +591,10 @@ async function sendOrderToLINE() {
     const landmark = document.getElementById("cust-landmark").value.trim();
     const slot = document.getElementById("cust-slot").value;
     const note = document.getElementById("cust-note")?.value.trim() || "";
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const orderItems = cart.map(i => `- ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`).join("\n");
-    const itemNames = cart.map(i => `${i.name} ×${i.qty}`).join(", ");
+    const total = checkoutTotal;
+    const cartForSend = checkoutLockedCart;
+    const orderItems = cartForSend.map(i => `- ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`).join("\n");
+    const itemNames = cartForSend.map(i => `${i.name} ×${i.qty}`).join(", ");
     const deliveryDateThai = getDeliveryDateThai();
 
     if (!name || !tel || !slot || !gpsLink) {
@@ -741,10 +776,10 @@ updateCartUI();
 function openGrab() {
     const appUrl = "grab://open?screenType=SEARCH&searchKeyword=Clean%20Food%20Chiang%20Rai";
     const webUrl = "https://food.grab.com/th/th/search/?search=Clean%20Food%20Chiang%20Rai";
-    
+
     // ลองเปิดแอป
     window.location.href = appUrl;
-    
+
     // ถ้าผ่านไป 500ms แล้วยังอยู่ที่เดิม (เปิดแอปไม่ขึ้น) ให้วาร์ปไปเว็บแทน
     setTimeout(() => {
         if (document.hasFocus()) {
@@ -752,3 +787,9 @@ function openGrab() {
         }
     }, 500);
 }
+
+window.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "visible" && isCheckoutMode) {
+        location.reload();
+    }
+});

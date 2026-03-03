@@ -32,8 +32,8 @@ body {
 
 .glass-header {
     background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
     border-bottom: 1px solid rgba(22, 163, 74, 0.1)
 }
 
@@ -107,8 +107,8 @@ body {
 }
 
 #modal-backdrop {
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px)
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px)
 }
 
 .progress-bar-bg {
