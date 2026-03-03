@@ -540,93 +540,93 @@ function generateQR() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  8. SEND ORDER → GAS → LINE (ฉบับแก้ไข LINE ไม่เด้ง)
+//  8. SEND ORDER → GAS → LINE (พุ่งเข้าแชทร้าน @282ovoyd โดยตรง)
 // ═══════════════════════════════════════════════════════════
 async function sendOrderToLINE() {
-    const name = document.getElementById("cust-name").value.trim();
-    const tel = document.getElementById("cust-tel").value.trim();
-    const gpsLink = document.getElementById("cust-address").value.trim();
-    const lat = document.getElementById("cust-lat").value;
-    const lng = document.getElementById("cust-lng").value;
+    const name     = document.getElementById("cust-name").value.trim();
+    const tel      = document.getElementById("cust-tel").value.trim();
+    const gpsLink  = document.getElementById("cust-address").value.trim();
+    const lat      = document.getElementById("cust-lat").value;
+    const lng      = document.getElementById("cust-lng").value;
     const landmark = document.getElementById("cust-landmark").value.trim();
-    const slot = document.getElementById("cust-slot").value;
-    const note = document.getElementById("cust-note")?.value.trim() || "";
-    const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    const slot     = document.getElementById("cust-slot").value;
+    const note     = document.getElementById("cust-note")?.value.trim() || "";
+    const total    = cart.reduce((s, i) => s + i.price * i.qty, 0);
     const orderItems = cart.map((i) => `- ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`).join("\n");
-    const itemNames = cart.map((i) => `${i.name} ×${i.qty}`).join(", ");
+    const itemNames  = cart.map((i) => `${i.name} ×${i.qty}`).join(", ");
 
     if (!name || !tel || !slot || !gpsLink) {
         showToast("⚠️ กรุณากรอกข้อมูลให้ครบก่อนส่ง");
         return;
     }
 
-    if (!confirm("คุณลูกค้าโอนเงินและเซฟสลิปไว้เรียบร้อยแล้วใช่ไหมคะ?\n\n⏳ ระบบกำลังบันทึกข้อมูลและจะพาคุณไปที่ LINE เพื่อส่งสลิปค่ะ")) {
+    if (!confirm("คุณลูกค้าโอนเงินและเซฟสลิปเรียบร้อยแล้วใช่ไหมคะ?\n\n⏳ ระบบจะบันทึกข้อมูลและพาคุณไปที่ LINE ของร้านทันทีค่ะ")) {
         return;
     }
 
     // ⏳ แสดง Loading State
     const btn = document.getElementById("submit-order-btn");
     const originalContent = btn.innerHTML;
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึกข้อมูล...`;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึกออเดอร์...`;
     btn.disabled = true;
     btn.classList.add("opacity-70", "cursor-wait");
 
     const payload = {
         customerName: name,
-        phone: tel,
-        address: landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
-        latitude: lat,
-        longitude: lng,
+        phone:        tel,
+        address:      landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
+        latitude:     lat,
+        longitude:    lng,
         deliverySlot: slot,
         orderDetails: itemNames,
-        totalAmount: total,
-        note: note,
-        source: "web",
+        totalAmount:  total,
+        note:         note,
+        source:       "web",
     };
 
     try {
-        // 1. บันทึกลง Google Sheets (ใช้ Promise เพื่อคุมเวลา)
+        // 1. บันทึกลง Google Sheets ก่อนเพื่อให้เรามีข้อมูล [cite: 2026-02-26]
         await fetch(CONFIG.GAS_URL, {
             method: "POST",
-            mode: "no-cors",
+            mode:   "no-cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
         });
 
-        // 2. เตรียมข้อความ LINE
+        // 2. เตรียมข้อความออเดอร์
         const lineMsg = [
             `🛒 *ออเดอร์ใหม่ — Clean Food CR*`,
-            `👤 ชื่อ: ${name}`,
-            `📱 โทร: ${tel}`,
+            `👤 ${name}`,
+            `📱 ${tel}`,
             `🕐 รอบส่ง: ${slot}`,
-            `🏠 จุดส่ง: ${landmark || "(ดูพิกัด)"}`,
             `📍 ${gpsLink}`,
             `──────────────────────`,
             `รายการ:`,
             orderItems,
-            `──────────────────────`,
             `💰 รวม: ฿${total.toLocaleString()}`,
             note ? `📝 หมายเหตุ: ${note}` : "",
             `──────────────────────`,
             `⚠️ จัดส่งวันถัดไป | แนบสลิปด้านล่าง 👇`
         ].filter(Boolean).join("\n");
 
-        const lineId = CONFIG.LINE_OA.replace('@', ''); // ลบ @ ออกถ้ามี
+        // 3. 🚀 จุดตาย! เปลี่ยน URL เป็นแบบพุ่งเข้าแชท OA โดยตรง [cite: 2026-02-26]
+        // ใช้โครงสร้าง: https://line.me/R/oaMessage/{LINE_ID}/?{message}
+        const lineId  = "282ovoyd"; // ระบุ ID ร้านโดยตรง (ไม่มี @) เพื่อความแม่นยำ [cite: 2026-02-26]
         const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(lineMsg)}`;
 
-        showToast("✅ บันทึกข้อมูลแล้ว กำลังพาไปที่แชทร้าน...");
+        showToast("✅ บันทึกแล้ว! กำลังเปิดแชทร้าน...");
 
-        // สั่งเด้งไปที่หน้าแชท
+        // 4. สั่งพุ่งตัวไปที่ LINE ทันที [cite: 2026-02-26]
         setTimeout(() => {
             window.location.href = lineUrl;
-        }, 800);
-
+        }, 1000);
+        
     } catch (err) {
-        console.error("sendOrderToLINE error:", err);
+        console.error("Error:", err);
         btn.innerHTML = originalContent;
-        btn.disabled = false;
+        btn.disabled  = false;
         btn.classList.remove("opacity-70", "cursor-wait");
-        showToast("❌ เกิดข้อผิดพลาด กรุณาลองใหม่");
+        showToast("❌ ระบบขัดข้อง กรุณาลองใหม่นะคะ");
     }
 }
 
