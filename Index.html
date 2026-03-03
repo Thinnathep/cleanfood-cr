@@ -1,398 +1,739 @@
 <!DOCTYPE html>
 <html lang="th" data-theme="light">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clean Food Chiang Rai | Premium App</title>
+    <title>Clean Food Chiang Rai | สุขภาพดี ส่งถึงบ้าน</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- <style>
-        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap');
+    <style>
+        :root {
+            --green: #16a34a;
+            --green-light: #22c55e;
+            --green-pale: #f0fdf4;
+            --teal: #0d9488;
+            --slate-50: #f8fafc;
+            --slate-100: #f1f5f9;
+            --slate-800: #1e293b;
+            --rose: #f43f5e;
+        }
+
+        * { box-sizing: border-box; }
 
         body {
             font-family: 'Prompt', sans-serif;
-            background-color: #f8fafc;
+            background-color: var(--slate-50);
             overflow-x: hidden;
         }
 
-        ::-webkit-scrollbar {
-            width: 6px;
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 10px; }
+
+        /* HEADER */
+        .glass-header {
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(22,163,74,0.1);
         }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
+        /* HERO BANNER */
+        .hero-banner {
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 40%, #0d9488 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .hero-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(60px);
+            opacity: 0.15;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #10b981;
-            border-radius: 10px;
+        /* PROMO BANNER */
+        .promo-gradient {
+            background: linear-gradient(90deg, #059669, #0d9488);
         }
 
-        /* Hardware Acceleration & Optimization */
+        /* FILTER PILLS */
+        .filter-btn {
+            transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+            border: 1.5px solid transparent;
+        }
+        .filter-btn.active {
+            background: var(--slate-800);
+            color: white;
+            box-shadow: 0 4px 12px rgba(30,41,59,0.25);
+        }
+        .filter-btn:not(.active) {
+            background: white;
+            color: #475569;
+            border-color: #e2e8f0;
+        }
+        .filter-btn:not(.active):hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* MENU CARDS */
         .menu-card {
-            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-            will-change: transform, opacity;
+            transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s ease;
+            will-change: transform;
             cursor: pointer;
             transform: translateZ(0);
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
         }
-
         .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 24px 40px -8px rgba(0,0,0,0.12), 0 0 0 1px rgba(22,163,74,0.08);
         }
-
-        .menu-card:active {
-            transform: scale(0.97);
-        }
+        .menu-card:active { transform: scale(0.98); }
 
         .food-img {
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
             will-change: transform;
         }
+        .menu-card:hover .food-img { transform: scale(1.07); }
 
-        .menu-card:hover .food-img {
-            transform: scale(1.08);
-        }
-
-        /* UI Elements */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-        }
-
-        #modal-backdrop {
+        .kcal-badge {
+            background: rgba(15,23,42,0.75);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
         }
 
+        /* MODALS */
+        #modal-backdrop {
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+
+        /* NUTRITION BARS */
         .progress-bar-bg {
             background: #e2e8f0;
             border-radius: 999px;
-            height: 6px;
-            width: 100%;
+            height: 5px;
             overflow: hidden;
-            transform: translateZ(0);
         }
-
         .progress-bar-fill {
             height: 100%;
             border-radius: 999px;
-            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: width 1s cubic-bezier(0.4,0,0.2,1);
         }
 
-        /* Cart Drawer */
+        /* CART DRAWER */
         #cart-drawer {
             transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        #cart-drawer.open { transform: translateX(0); }
+
+        /* CART ITEMS */
+        .cart-item-row {
+            transition: all 0.25s ease;
+        }
+        .cart-item-row:hover { background: #f8fafc; }
+
+        /* BUTTON STATES */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--green), var(--teal));
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(22,163,74,0.35);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 8px 25px rgba(22,163,74,0.4);
+            transform: translateY(-1px);
+        }
+        .btn-dark {
+            background: var(--slate-800);
+            transition: all 0.3s ease;
+        }
+        .btn-dark:hover {
+            background: var(--green);
+            box-shadow: 0 8px 20px rgba(22,163,74,0.3);
         }
 
-        #cart-drawer.open {
-            transform: translateX(0);
+        /* TOAST */
+        #toast {
+            transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s ease;
         }
-    </style> -->
+
+        /* STATUS BADGE */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* MAP */
+        #map { border-radius: 12px; z-index: 0; }
+
+        /* INGREDIENT TAGS */
+        .ing-tag {
+            background: #f0fdf4;
+            color: #15803d;
+            border: 1px solid #bbf7d0;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 6px;
+        }
+
+        /* SUBSCRIPTION CARD */
+        .sub-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #475569;
+        }
+
+        /* SECTION DIVIDER */
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--green);
+        }
+
+        /* ORDER TRACKER DOTS */
+        .tracker-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #e2e8f0;
+        }
+        .tracker-dot.done { background: var(--green); }
+        .tracker-dot.active {
+            background: var(--green);
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.25);
+            animation: pulse-dot 1.5s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,100% { box-shadow: 0 0 0 3px rgba(22,163,74,0.25); }
+            50% { box-shadow: 0 0 0 6px rgba(22,163,74,0.1); }
+        }
+
+        /* CARD SKELETON */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 12px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* QR AREA */
+        #qr-container {
+            background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+            border: 2px dashed #86efac;
+            border-radius: 20px;
+        }
+
+        /* LINE BUTTON */
+        .line-btn {
+            background: linear-gradient(135deg, #00B900, #00a000);
+            box-shadow: 0 4px 15px rgba(0,185,0,0.3);
+        }
+        .line-btn:hover {
+            box-shadow: 0 8px 25px rgba(0,185,0,0.4);
+            transform: translateY(-1px);
+        }
+
+        /* MOBILE SEARCH */
+        .mobile-search-bar {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            .mobile-search-bar { display: flex; }
+        }
+    </style>
 </head>
 
 <body class="flex flex-col min-h-screen">
 
-    <header class="glass-panel shadow-sm sticky top-0 z-40 border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <div class="flex flex-col">
-                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <i class="fa-solid fa-leaf text-emerald-500"></i> Clean Food <span
-                            class="text-emerald-500 hidden sm:inline">Chiang Rai</span>
-                    </h1>
-                    <span id="datetime-display" class="text-xs text-slate-400 font-mono mt-1"><i
-                            class="fa-regular fa-clock"></i> Loading...</span>
-                </div>
+<!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
+<header class="glass-header sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16 sm:h-20">
 
-                <div class="hidden md:flex flex-1 max-w-md mx-8 relative">
-                    <input type="text" id="search-desktop" placeholder="ค้นหาเมนู (เช่น แซลมอน, อกไก่)..."
-                        class="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-full border-transparent focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all outline-none">
-                    <i class="fa-solid fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                </div>
+            <!-- LOGO -->
+            <div class="flex flex-col justify-center">
+                <h1 class="text-xl sm:text-2xl font-extrabold text-slate-800 flex items-center gap-2 leading-none">
+                    <span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-leaf text-white text-sm"></i>
+                    </span>
+                    Clean Food
+                    <span class="text-emerald-600 hidden sm:inline">Chiang Rai</span>
+                </h1>
+                <span id="datetime-display" class="text-[10px] text-slate-400 font-mono mt-1 hidden sm:block">
+                    <i class="fa-regular fa-clock"></i> Loading...
+                </span>
+            </div>
 
+            <!-- SEARCH (Desktop) -->
+            <div class="hidden md:flex flex-1 max-w-sm mx-8 relative">
+                <input type="text" id="search-desktop"
+                    placeholder="ค้นหาเมนู เช่น อกไก่, ปลา..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-slate-100 rounded-full text-sm border border-transparent focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all outline-none">
+                <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            </div>
+
+            <!-- RIGHT ACTIONS -->
+            <div class="flex items-center gap-2">
+                <!-- Order Tracker -->
+                <!-- <button onclick="openOrderTracker()"
+                    class="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold border border-emerald-100 hover:bg-emerald-100 transition-colors">
+                    <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+                    <span>ติดตามออเดอร์</span>
+                </button> -->
+                <!-- Cart -->
                 <button onclick="toggleCart()"
-                    class="relative p-2 text-slate-600 hover:text-emerald-500 transition-colors group bg-slate-100 rounded-full w-12 h-12 flex items-center justify-center cursor-pointer">
-                    <i class="fa-solid fa-basket-shopping text-xl group-hover:scale-110 transition-transform"></i>
+                    class="relative p-2.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors group cursor-pointer">
+                    <i class="fa-solid fa-basket-shopping text-slate-600 group-hover:text-emerald-600 text-lg transition-colors"></i>
                     <span id="cart-count"
-                        class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold h-6 w-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm transition-all">0</span>
+                        class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center border-2 border-white shadow-sm">0</span>
                 </button>
             </div>
         </div>
-    </header>
+    </div>
 
-    <!-- <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-4 px-4 sm:px-6 lg:px-8 cursor-pointer hover:opacity-95 transition-opacity"
-        onclick="openSubscriptionModal()">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div
-                    class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-2xl">
-                    🍱</div>
-                <div>
-                    <h3 class="font-bold text-lg leading-tight">โปรโมชั่นผูกปิ่นโตรายสัปดาห์ (10 มื้อ)</h3>
-                    <p class="text-emerald-100 text-sm">ประหยัดกว่า คุมแคลอรี่ได้เป๊ะ จัดส่งฟรี 2 รอบ/สัปดาห์</p>
-                </div>
+    <!-- MOBILE SEARCH -->
+    <div class="mobile-search-bar px-4 pb-3 gap-2">
+        <div class="relative flex-1">
+            <input type="text" id="search-mobile"
+                placeholder="ค้นหาเมนู..."
+                class="w-full pl-9 pr-4 py-2 bg-slate-100 rounded-full text-sm border border-transparent focus:bg-white focus:border-emerald-400 outline-none transition-all">
+            <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        </div>
+    </div>
+</header>
+
+<!-- ═══════════════════════════ INFO BAR ═══════════════════════════ -->
+<div class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center">
+    <p class="text-[11px] text-amber-800 font-medium">
+        🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวด่วน?
+        <a href="https://grab.com" target="_blank" class="underline font-bold text-emerald-600">สั่ง Grab ทันที</a>
+        (10:00–19:00 น.) | 📦 ส่งฟรีในเขตเมืองเชียงราย
+    </p>
+</div>
+
+<!-- ═══════════════════════════ HERO / PROMO ═══════════════════════════ -->
+<!-- <div class="hero-banner text-white py-6 sm:py-8 px-4 cursor-pointer hover:opacity-95 transition-opacity"
+    onclick="openSubscriptionModal()">
+ 
+    <div class="hero-orb w-72 h-72 bg-emerald-300" style="top:-60px;right:-40px;"></div>
+    <div class="hero-orb w-48 h-48 bg-teal-400" style="bottom:-30px;left:10%;"></div>
+
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 relative z-10">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-white/15 rounded-2xl flex items-center justify-center text-3xl backdrop-blur-sm border border-white/20 shadow-lg">
+                🍱
             </div>
-            <div class="flex items-center gap-3 bg-white text-emerald-600 px-5 py-2 rounded-full font-bold shadow-lg">
-                <span class="line-through text-slate-400 text-sm">฿1,590</span>
-                <span>฿1,290</span>
-                <i class="fa-solid fa-cart-plus ml-1"></i>
+            <div>
+                <div class="section-label text-emerald-300 mb-0.5">โปรโมชั่นพิเศษ</div>
+                <h3 class="font-bold text-lg sm:text-xl leading-snug">แพ็กเกจผูกปิ่นโต Pre-order</h3>
+                <p class="text-white/70 text-sm">ประหยัดกว่า · ส่งฟรี 2 รอบ/สัปดาห์ · ไม่ต้องคิด</p>
             </div>
+        </div>
+        <div class="flex items-center gap-3 bg-white text-emerald-700 px-6 py-3 rounded-2xl font-bold shadow-2xl text-sm whitespace-nowrap">
+            <span>เริ่มต้น ฿1,290</span>
+            <span class="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </span>
+        </div>
+    </div>
+</div> -->
+
+<!-- ═══════════════════════════ MAIN CONTENT ═══════════════════════════ -->
+<main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+    <!-- STATS BAR -->
+    <!-- <div class="grid grid-cols-3 gap-3 mb-8">
+        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-sm text-center">
+            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">10+</div>
+            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5">เมนูสุขภาพ</div>
+        </div>
+        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-sm text-center">
+            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">2x</div>
+            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5">รอบส่งต่อวัน</div>
+        </div>
+        <div class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-sm text-center">
+            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600">0%</div>
+            <div class="text-[10px] sm:text-xs text-slate-500 mt-0.5">น้ำมันทอด</div>
         </div>
     </div> -->
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <div class="flex flex-wrap justify-center gap-2 mb-10" id="filter-container">
-            <button
-                class="filter-btn active px-6 py-2 rounded-full text-sm font-medium bg-slate-800 text-white shadow-md transition-all"
-                data-filter="all">ทั้งหมด</button>
-            <button
-                class="filter-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all"
-                data-filter="chicken">อกไก่</button>
-            <button
-                class="filter-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all"
-                data-filter="fish">ปลา</button>
-            <button
-                class="filter-btn px-6 py-2 rounded-full text-sm font-medium bg-white text-slate-600 border border-slate-200 hover:border-emerald-500 hover:text-emerald-600 transition-all"
-                data-filter="beef">เนื้อ</button>
-        </div>
+    <!-- FILTER PILLS -->
+    <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
+        <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold" data-filter="all">
+            <i class="fa-solid fa-border-all mr-1"></i> ทั้งหมด
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="chicken">
+            🍗 อกไก่
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="fish">
+            🐟 ปลา
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="beef">
+            🥩 เนื้อ
+        </button>
+        <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="salad">
+            🥗 สลัด
+        </button>
+    </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="menu-grid">
-        </div>
-    </main>
+    <!-- MENU GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="menu-grid"></div>
 
-    <footer class="bg-slate-900 text-slate-300 mt-auto">
-        <div
-            class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="text-center md:text-left">
-                <h2 class="text-xl font-bold text-white mb-2"><i class="fa-solid fa-leaf text-emerald-500"></i> Clean
-                    Food Chiang Rai</h2>
-                <p class="text-sm text-slate-400">อร่อย สุขภาพดี ส่งตรงถึงบ้านคุณ</p>
-            </div>
-            <div class="flex gap-4">
-                <a href="#"
-                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"><i
-                        class="fa-brands fa-facebook-f"></i></a>
-                <a href="#"
-                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"><i
-                        class="fa-brands fa-line"></i></a>
-                <a href="#"
-                    class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-500 hover:text-white transition-colors"><i
-                        class="fa-solid fa-motorcycle"></i></a>
-            </div>
-        </div>
-        <div class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-            &copy; <span id="year"></span> Clean Food Chiang Rai. All rights reserved. Designed with ❤️
-        </div>
-    </footer>
+    <!-- EMPTY STATE -->
+    <div id="empty-state" class="hidden text-center py-20">
+        <div class="text-5xl mb-4">🔍</div>
+        <h3 class="text-slate-600 font-semibold mb-2">ไม่พบเมนูที่ค้นหา</h3>
+        <p class="text-slate-400 text-sm">ลองค้นหาด้วยคำอื่น หรือเลือกหมวดหมู่อื่น</p>
+    </div>
+</main>
 
-    <div id="cart-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden opacity-0 transition-opacity"
-        onclick="toggleCart()"></div>
-    <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white z-50 shadow-2xl flex flex-col">
+<!-- ═══════════════════════════ CART DRAWER ═══════════════════════════ -->
+<div id="cart-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden opacity-0 transition-opacity" onclick="toggleCart()"></div>
 
-        <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shadow-sm z-10">
-            <h2 class="text-xl font-bold text-slate-800"><i
-                    class="fa-solid fa-basket-shopping text-emerald-500 mr-2"></i>ตะกร้าของคุณ</h2>
-            <button onclick="toggleCart()"
-                class="w-8 h-8 rounded-full bg-white text-slate-500 hover:text-rose-500 hover:bg-rose-50 flex items-center justify-center shadow-sm"><i
-                    class="fa-solid fa-xmark"></i></button>
+<div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white z-50 shadow-2xl flex flex-col">
+    <!-- CART HEADER -->
+    <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+        <div>
+            <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-basket-shopping text-emerald-500"></i>
+                ตะกร้าของคุณ
+            </h2>
+            <p id="cart-item-count-label" class="text-xs text-slate-400 mt-0.5">รายการสินค้า</p>
         </div>
+        <button onclick="toggleCart()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:text-rose-500 hover:bg-rose-50 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
 
-        <div class="flex-grow overflow-y-auto flex flex-col">
-            <div id="cart-items" class="p-5 flex flex-col gap-4">
-                <div class="text-center text-slate-400 mt-10" id="empty-cart-msg">
-                    <i class="fa-solid fa-box-open text-4xl mb-3 opacity-50"></i><br>ตะกร้าว่างเปล่า
-                    ลองเลือกเมนูสุขภาพสิ!
+    <!-- CART BODY -->
+    <div class="flex-grow overflow-y-auto">
+        <div id="cart-items" class="p-4 flex flex-col gap-3"></div>
+
+        <!-- CHECKOUT FORM -->
+        <div id="checkout-form-container" class="hidden px-4 pb-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
+
+                <div class="section-label mb-1">
+                    <i class="fa-solid fa-motorcycle mr-1"></i> ข้อมูลจัดส่ง (จัดส่งวันพรุ่งนี้)
                 </div>
-            </div>
 
-            <div id="checkout-form-container" class="hidden px-5 pb-5">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
-                    <h3 class="font-bold text-slate-800 text-sm"><i
-                            class="fa-solid fa-motorcycle text-emerald-500 mr-1"></i> ข้อมูลจัดส่ง</h3>
+                <input type="hidden" id="cust-address">
+                <input type="hidden" id="cust-lat">
+                <input type="hidden" id="cust-lng">
+
+                <!-- MAP -->
+                <div id="map" class="h-44 w-full border border-slate-200 mb-0"></div>
+                <p class="text-[10px] text-slate-400 text-center -mt-1">📍 ลากหมุดไปยังจุดจัดส่งของคุณ</p>
+
+                <!-- GPS DISPLAY -->
+                <div id="gps-display" class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 text-[11px] text-emerald-700 hidden">
+                    <i class="fa-solid fa-location-dot mr-1"></i>
+                    <span id="gps-coords-text">กำลังรอพิกัด...</span>
+                </div>
+
+                <textarea id="cust-landmark"
+                    placeholder="รายละเอียดเพิ่มเติม เช่น สีบ้าน, เลขที่, จุดสังเกต"
+                    class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all h-20 resize-none"></textarea>
+
+                <div class="grid grid-cols-2 gap-2">
                     <input type="text" id="cust-name" placeholder="ชื่อ-นามสกุล"
-                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors">
+                        class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
                     <input type="tel" id="cust-tel" placeholder="เบอร์โทรศัพท์"
-                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors">
-                    <textarea id="cust-address" placeholder="ที่อยู่ (สามารถแปะลิงก์ Google Maps ได้)"
-                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors h-16"></textarea>
-                    <select id="cust-slot"
-                        class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-emerald-500 transition-colors">
-                        <option value="">-- เลือกรอบจัดส่ง --</option>
-                        <option value="11:00-13:00">รอบเที่ยง (11:00 - 13:00 น.)</option>
-                        <option value="16:00-18:00">รอบเย็น (16:00 - 18:00 น.)</option>
-                    </select>
-
-                    <label class="flex items-start gap-2 text-[11px] text-slate-500 mt-2 cursor-pointer">
-                        <input type="checkbox" id="pdpa-consent" class="accent-emerald-500 w-4 h-4 mt-0.5 shrink-0">
-                        <span class="leading-relaxed">
-                            ข้าพเจ้ายินยอมให้ Clean Food Chiang Rai เก็บรวบรวมและใช้ข้อมูลส่วนบุคคล (ชื่อ เบอร์โทร
-                            และที่อยู่) เพื่อการจัดส่งอาหารและติดต่อเรื่องออเดอร์เท่านั้น ทั้งนี้เป็นไปตาม
-                            <a href="javascript:void(0)" onclick="openPDPAModal()"
-                                class="text-emerald-600 font-bold underline hover:text-emerald-700">นโยบายคุ้มครองข้อมูลส่วนบุคคล
-                                (Privacy Policy)</a>
-                        </span>
-                    </label>
+                        class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
                 </div>
-            </div>
-        </div>
 
-        <div class="p-5 border-t border-slate-100 bg-white z-10 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
-            <div class="flex justify-between items-center mb-4">
-                <span class="text-slate-500 font-medium">ยอดรวมทั้งหมด</span>
-                <span class="text-2xl font-bold text-emerald-600" id="cart-total-price">฿0</span>
-            </div>
+                <select id="cust-slot"
+                    class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
+                    <option value="">-- เลือกรอบจัดส่ง (วันพรุ่งนี้) --</option>
+                    <option value="11:00-13:00">🌞 รอบเที่ยง (11:00–13:00 น.)</option>
+                    <option value="16:00-18:00">🌅 รอบเย็น (16:00–18:00 น.)</option>
+                </select>
 
-            <div id="qr-container"
-                class="hidden flex-col items-center mb-4 p-4 border-2 border-dashed border-emerald-200 rounded-2xl bg-emerald-50">
-                <p class="text-xs font-bold text-emerald-700 mb-2">สแกนจ่ายผ่านพร้อมเพย์ (ยอดเป๊ะ)</p>
-                <img id="promptpay-qr" src="" alt="PromptPay QR" class="w-48 h-48 rounded-xl shadow-sm bg-white p-2">
-                <p class="text-[10px] text-slate-500 mt-2 text-center font-medium">สแกนจ่ายแล้วกดปุ่มด้านล่าง
-                    เพื่อส่งหลักฐานทาง LINE</p>
-                <button onclick="sendOrderToLINE()"
-                    class="w-full mt-3 bg-[#00B900] text-white py-3 rounded-xl text-sm font-bold hover:bg-[#009900] shadow-lg shadow-[#00B900]/30 transition-all flex justify-center items-center gap-2">
-                    <i class="fa-brands fa-line text-lg"></i> ส่งสลิปและยืนยันออเดอร์
-                </button>
+                <textarea id="cust-note"
+                    placeholder="หมายเหตุเพิ่มเติม เช่น ขอไม่ใส่พริก, แพ้อาหาร (ถ้ามี)"
+                    class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-all h-16 resize-none"></textarea>
             </div>
 
-            <button id="checkout-btn" onclick="generateQR()"
-                class="w-full bg-emerald-500 text-white py-4 rounded-xl font-bold hover:bg-emerald-600 transition-colors shadow-lg shadow-emerald-500/30 flex justify-center items-center gap-2 opacity-50 cursor-not-allowed"
-                disabled>
-                <i class="fa-solid fa-qrcode"></i> กรอกข้อมูลครบแล้ว สร้าง QR Code
-            </button>
+            <!-- PDPA -->
+            <label class="flex items-start gap-2 text-[11px] text-slate-500 mt-3 cursor-pointer">
+                <input type="checkbox" id="pdpa-consent" class="accent-emerald-500 w-4 h-4 mt-0.5 shrink-0">
+                <span class="leading-relaxed">
+                    ข้าพเจ้ายินยอมให้ Clean Food Chiang Rai เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการจัดส่งเท่านั้น
+                    <a href="javascript:void(0)" onclick="openPDPAModal()" class="text-emerald-600 font-bold underline">(นโยบายความเป็นส่วนตัว)</a>
+                </span>
+            </label>
         </div>
     </div>
 
-    <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-        <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/40 opacity-0 cursor-pointer"
-            onclick="closeModal()"></div>
+    <!-- CART FOOTER -->
+    <div class="p-4 border-t border-slate-100 bg-white shadow-[0_-8px_20px_-4px_rgba(0,0,0,0.06)]">
+        <!-- TOTAL -->
+        <div class="flex justify-between items-center mb-3">
+            <div>
+                <span class="text-slate-500 text-sm font-medium">ยอดรวม</span>
+                <div class="text-[10px] text-slate-400" id="cart-items-summary"></div>
+            </div>
+            <span class="text-2xl font-extrabold text-emerald-600" id="cart-total-price">฿0</span>
+        </div>
 
-        <div id="modal-content"
-            class="bg-white rounded-3xl shadow-2xl w-[90%] max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative opacity-0 scale-95 transform">
-            <button onclick="closeModal()"
-                class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/50 backdrop-blur-md rounded-full flex items-center justify-center text-slate-800 hover:bg-rose-500 hover:text-white transition-colors shadow-sm">
-                <i class="fa-solid fa-xmark text-xl"></i>
+        <!-- QR CODE AREA -->
+        <div id="qr-container" class="hidden flex-col items-center mb-4 p-5">
+            <p class="text-xs font-bold text-emerald-700 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-qrcode"></i> สแกนจ่ายพร้อมเพย์ (ยอดเป๊ะ)
+            </p>
+            <div class="bg-white p-3 rounded-2xl shadow-sm border border-emerald-100">
+                <img id="promptpay-qr" src="" alt="PromptPay QR" class="w-44 h-44">
+            </div>
+            <p class="text-[10px] text-slate-500 mt-3 text-center">สแกนจ่ายแล้ว → กดปุ่มด้านล่าง → ส่งสลิปใน LINE</p>
+            <button onclick="sendOrderToLINE()"
+                class="line-btn w-full mt-3 text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2">
+                <i class="fa-brands fa-line text-lg"></i>
+                ส่งหลักฐานการโอน & ยืนยันออเดอร์
             </button>
+        </div>
 
-            <div class="w-full md:w-1/2 h-64 md:h-auto relative">
-                <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:hidden"></div>
-                <div id="modal-badge"
-                    class="absolute top-4 left-4 bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+        <!-- CHECKOUT BUTTON -->
+        <button id="checkout-btn" onclick="generateQR()"
+            class="w-full btn-primary text-white py-4 rounded-xl font-bold text-sm flex justify-center items-center gap-2 opacity-40 cursor-not-allowed transition-all"
+            disabled>
+            <i class="fa-solid fa-qrcode"></i>
+            กรอกข้อมูลให้ครบ แล้วสร้าง QR
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════ ITEM MODAL ═══════════════════════════ -->
+<div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
+    <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 opacity-0 cursor-pointer" onclick="closeModal()"></div>
+    <div id="modal-content"
+        class="bg-white rounded-3xl shadow-2xl w-[92%] max-w-3xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row relative opacity-0 scale-95 transform">
+
+        <button onclick="closeModal()"
+            class="absolute top-4 right-4 z-20 w-9 h-9 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-700 hover:bg-rose-500 hover:text-white transition-colors shadow-sm">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <!-- IMAGE SIDE -->
+        <div class="w-full md:w-2/5 h-56 md:h-auto relative overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
+            <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+            <div id="modal-badge"
+                class="absolute top-4 left-4 bg-rose-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"></div>
+            <div id="modal-kcal-badge"
+                class="absolute bottom-4 left-4 kcal-badge text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
+                <i class="fa-solid fa-fire text-amber-400 mr-1"></i>
+                <span id="modal-kcal-val"></span> Kcal
+            </div>
+        </div>
+
+        <!-- DETAIL SIDE -->
+        <div class="w-full md:w-3/5 p-5 md:p-7 flex flex-col overflow-y-auto">
+            <div class="section-label mb-1" id="modal-category-label"></div>
+            <h2 id="modal-title" class="text-2xl font-extrabold text-slate-800 leading-tight mb-1"></h2>
+            <div class="text-2xl font-extrabold text-emerald-600 mb-3" id="modal-price"></div>
+            <p id="modal-desc" class="text-sm text-slate-500 leading-relaxed mb-5"></p>
+
+            <!-- NUTRITION -->
+            <div class="bg-slate-50 rounded-2xl p-4 mb-5 border border-slate-100" id="nutrition-box">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="font-bold text-slate-700 text-sm">โภชนาการต่อ 1 เสิร์ฟ</span>
+                    <span class="text-[10px] text-slate-400 bg-white border border-slate-100 px-2 py-1 rounded-full">%ต่อ 2000 Kcal</span>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="font-semibold text-slate-600">โปรตีน</span>
+                            <span id="modal-pro" class="text-blue-600 font-bold"></span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-pro" class="progress-bar-fill bg-blue-500" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="font-semibold text-slate-600">คาร์บ</span>
+                            <span id="modal-carb" class="text-amber-600 font-bold"></span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-carb" class="progress-bar-fill bg-amber-500" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-xs mb-1.5">
+                            <span class="font-semibold text-slate-600">ไขมัน</span>
+                            <span id="modal-fat" class="text-rose-600 font-bold"></span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div id="bar-fat" class="progress-bar-fill bg-rose-500" style="width:0%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="w-full md:w-1/2 p-6 md:p-8 flex flex-col overflow-y-auto">
-                <div class="flex justify-between items-start mb-2">
-                    <h2 id="modal-title" class="text-2xl md:text-3xl font-bold text-slate-800 leading-tight"></h2>
-                </div>
-                <div class="text-3xl font-bold text-emerald-600 mb-4" id="modal-price"></div>
-                <p id="modal-desc" class="text-sm text-slate-500 mb-6 leading-relaxed"></p>
+            <!-- INGREDIENTS -->
+            <div class="mb-auto">
+                <h4 class="font-bold text-slate-700 text-sm mb-2" id="ingredients-title">
+                    <i class="fa-solid fa-basket-wheat text-emerald-500 mr-1"></i> ส่วนประกอบหลัก
+                </h4>
+                <div id="modal-ingredients" class="flex flex-wrap gap-1.5"></div>
+            </div>
 
-                <div class="bg-slate-50 rounded-2xl p-4 mb-6 border border-slate-100" id="nutrition-box">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-bold text-slate-700 flex items-center gap-2"><i
-                                class="fa-solid fa-fire text-rose-500"></i> <span id="modal-kcal"></span> Kcal</span>
-                        <span class="text-xs text-slate-400">โภชนาการต่อ 1 เสิร์ฟ</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4" id="macros-grid">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1"><span
-                                    class="font-medium text-slate-600">โปรตีน</span><span id="modal-pro"
-                                    class="text-blue-600 font-bold"></span></div>
-                            <div class="progress-bar-bg">
-                                <div id="bar-pro" class="progress-bar-fill bg-blue-500" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1"><span
-                                    class="font-medium text-slate-600">คาร์บ</span><span id="modal-carb"
-                                    class="text-amber-600 font-bold"></span></div>
-                            <div class="progress-bar-bg">
-                                <div id="bar-carb" class="progress-bar-fill bg-amber-500" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1"><span
-                                    class="font-medium text-slate-600">ไขมัน</span><span id="modal-fat"
-                                    class="text-rose-600 font-bold"></span></div>
-                            <div class="progress-bar-bg">
-                                <div id="bar-fat" class="progress-bar-fill bg-rose-500" style="width: 0%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="mb-auto">
-                    <h4 class="font-bold text-slate-800 mb-2 text-sm" id="ingredients-title"><i
-                            class="fa-solid fa-basket-wheat text-emerald-500"></i> ส่วนประกอบหลัก:</h4>
-                    <div id="modal-ingredients" class="flex flex-wrap gap-2"></div>
-                </div>
-
-                <div class="mt-8 flex gap-4">
-                    <div class="flex items-center bg-slate-100 rounded-xl px-2" id="qty-selector">
-                        <button onclick="updateQty(-1)" class="w-10 h-10 text-slate-600 hover:text-rose-500"><i
-                                class="fa-solid fa-minus"></i></button>
-                        <span id="modal-qty" class="w-8 text-center font-bold text-slate-800">1</span>
-                        <button onclick="updateQty(1)" class="w-10 h-10 text-slate-600 hover:text-emerald-500"><i
-                                class="fa-solid fa-plus"></i></button>
-                    </div>
-                    <button onclick="confirmAddToCart()"
-                        class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-emerald-500 transition-colors shadow-lg hover:shadow-emerald-500/30 flex justify-center items-center gap-2">
-                        <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
+            <!-- QTY + ADD TO CART -->
+            <div class="mt-6 flex gap-3">
+                <div class="flex items-center bg-slate-100 rounded-xl px-1">
+                    <button onclick="updateQty(-1)" class="w-9 h-9 text-slate-600 hover:text-rose-500 transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-minus text-xs"></i>
+                    </button>
+                    <span id="modal-qty" class="w-8 text-center font-extrabold text-slate-800">1</span>
+                    <button onclick="updateQty(1)" class="w-9 h-9 text-slate-600 hover:text-emerald-500 transition-colors flex items-center justify-center">
+                        <i class="fa-solid fa-plus text-xs"></i>
                     </button>
                 </div>
+                <button onclick="confirmAddToCart()"
+                    class="flex-1 btn-dark text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-lg">
+                    <i class="fa-solid fa-cart-plus"></i>
+                    เพิ่มลงตะกร้า
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <div id="toast"
-        class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 z-50 pointer-events-none">
-        <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center"><i
-                class="fa-solid fa-check text-xs"></i></div>
-        <span id="toast-msg" class="font-medium text-sm">เพิ่มลงตะกร้าแล้ว</span>
-    </div>
+<!-- ═══════════════════════════ ORDER TRACKER MODAL ═══════════════════════════ -->
+<div id="tracker-modal" class="fixed inset-0 z-[55] flex items-end sm:items-center justify-center hidden">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closeOrderTracker()"></div>
+    <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl w-full sm:w-[480px] p-6 relative z-10 transform translate-y-4 opacity-0 transition-all duration-300" id="tracker-content">
+        <button onclick="closeOrderTracker()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+        <h3 class="text-lg font-extrabold text-slate-800 mb-1">
+            <i class="fa-solid fa-clock-rotate-left text-emerald-500 mr-2"></i>ติดตามออเดอร์
+        </h3>
+        <p class="text-xs text-slate-400 mb-5">กรอกเบอร์โทรหรือรหัสออเดอร์ของคุณ</p>
 
-    <div id="pdpa-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-lg p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300"
-            id="pdpa-content">
-            <button onclick="closePDPAModal()"
-                class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:bg-rose-500 hover:text-white transition-colors">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <h3 class="text-lg font-bold text-slate-800 mb-4"><i
-                    class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i>นโยบายคุ้มครองข้อมูลส่วนบุคคล</h3>
-            <div class="text-xs text-slate-600 space-y-3 h-64 overflow-y-auto pr-2">
-                <p><strong>1. วัตถุประสงค์การเก็บข้อมูล:</strong> ร้าน Clean Food Chiang Rai จะเก็บรวบรวมข้อมูล ชื่อ,
-                    เบอร์โทรศัพท์ และที่อยู่ ของท่าน เพื่อใช้ในการยืนยันคำสั่งซื้อ จัดส่งอาหาร
-                    และติดต่อประสานงานที่เกี่ยวข้องกับออเดอร์เท่านั้น</p>
-                <p><strong>2. การรักษาความปลอดภัย:</strong> ข้อมูลของท่านจะถูกเก็บรักษาไว้อย่างปลอดภัย
-                    และจะไม่มีการนำไปขาย แลกเปลี่ยน หรือส่งต่อให้บุคคลที่สาม (Third-party)
-                    ที่ไม่มีส่วนเกี่ยวข้องกับการจัดส่งเด็ดขาด</p>
-                <p><strong>3. ระยะเวลาการเก็บรักษา:</strong>
-                    ร้านจะเก็บข้อมูลของท่านไว้เป็นฐานข้อมูลลูกค้าเพื่อความสะดวกในการสั่งซื้อครั้งต่อไป
-                    หากท่านไม่มีการเคลื่อนไหวเกิน 1 ปี ข้อมูลจะถูกทำลาย</p>
-                <p><strong>4. สิทธิของเจ้าของข้อมูล:</strong> ท่านมีสิทธิ์ขอดู แก้ไข
-                    หรือแจ้งให้ทางร้านลบข้อมูลส่วนบุคคลของท่านออกจากระบบได้ตลอดเวลา ผ่านช่องทาง LINE Official ของทางร้าน
-                </p>
-            </div>
-            <button onclick="closePDPAModal()"
-                class="w-full mt-5 bg-emerald-500 text-white py-3 rounded-xl font-bold hover:bg-emerald-600 transition-colors">
-                รับทราบและปิดหน้าต่าง
+        <div class="flex gap-2 mb-4">
+            <input type="text" id="tracker-input" placeholder="เช่น 0812345678 หรือ CF-260303..."
+                class="flex-1 px-4 py-2.5 bg-slate-100 rounded-xl text-sm outline-none focus:bg-white focus:ring-2 focus:ring-emerald-100 border border-transparent focus:border-emerald-300 transition-all">
+            <button onclick="checkOrderStatus()"
+                class="px-4 py-2.5 btn-primary text-white rounded-xl font-bold text-sm">
+                <i class="fa-solid fa-search"></i>
             </button>
         </div>
-    </div>
 
-    <script src="script.js"></script>
+        <div id="tracker-result" class="text-sm text-slate-500 text-center py-4 hidden">
+            <div class="text-2xl mb-2">📦</div>
+            <p>ไม่พบออเดอร์ กรุณาตรวจสอบข้อมูลอีกครั้ง</p>
+        </div>
+        <div id="tracker-order-card" class="hidden bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
+            <div class="flex justify-between items-start mb-3">
+                <div>
+                    <div id="tr-orderid" class="font-bold text-slate-800 text-sm"></div>
+                    <div id="tr-name" class="text-xs text-slate-500"></div>
+                </div>
+                <span id="tr-status-badge" class="status-badge"></span>
+            </div>
+            <div id="tr-items" class="text-xs text-slate-600 mb-2"></div>
+            <div class="flex justify-between text-xs text-slate-500">
+                <span><i class="fa-solid fa-clock mr-1"></i><span id="tr-slot"></span></span>
+                <span class="font-bold text-emerald-700"><span id="tr-total"></span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════ PDPA MODAL ═══════════════════════════ -->
+<div id="pdpa-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
+    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
+    <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300" id="pdpa-content">
+        <button onclick="closePDPAModal()" class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+        <h3 class="text-base font-extrabold text-slate-800 mb-4">
+            <i class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i>
+            นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)
+        </h3>
+        <div class="text-xs text-slate-600 space-y-3 h-56 overflow-y-auto pr-1 leading-relaxed">
+            <p><strong>1. วัตถุประสงค์:</strong> ร้าน Clean Food Chiang Rai เก็บข้อมูลเพื่อใช้ในการจัดส่งอาหารและติดต่อเรื่องออเดอร์เท่านั้น</p>
+            <p><strong>2. ข้อมูลที่เก็บ:</strong> ชื่อ เบอร์โทร พิกัดที่อยู่ รายละเอียดออเดอร์</p>
+            <p><strong>3. การรักษาความปลอดภัย:</strong> ข้อมูลจะถูกเก็บเป็นความลับ ไม่มีการขายหรือส่งต่อให้บุคคลที่สาม</p>
+            <p><strong>4. สิทธิของเจ้าของข้อมูล:</strong> ท่านสามารถขอดู แก้ไข หรือลบข้อมูลได้ตลอดเวลาผ่าน LINE OA ของร้าน</p>
+            <p><strong>5. ระยะเวลาเก็บข้อมูล:</strong> 1 ปี นับจากวันที่สั่งซื้อ</p>
+        </div>
+        <button onclick="closePDPAModal()" class="w-full mt-4 btn-primary text-white py-3 rounded-xl font-bold text-sm">
+            รับทราบและปิด
+        </button>
+    </div>
+</div>
+
+<!-- ═══════════════════════════ TOAST ═══════════════════════════ -->
+<div id="toast"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 z-[70] pointer-events-none"
+    style="transform: translateX(-50%) translateY(80px); opacity:0;">
+    <div class="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center shrink-0">
+        <i class="fa-solid fa-check text-xs"></i>
+    </div>
+    <span id="toast-msg" class="font-medium text-sm">เพิ่มลงตะกร้าแล้ว</span>
+</div>
+
+<!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+<footer class="bg-slate-900 text-slate-400 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div>
+            <h2 class="text-white font-extrabold text-lg mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-leaf text-emerald-500"></i> Clean Food Chiang Rai
+            </h2>
+            <p class="text-sm leading-relaxed">อาหารสุขภาพคุณภาพดี ใส่ใจทุกส่วนประกอบ ส่งตรงถึงบ้านคุณ</p>
+        </div> 
+        <div>
+            <h3 class="text-white font-bold text-sm mb-3">เวลาทำการ</h3>
+            <div class="text-sm space-y-1">
+                <p>🕙 รับออเดอร์: 10:00–23:00 น.</p>
+                <p>🚀 จัดส่งรอบเช้า: 11:00–13:00 น.</p>
+                <p>🌅 จัดส่งรอบเย็น: 16:00–18:00 น.</p>
+            </div>
+        </div>
+        <div>   
+            <h3 class="text-white font-bold text-sm mb-3">ติดต่อเรา</h3>
+            <a href="https://line.me/R/ti/p/@282ovoyd" target="_blank"
+                class="inline-flex items-center gap-2 bg-[#00B900] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#009900] transition-colors">
+                <i class="fa-brands fa-line"></i> LINE OA: @282ovoyd
+            </a>
+        </div>
+    </div>
+    <div class="border-t border-slate-800 py-4 text-center text-xs text-slate-600">
+        &copy; <span id="year"></span> Clean Food Chiang Rai · Designed with ❤️ in Chiang Rai
+    </div>
+</footer>
+
+<script src="script.js"></script>
 </body>
-
 </html>
