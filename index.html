@@ -15,18 +15,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="flex flex-col min-h-screen">
 
-    <!-- ═══════════════════════════ HEADER ═══════════════════════════ -->
     <header class="glass-header sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 sm:h-20">
-
-                <!-- LOGO -->
                 <div class="flex flex-col justify-center">
                     <h1 class="text-xl sm:text-2xl font-extrabold text-slate-800 flex items-center gap-2 leading-none">
                         <span class="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shadow-sm">
@@ -40,22 +36,13 @@
                     </span>
                 </div>
 
-                <!-- SEARCH (Desktop) -->
                 <div class="hidden md:flex flex-1 max-w-sm mx-8 relative">
                     <input type="text" id="search-desktop" placeholder="ค้นหาเมนู เช่น อกไก่, ปลา..."
                         class="w-full pl-10 pr-4 py-2.5 bg-slate-100 rounded-full text-sm border border-transparent focus:bg-white focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all outline-none">
                     <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 </div>
 
-                <!-- RIGHT ACTIONS -->
                 <div class="flex items-center gap-2">
-                    <!-- Order Tracker -->
-                    <!-- <button onclick="openOrderTracker()"
-                    class="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-full text-xs font-semibold border border-emerald-100 hover:bg-emerald-100 transition-colors">
-                    <i class="fa-solid fa-clock-rotate-left text-xs"></i>
-                    <span>ติดตามออเดอร์</span>
-                </button> -->
-                    <!-- Cart -->
                     <button onclick="toggleCart()"
                         class="relative p-2.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors group cursor-pointer">
                         <i
@@ -67,7 +54,6 @@
             </div>
         </div>
 
-        <!-- MOBILE SEARCH -->
         <div class="mobile-search-bar px-4 pb-3 gap-2">
             <div class="relative flex-1">
                 <input type="text" id="search-mobile" placeholder="ค้นหาเมนู..."
@@ -77,11 +63,13 @@
         </div>
     </header>
 
-    <!-- ═══════════════════════════ INFO BAR ═══════════════════════════ -->
     <div class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center">
         <p class="text-[11px] text-amber-800 font-medium">
             🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวด่วน?
-            <a href="https://grab.com" target="_blank" class="underline font-bold text-emerald-600">สั่ง Grab ทันที</a>
+            <a href="grab://open?screenType=SEARCH&searchKeyword=Clean%20Food%20Chiang%20Rai"
+                class="underline font-bold text-emerald-600">
+                สั่ง Grab ทันที
+            </a>
             (10:00–19:00 น.) | 📦 ส่งฟรีในเขตเมืองเชียงราย
         </p>
     </div>
@@ -132,29 +120,20 @@
         </div>
     </div> -->
 
-        <!-- FILTER PILLS -->
+
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
             <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold" data-filter="all">
                 <i class="fa-solid fa-border-all mr-1"></i> ทั้งหมด
             </button>
-            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="chicken">
-                🍗 อกไก่
-            </button>
-            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="fish">
-                🐟 ปลา
-            </button>
-            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="beef">
-                🥩 เนื้อ
-            </button>
-            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="salad">
-                🥗 สลัด
-            </button>
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="chicken">🍗
+                อกไก่</button>
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="fish">🐟 ปลา</button>
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="beef">🥩 เนื้อ</button>
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="salad">🥗 สลัด</button>
         </div>
 
-        <!-- MENU GRID -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="menu-grid"></div>
 
-        <!-- EMPTY STATE -->
         <div id="empty-state" class="hidden text-center py-20">
             <div class="text-5xl mb-4">🔍</div>
             <h3 class="text-slate-600 font-semibold mb-2">ไม่พบเมนูที่ค้นหา</h3>
@@ -162,17 +141,14 @@
         </div>
     </main>
 
-    <!-- ═══════════════════════════ CART DRAWER ═══════════════════════════ -->
     <div id="cart-overlay" class="fixed inset-0 bg-slate-900/40 z-50 hidden opacity-0 transition-opacity"
         onclick="toggleCart()"></div>
 
     <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[460px] bg-white z-50 shadow-2xl flex flex-col">
-        <!-- CART HEADER -->
         <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
             <div>
                 <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-basket-shopping text-emerald-500"></i>
-                    ตะกร้าของคุณ
+                    <i class="fa-solid fa-basket-shopping text-emerald-500"></i> ตะกร้าของคุณ
                 </h2>
                 <p id="cart-item-count-label" class="text-xs text-slate-400 mt-0.5">รายการสินค้า</p>
             </div>
@@ -182,11 +158,9 @@
             </button>
         </div>
 
-        <!-- CART BODY -->
         <div class="flex-grow overflow-y-auto">
             <div id="cart-items" class="p-4 flex flex-col gap-3"></div>
 
-            <!-- CHECKOUT FORM -->
             <div id="checkout-form-container" class="hidden px-4 pb-4">
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
 
@@ -198,11 +172,10 @@
                     <input type="hidden" id="cust-lat">
                     <input type="hidden" id="cust-lng">
 
-                    <!-- MAP -->
                     <div id="map" class="h-44 w-full border border-slate-200 mb-0"></div>
-                    <p class="text-[10px] text-slate-400 text-center -mt-1">📍 ลากหมุดไปยังจุดจัดส่งของคุณ</p>
+                    <p class="text-[10px] text-slate-400 text-center -mt-1">📍 ลากหมุด หรือ แตะบนแผนที่เพื่อเลือกจุดส่ง
+                    </p>
 
-                    <!-- GPS DISPLAY -->
                     <div id="gps-display"
                         class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 text-[11px] text-emerald-700 hidden">
                         <i class="fa-solid fa-location-dot mr-1"></i>
@@ -213,24 +186,38 @@
                         class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all h-20 resize-none"></textarea>
 
                     <div class="grid grid-cols-2 gap-2">
-                        <input type="text" id="cust-name" placeholder="ชื่อ-นามสกุล"
-                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
-                        <input type="tel" id="cust-tel" placeholder="เบอร์โทรศัพท์"
-                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
+                        <div class="flex flex-col gap-1">
+                            <input type="text" id="cust-name" placeholder="ชื่อ-นามสกุล"
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
+                            <span id="cust-name-err" class="hidden text-[10px] text-rose-500 px-1">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>กรุณากรอกชื่อ-นามสกุล
+                            </span>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <input type="tel" id="cust-tel" placeholder="เบอร์โทร (0XXXXXXXXX)"
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
+                            <span id="cust-tel-err" class="hidden text-[10px] text-rose-500 px-1">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>เบอร์โทรไม่ถูกต้อง
+                            </span>
+                        </div>
                     </div>
 
-                    <select id="cust-slot"
-                        class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
-                        <option value="">-- เลือกรอบจัดส่ง (วันพรุ่งนี้) --</option>
-                        <option value="11:00-13:00">🌞 รอบเที่ยง (11:00–13:00 น.)</option>
-                        <option value="16:00-18:00">🌅 รอบเย็น (16:00–18:00 น.)</option>
-                    </select>
+                    <div class="flex flex-col gap-1">
+                        <select id="cust-slot"
+                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
+                            <option value="">-- เลือกรอบจัดส่ง (วันพรุ่งนี้) --</option>
+                            <option value="11:00-13:00">🌞 รอบเที่ยง (11:00–13:00 น.)</option>
+                            <option value="16:00-18:00">🌅 รอบเย็น (16:00–18:00 น.)</option>
+                        </select>
+                        <span id="cust-slot-err" class="hidden text-[10px] text-rose-500 px-1">
+                            <i class="fa-solid fa-circle-exclamation mr-1"></i>กรุณาเลือกรอบจัดส่ง
+                        </span>
+                    </div>
 
                     <textarea id="cust-note" placeholder="หมายเหตุเพิ่มเติม เช่น ขอไม่ใส่พริก, แพ้อาหาร (ถ้ามี)"
                         class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-all h-16 resize-none"></textarea>
                 </div>
 
-                <!-- PDPA -->
                 <label class="flex items-start gap-2 text-[11px] text-slate-500 mt-3 cursor-pointer">
                     <input type="checkbox" id="pdpa-consent" class="accent-emerald-500 w-4 h-4 mt-0.5 shrink-0">
                     <span class="leading-relaxed">
@@ -242,9 +229,7 @@
             </div>
         </div>
 
-        <!-- CART FOOTER -->
         <div class="p-4 border-t border-slate-100 bg-white shadow-[0_-8px_20px_-4px_rgba(0,0,0,0.06)]">
-            <!-- TOTAL -->
             <div class="flex justify-between items-center mb-3">
                 <div>
                     <span class="text-slate-500 text-sm font-medium">ยอดรวม</span>
@@ -253,55 +238,44 @@
                 <span class="text-2xl font-extrabold text-emerald-600" id="cart-total-price">฿0</span>
             </div>
 
-            <!-- QR CODE AREA -->
-            <div id="qr-container"
-                class="hidden flex-col items-center mb-4 p-5 border-2 border-dashed border-emerald-300 bg-emerald-50/40 rounded-2xl">
+            <div id="qr-container" class="hidden flex-col items-center mb-4 p-5">
                 <p class="text-sm font-extrabold text-emerald-800 mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-qrcode"></i> สแกนจ่ายผ่าน Make by KBank
                 </p>
-
                 <div
                     class="bg-rose-50 text-rose-600 px-5 py-2 rounded-full font-extrabold text-sm mb-4 border border-rose-200 shadow-sm">
                     กรุณาระบุยอดเงิน: <span id="qr-total-amount" class="text-xl">0</span> บาท
                 </div>
-
                 <div
                     class="bg-white p-2 rounded-2xl shadow-sm border border-emerald-100 mb-3 w-48 h-48 flex items-center justify-center overflow-hidden">
                     <img id="make-qr" src="Img/make-qr.jpg" alt="Make QR" class="w-full h-full object-cover">
                 </div>
-
                 <p class="text-[10px] text-slate-500 mt-1 text-center font-medium">สแกนจ่ายแล้ว → กดปุ่มด้านล่าง →
-                    เพื่อส่งหลักฐานใน LINE</p>
-
+                    ส่งหลักฐานใน LINE</p>
                 <button id="submit-order-btn" onclick="sendOrderToLINE()"
                     class="line-btn w-full mt-4 text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2">
                     <i class="fa-brands fa-line text-lg"></i> ส่งสลิปและยืนยันออเดอร์
                 </button>
             </div>
 
-            <!-- CHECKOUT BUTTON -->
             <button id="checkout-btn" onclick="generateQR()"
                 class="w-full btn-primary text-white py-4 rounded-xl font-bold text-sm flex justify-center items-center gap-2 opacity-40 cursor-not-allowed transition-all"
                 disabled>
-                <i class="fa-solid fa-qrcode"></i>
-                กรอกข้อมูลให้ครบ แล้วสร้าง QR
+                <i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR
             </button>
         </div>
     </div>
 
-    <!-- ═══════════════════════════ ITEM MODAL ═══════════════════════════ -->
+    <!-- ITEM MODAL -->
     <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 opacity-0 cursor-pointer"
             onclick="closeModal()"></div>
         <div id="modal-content"
             class="bg-white rounded-3xl shadow-2xl w-[92%] max-w-3xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row relative opacity-0 scale-95 transform">
-
             <button onclick="closeModal()"
                 class="absolute top-4 right-4 z-20 w-9 h-9 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-700 hover:bg-rose-500 hover:text-white transition-colors shadow-sm">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-
-            <!-- IMAGE SIDE -->
             <div
                 class="w-full md:w-2/5 h-56 md:h-auto relative overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
                 <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
@@ -315,15 +289,11 @@
                     <span id="modal-kcal-val"></span> Kcal
                 </div>
             </div>
-
-            <!-- DETAIL SIDE -->
             <div class="w-full md:w-3/5 p-5 md:p-7 flex flex-col overflow-y-auto">
                 <div class="section-label mb-1" id="modal-category-label"></div>
                 <h2 id="modal-title" class="text-2xl font-extrabold text-slate-800 leading-tight mb-1"></h2>
                 <div class="text-2xl font-extrabold text-emerald-600 mb-3" id="modal-price"></div>
                 <p id="modal-desc" class="text-sm text-slate-500 leading-relaxed mb-5"></p>
-
-                <!-- NUTRITION -->
                 <div class="bg-slate-50 rounded-2xl p-4 mb-5 border border-slate-100" id="nutrition-box">
                     <div class="flex justify-between items-center mb-3">
                         <span class="font-bold text-slate-700 text-sm">โภชนาการต่อ 1 เสิร์ฟ</span>
@@ -333,67 +303,57 @@
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <div class="flex justify-between text-xs mb-1.5">
-                                <span class="font-semibold text-slate-600">โปรตีน</span>
-                                <span id="modal-pro" class="text-blue-600 font-bold"></span>
-                            </div>
+                            <div class="flex justify-between text-xs mb-1.5"><span
+                                    class="font-semibold text-slate-600">โปรตีน</span><span id="modal-pro"
+                                    class="text-blue-600 font-bold"></span></div>
                             <div class="progress-bar-bg">
                                 <div id="bar-pro" class="progress-bar-fill bg-blue-500" style="width:0%"></div>
                             </div>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-1.5">
-                                <span class="font-semibold text-slate-600">คาร์บ</span>
-                                <span id="modal-carb" class="text-amber-600 font-bold"></span>
-                            </div>
+                            <div class="flex justify-between text-xs mb-1.5"><span
+                                    class="font-semibold text-slate-600">คาร์บ</span><span id="modal-carb"
+                                    class="text-amber-600 font-bold"></span></div>
                             <div class="progress-bar-bg">
                                 <div id="bar-carb" class="progress-bar-fill bg-amber-500" style="width:0%"></div>
                             </div>
                         </div>
                         <div>
-                            <div class="flex justify-between text-xs mb-1.5">
-                                <span class="font-semibold text-slate-600">ไขมัน</span>
-                                <span id="modal-fat" class="text-rose-600 font-bold"></span>
-                            </div>
+                            <div class="flex justify-between text-xs mb-1.5"><span
+                                    class="font-semibold text-slate-600">ไขมัน</span><span id="modal-fat"
+                                    class="text-rose-600 font-bold"></span></div>
                             <div class="progress-bar-bg">
                                 <div id="bar-fat" class="progress-bar-fill bg-rose-500" style="width:0%"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- INGREDIENTS -->
                 <div class="mb-auto">
                     <h4 class="font-bold text-slate-700 text-sm mb-2" id="ingredients-title">
                         <i class="fa-solid fa-basket-wheat text-emerald-500 mr-1"></i> ส่วนประกอบหลัก
                     </h4>
                     <div id="modal-ingredients" class="flex flex-wrap gap-1.5"></div>
                 </div>
-
-                <!-- QTY + ADD TO CART -->
                 <div class="mt-6 flex gap-3">
                     <div class="flex items-center bg-slate-100 rounded-xl px-1">
                         <button onclick="updateQty(-1)"
-                            class="w-9 h-9 text-slate-600 hover:text-rose-500 transition-colors flex items-center justify-center">
-                            <i class="fa-solid fa-minus text-xs"></i>
-                        </button>
+                            class="w-9 h-9 text-slate-600 hover:text-rose-500 transition-colors flex items-center justify-center"><i
+                                class="fa-solid fa-minus text-xs"></i></button>
                         <span id="modal-qty" class="w-8 text-center font-extrabold text-slate-800">1</span>
                         <button onclick="updateQty(1)"
-                            class="w-9 h-9 text-slate-600 hover:text-emerald-500 transition-colors flex items-center justify-center">
-                            <i class="fa-solid fa-plus text-xs"></i>
-                        </button>
+                            class="w-9 h-9 text-slate-600 hover:text-emerald-500 transition-colors flex items-center justify-center"><i
+                                class="fa-solid fa-plus text-xs"></i></button>
                     </div>
                     <button onclick="confirmAddToCart()"
                         class="flex-1 btn-dark text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-lg">
-                        <i class="fa-solid fa-cart-plus"></i>
-                        เพิ่มลงตะกร้า
+                        <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ═══════════════════════════ ORDER TRACKER MODAL ═══════════════════════════ -->
+    <!-- ORDER TRACKER MODAL -->
     <div id="tracker-modal" class="fixed inset-0 z-[55] flex items-end sm:items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closeOrderTracker()">
         </div>
@@ -403,11 +363,9 @@
                 class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
-            <h3 class="text-lg font-extrabold text-slate-800 mb-1">
-                <i class="fa-solid fa-clock-rotate-left text-emerald-500 mr-2"></i>ติดตามออเดอร์
-            </h3>
+            <h3 class="text-lg font-extrabold text-slate-800 mb-1"><i
+                    class="fa-solid fa-clock-rotate-left text-emerald-500 mr-2"></i>ติดตามออเดอร์</h3>
             <p class="text-xs text-slate-400 mb-5">กรอกเบอร์โทรหรือรหัสออเดอร์ของคุณ</p>
-
             <div class="flex gap-2 mb-4">
                 <input type="text" id="tracker-input" placeholder="เช่น 0812345678 หรือ CF-260303..."
                     class="flex-1 px-4 py-2.5 bg-slate-100 rounded-xl text-sm outline-none focus:bg-white focus:ring-2 focus:ring-emerald-100 border border-transparent focus:border-emerald-300 transition-all">
@@ -416,11 +374,7 @@
                     <i class="fa-solid fa-search"></i>
                 </button>
             </div>
-
-            <div id="tracker-result" class="text-sm text-slate-500 text-center py-4 hidden">
-                <div class="text-2xl mb-2">📦</div>
-                <p>ไม่พบออเดอร์ กรุณาตรวจสอบข้อมูลอีกครั้ง</p>
-            </div>
+            <div id="tracker-result" class="text-sm text-slate-500 text-center py-4 hidden"></div>
             <div id="tracker-order-card" class="hidden bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
                 <div class="flex justify-between items-start mb-3">
                     <div>
@@ -438,7 +392,7 @@
         </div>
     </div>
 
-    <!-- ═══════════════════════════ PDPA MODAL ═══════════════════════════ -->
+    <!-- PDPA MODAL -->
     <div id="pdpa-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
         <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300"
@@ -448,8 +402,7 @@
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
             <h3 class="text-base font-extrabold text-slate-800 mb-4">
-                <i class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i>
-                นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)
+                <i class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i>นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)
             </h3>
             <div class="text-xs text-slate-600 space-y-3 h-56 overflow-y-auto pr-1 leading-relaxed">
                 <p><strong>1. วัตถุประสงค์:</strong> ร้าน Clean Food Chiang Rai
@@ -462,13 +415,11 @@
                 <p><strong>5. ระยะเวลาเก็บข้อมูล:</strong> 1 ปี นับจากวันที่สั่งซื้อ</p>
             </div>
             <button onclick="closePDPAModal()"
-                class="w-full mt-4 btn-primary text-white py-3 rounded-xl font-bold text-sm">
-                รับทราบและปิด
-            </button>
+                class="w-full mt-4 btn-primary text-white py-3 rounded-xl font-bold text-sm">รับทราบและปิด</button>
         </div>
     </div>
 
-    <!-- ═══════════════════════════ TOAST ═══════════════════════════ -->
+    <!-- TOAST -->
     <div id="toast"
         class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 z-[70] pointer-events-none"
         style="transform: translateX(-50%) translateY(80px); opacity:0;">
@@ -478,7 +429,7 @@
         <span id="toast-msg" class="font-medium text-sm">เพิ่มลงตะกร้าแล้ว</span>
     </div>
 
-    <!-- ═══════════════════════════ FOOTER ═══════════════════════════ -->
+    <!-- FOOTER -->
     <footer class="bg-slate-900 text-slate-400 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
@@ -491,7 +442,7 @@
                 <h3 class="text-white font-bold text-sm mb-3">เวลาทำการ</h3>
                 <div class="text-sm space-y-1">
                     <p>🕙 รับออเดอร์: 10:00–23:00 น.</p>
-                    <p>🚀 จัดส่งรอบเช้า: 11:00–13:00 น.</p>
+                    <p>🚀 จัดส่งรอบเที่ยง: 11:00–13:00 น.</p>
                     <p>🌅 จัดส่งรอบเย็น: 16:00–18:00 น.</p>
                 </div>
             </div>
