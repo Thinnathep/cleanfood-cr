@@ -540,7 +540,7 @@ function generateQR() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  8. SEND ORDER → GAS → LINE (พร้อมระบบ Loading 1-2 นาที)
+//  8. SEND ORDER → GAS → LINE (ฉบับแก้ไข LINE ไม่เด้ง)
 // ═══════════════════════════════════════════════════════════
 async function sendOrderToLINE() {
     const name     = document.getElementById("cust-name").value.trim();
@@ -552,7 +552,7 @@ async function sendOrderToLINE() {
     const slot     = document.getElementById("cust-slot").value;
     const note     = document.getElementById("cust-note")?.value.trim() || "";
     const total    = cart.reduce((s, i) => s + i.price * i.qty, 0);
-    const orderItems = cart.map((i) => `- ${i.name} ×${i.qty} = ฿${i.price * i.qty}`).join("\n");
+    const orderItems = cart.map((i) => `- ${i.name} ×${i.qty} = ฿${(i.price * i.qty).toLocaleString()}`).join("\n");
     const itemNames  = cart.map((i) => `${i.name} ×${i.qty}`).join(", ");
 
     if (!name || !tel || !slot || !gpsLink) {
@@ -560,22 +560,21 @@ async function sendOrderToLINE() {
         return;
     }
 
-    // 🛡️ ยืนยันการโอนเงิน (Confirmation ก่อนยิงข้อมูล)
-    if (!confirm("คุณลูกค้าโอนเงินและเซฟสลิปไว้เรียบร้อยแล้วใช่ไหมคะ?\n\n⏳ ระบบกำลังจะบันทึกข้อมูล กรุณากด 'ตกลง' แล้วรอ 1-2 นาทีนะคะ")) {
+    if (!confirm("คุณลูกค้าโอนเงินและเซฟสลิปไว้เรียบร้อยแล้วใช่ไหมคะ?\n\n⏳ ระบบกำลังบันทึกข้อมูลและจะพาคุณไปที่ LINE เพื่อส่งสลิปค่ะ")) {
         return;
     }
 
-    // ⏳ เปลี่ยนปุ่มเป็น Loading State 
+    // ⏳ แสดง Loading State
     const btn = document.getElementById("submit-order-btn");
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-lg"></i> กำลังบันทึกข้อมูล... รอ 1-2 นาที`;
+    const originalContent = btn.innerHTML;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึกข้อมูล...`;
     btn.disabled  = true;
-    btn.classList.add("opacity-70", "cursor-wait"); // ทำให้ปุ่มดูจางลงและเมาส์เป็นรูปนาฬิกาทราย
+    btn.classList.add("opacity-70", "cursor-wait");
 
-    // Payload ที่ส่งไป Google Sheets 
     const payload = {
         customerName:  name,
         phone:         tel,
-        address:       landmark ? `${landmark} | ${gpsLink}` : gpsLink,
+        address:       landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
         latitude:      lat,
         longitude:     lng,
         deliverySlot:  slot,
@@ -586,7 +585,7 @@ async function sendOrderToLINE() {
     };
 
     try {
-        // บันทึกลง Google Sheets
+        // 1. บันทึกลง Google Sheets (ใช้ Promise เพื่อคุมเวลา)
         await fetch(CONFIG.GAS_URL, {
             method: "POST",
             mode:   "no-cors",
@@ -594,12 +593,11 @@ async function sendOrderToLINE() {
             body: JSON.stringify(payload),
         });
 
-        // เปิด LINE พร้อมข้อมูลออเดอร์
+        // 2. เตรียมข้อความ LINE
         const lineMsg = [
             `🛒 *ออเดอร์ใหม่ — Clean Food CR*`,
-            `──────────────────────`,
-            `👤 ${name}`,
-            `📱 ${tel}`,
+            `👤 ชื่อ: ${name}`,
+            `📱 โทร: ${tel}`,
             `🕐 รอบส่ง: ${slot}`,
             `🏠 จุดส่ง: ${landmark || "(ดูพิกัด)"}`,
             `📍 ${gpsLink}`,
@@ -610,18 +608,22 @@ async function sendOrderToLINE() {
             `💰 รวม: ฿${total.toLocaleString()}`,
             note ? `📝 หมายเหตุ: ${note}` : "",
             `──────────────────────`,
-            `⚠️ ลูกค้ารับทราบ: จัดส่งวันถัดไป`,
-            `📎 กรุณาแนบสลิป Make KBank ด้วยนะคะ 👇`,
+            `⚠️ จัดส่งวันถัดไป | แนบสลิปด้านล่าง 👇`
         ].filter(Boolean).join("\n");
 
-        window.open(`https://line.me/R/msg/text/?${encodeURIComponent(lineMsg)}`, "_blank");
-        showToast("✅ ส่งออเดอร์เรียบร้อย! กรุณาส่งสลิปใน LINE ด้วยนะคะ");
-        setTimeout(() => location.reload(), 2000);
+        // 3. 🚀 จุดสำคัญ: ย้ายไป LINE (ใช้ window.location.href แทน window.open)
+        const lineUrl = `https://line.me/R/msg/text/?${encodeURIComponent(lineMsg)}`;
+        
+        showToast("✅ บันทึกข้อมูลแล้ว กำลังพาไปที่ LINE...");
+        
+        // ให้เวลาระบบ Toast ทำงานนิดนึงก่อนเด้ง
+        setTimeout(() => {
+            window.location.href = lineUrl;
+        }, 800);
 
     } catch (err) {
         console.error("sendOrderToLINE error:", err);
-        // หากล้มเหลว คืนค่าปุ่มให้กดใหม่ได้
-        btn.innerHTML = `<i class="fa-brands fa-line text-lg"></i> เกิดข้อผิดพลาด ลองส่งใหม่อีกครั้ง`;
+        btn.innerHTML = originalContent;
         btn.disabled  = false;
         btn.classList.remove("opacity-70", "cursor-wait");
         showToast("❌ เกิดข้อผิดพลาด กรุณาลองใหม่");
