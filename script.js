@@ -609,15 +609,15 @@ async function sendOrderToLINE() {
             `⚠️ จัดส่งวันถัดไป | แนบสลิปด้านล่าง 👇`
         ].filter(Boolean).join("\n");
 
-        // 1. ระบุ ID ร้าน (ไม่มี @)
-        const lineId = "282ovoyd";
+      // 1. ระบุ ID ร้านแบบเต็ม (ต้องมี @) [cite: 2026-02-26]
+        const lineId = "@282ovoyd"; 
 
-        // 2. ⚠️ จุดสำคัญ: ต้องมีคำว่า text= ก่อน encodeURIComponent นะคะ [cite: 2026-02-26]
-        const lineUrl = `https://line.me/R/oaMessage/${lineId}/?text=${encodeURIComponent(lineMsg)}`;
+        // 2. ⚠️ แก้ไขโครงสร้าง URL: ตัด 'text=' ออก และใส่ข้อความต่อท้าย '?' ทันที [cite: 2026-02-26]
+        const lineUrl = `https://line.me/R/oaMessage/${lineId}/?${encodeURIComponent(lineMsg)}`;
 
         showToast("✅ บันทึกแล้ว! กำลังเปิดแชทร้าน...");
 
-        // 3. สั่งเด้ง [cite: 2026-02-26]
+        // 3. สั่งเด้งไปที่ LINE [cite: 2026-02-26]
         setTimeout(() => {
             window.location.href = lineUrl;
         }, 800);
