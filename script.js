@@ -513,16 +513,27 @@ function generateQR() {
     if (!pdpa)                  { showToast("⚠️ กรุณายอมรับนโยบาย PDPA");       return; }
     if (cart.length === 0)      { showToast("⚠️ ยังไม่มีสินค้าในตะกร้า");        return; }
 
-    // ยืนยันก่อนสร้าง QR ว่าข้อมูลถูกต้อง
-    if (!confirm(`ตรวจสอบออเดอร์ให้ถูกต้องนะคะคุณ ${name}\n\n⚠️ ทางร้านจะจัดส่งใน "วันถัดไป" ยืนยันเพื่อชำระเงิน?`)) return;
+    // 🛡️ ด่านยืนยันที่ 1: ตรวจสอบความถูกต้องก่อนจ่ายเงิน
+    if (!confirm(`ตรวจสอบออเดอร์ให้ถูกต้องนะคะคุณ ${name}\n\n⚠️ ทางร้านจะจัดเตรียมและส่งใน "วันถัดไป" ยืนยันรับออเดอร์เพื่อชำระเงิน?`)) {
+        return;
+    }
 
     const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
     
-    // ใส่ตัวเลขยอดรวมให้ลูกค้าเห็นเด่นๆ เพื่อนำไปพิมพ์ใน Make
-    document.getElementById("qr-total-amount").innerText = total.toLocaleString();
+    // 🛡️ เช็คก่อนว่ามีกล่องรับยอดเงินไหม (กันเว็บพัง)
+    const amountEl = document.getElementById("qr-total-amount");
+    if (amountEl) {
+        amountEl.innerText = total.toLocaleString();
+    } else {
+        console.warn("Neko Warning: หา id='qr-total-amount' ไม่เจอใน HTML ค่ะ!");
+    }
 
-    document.getElementById("qr-container").classList.remove("hidden");
-    document.getElementById("qr-container").style.display = "flex";
+    const qrContainer = document.getElementById("qr-container");
+    if (qrContainer) {
+        qrContainer.classList.remove("hidden");
+        qrContainer.style.display = "flex";
+    }
+    
     document.getElementById("checkout-btn").classList.add("hidden");
     document.getElementById("cart-items").style.display   = "none";
     document.getElementById("checkout-form-container").style.display = "none";
