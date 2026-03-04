@@ -1064,8 +1064,8 @@ function closePDPAModal() {
 // ═══════════════════════════════════════════════════════════
 function isShopOpen() {
     const hr = new Date().getHours();
-    return hr >= 10 && hr < 20; // ← [ใช้งานจริง] 10:00-20:00
-    // return hr >= 0 && hr < 24;    // ← [ทดสอบ] เปิด 24 ชม.
+    // return hr >= 10 && hr < 20; // ← [ใช้งานจริง] 10:00-20:00
+    return hr >= 0 && hr < 24;    // ← [ทดสอบ] เปิด 24 ชม.
 }
 
 function updateShopStatusUI() {
