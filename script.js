@@ -1,4 +1,3 @@
-
 // ─── CONFIG ────────────────────────────────────────────────
 const CONFIG = {
     // PROMPTPAY: "0962386554",
@@ -416,14 +415,13 @@ function removeCartItem(index) {
         html: `ต้องการลบ <b>"${itemName}"</b><br>ออกจากตะกร้าใช่ไหมคะ?`,
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#ef4444', // สีแดง (rose-500) เพื่อเตือนว่านี่คือการลบ
-        cancelButtonColor: '#cbd5e1', // สีเทา (slate-300) สำหรับปุ่มยกเลิก
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#cbd5e1',
         confirmButtonText: 'ใช่, ลบเลย!',
         cancelButtonText: 'ยกเลิก',
-        reverseButtons: true // สลับให้ปุ่มยกเลิกอยู่ซ้าย ปุ่มยืนยันอยู่ขวา (UX มาตรฐาน)
+        reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
-            // ถ้าลูกค้ากด "ใช่, ลบเลย!" ค่อยทำการลบจริงๆ
             cart.splice(index, 1);
             updateCartUI();
             SwalToast(`ลบ "${itemName}" ออกแล้ว`, 'info');
@@ -448,7 +446,6 @@ function updateCartUI() {
     const deliveryFee = cart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
 
     if (cart.length === 0) {
-        // ... (โค้ดแสดงตะกร้าว่าง เหมือนเดิม) ...
         cartItemsEl.innerHTML = `
             <div class="text-center text-slate-400 py-16 flex flex-col items-center gap-3">
                 <div class="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center">
@@ -481,14 +478,11 @@ function updateCartUI() {
             </div>`;
 
         cart.forEach((item, index) => {
-            // 🟢 จุดแก้ที่ 1: ดึงราคาสุทธิ (ที่รวม Add-on แล้ว) มาใช้คำนวณ
-            // ถ้าเป็นเมนูเก่าๆ ที่ไม่มี priceWithAddon จะได้ใช้ price ธรรมดาเป็นตัวสำรอง (Fallback)
             const currentPrice = item.priceWithAddon || item.price;
             
             total += currentPrice * item.qty;
             totalQty += item.qty;
 
-            // 🟢 จุดแก้ที่ 2: เตรียมข้อความ Add-on, แพ้อาหาร, หมายเหตุ เพื่อนำไปโชว์
             let addonHtml = "";
             if (item.addonText) {
                 addonHtml += `<div class="text-[10px] text-emerald-600 mt-1 font-medium leading-tight">
@@ -535,7 +529,6 @@ function updateCartUI() {
                 </div>`;
         });
 
-        // 🚛 เพิ่มบรรทัดแสดงค่าจัดส่งในตะกร้า
         cartItemsEl.innerHTML += `
             <div class="flex justify-between items-center px-4 py-3 bg-emerald-50 rounded-2xl border border-emerald-100 text-xs mt-2">
                 <span class="font-bold text-slate-600">
@@ -549,7 +542,6 @@ function updateCartUI() {
         if (countLabel) countLabel.innerText = `${totalQty} รายการในตะกร้า`;
     }
 
-    // 💰 ยอดรวมสุดท้าย = สินค้าทั้งหมด + ค่าส่ง
     const grandTotal = total + deliveryFee;
     totalEl.innerText = `฿${grandTotal.toLocaleString()}`;
     badge.innerText = totalQty;
@@ -558,7 +550,7 @@ function updateCartUI() {
 }
 
 function checkFormValidity() {
-    const shopStatus = isShopOpen(); // 🟢 ดึงสถานะจากศูนย์กลาง
+    const shopStatus = isShopOpen();
 
     const name = document.getElementById("cust-name")?.value.trim() || "";
     const tel = document.getElementById("cust-tel")?.value.trim() || "";
@@ -571,7 +563,7 @@ function checkFormValidity() {
 
     const telOk = isValidThaiPhone(tel);
     const formFilled = cart.length > 0 && name && telOk && address && slot && pdpa;
-    const canCheckout = formFilled && shopStatus; // 🟢 ใช้ตัวแปรกลาง
+    const canCheckout = formFilled && shopStatus;
 
     btn.disabled = !canCheckout;
     btn.classList.toggle("opacity-40", !canCheckout);
@@ -629,7 +621,7 @@ function backToCart() {
 
 
 // ═══════════════════════════════════════════════════════════
-//  7. GENERATE QR — แก้บั๊กตะกร้าล็อกแล้ว!
+//  7. GENERATE QR
 // ═══════════════════════════════════════════════════════════
 function generateQR() {
     const name = document.getElementById("cust-name").value.trim();
@@ -638,7 +630,6 @@ function generateQR() {
     const slot = document.getElementById("cust-slot").value;
     const pdpa = document.getElementById("pdpa-consent").checked;
     
-    // เคลียร์ Error เดิมก่อน
     clearFieldErrors();
     let hasError = false;
 
@@ -650,11 +641,9 @@ function generateQR() {
 
     if (hasError) return;
 
-    // คำนวณค่าจัดส่ง
     const zoneEl = document.getElementById("cust-zone");
     const deliveryFee = cart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
 
-    // จำลองข้อมูลตะกร้า (ยังไม่ล็อกจริง จนกว่าจะกดยืนยัน)
     let tempCart = JSON.parse(JSON.stringify(cart));
     const itemsTotal = tempCart.reduce((s, i) => {
         const p = i.priceWithAddon || i.price;
@@ -662,7 +651,6 @@ function generateQR() {
     }, 0);
     const tempTotal = itemsTotal + deliveryFee;
 
-    // สร้างข้อความสรุปออเดอร์ในหน้าป๊อปอัป
     const orderSummary = tempCart.map(i => {
         const p = i.priceWithAddon || i.price;
         let line = `• <b class="text-slate-800">${i.name}</b> ×${i.qty} = ฿${(p * i.qty).toLocaleString()}`;
@@ -672,7 +660,6 @@ function generateQR() {
         return line;
     }).join("<br><div class='my-1 border-b border-dashed border-slate-200'></div>");
 
-    // ── SweetAlert ยืนยันออเดอร์ก่อนแสดง QR ──────────────
     SwalBase.fire({
         title: '📋 ตรวจสอบออเดอร์',
         html: `
@@ -700,15 +687,12 @@ function generateQR() {
         showCancelButton: true,
         reverseButtons: true,
     }).then(result => {
-        // 🟢 ถ้าลูกค้ากด "แก้ไขออเดอร์" (หรือคลิกปิด) ให้จบฟังก์ชันไปเลย ไม่ล็อกตะกร้า!
         if (!result.isConfirmed) return;
 
-        // 🟢 ถ้ากดยืนยันแล้ว ค่อย "ล็อกตะกร้าของจริง"
         checkoutLockedCart = tempCart;
         checkoutTotal = tempTotal;
-        isCheckoutMode = true; // ล็อกตะกร้าตรงนี้!
+        isCheckoutMode = true;
 
-        // โชว์หน้าสแกน QR
         const amountEl = document.getElementById("qr-total-amount");
         if (amountEl) amountEl.innerText = checkoutTotal.toLocaleString();
         document.getElementById("qr-container").classList.remove("hidden");
@@ -723,7 +707,8 @@ function generateQR() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  8. SEND ORDER → GAS → LINE (เวอร์ชันแก้บั๊กเบอร์โทรและชื่อเมนู)
+//  8. SEND ORDER → GAS → LINE
+//  ✅ แก้ไขระบบเปิด LINE ให้ถูกต้อง + รองรับกรณียังไม่เป็นเพื่อน
 // ═══════════════════════════════════════════════════════════
 async function sendOrderToLINE() {
     const name = document.getElementById("cust-name").value.trim();
@@ -738,7 +723,6 @@ async function sendOrderToLINE() {
     const zoneEl = document.getElementById("cust-zone");
     const deliveryFee = checkoutLockedCart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
     
-    // 💰 ใช้ยอดที่ล็อกไว้ตอนสร้าง QR (มั่นใจว่าตรงกันแน่นอน)
     const total = checkoutTotal;
     const cartForSend = checkoutLockedCart;
     
@@ -747,7 +731,7 @@ async function sendOrderToLINE() {
         return;
     }
 
-    // 🟢 1. สร้างรายการสำหรับส่งเข้าแชท LINE (จัดบรรทัดสวยๆ)
+    // 1. สร้างรายการสำหรับส่งเข้าแชท LINE
     const orderItems = cartForSend.map(i => {
         const p = i.priceWithAddon || i.price;
         let str = `- ${i.name} ×${i.qty} = ฿${(p * i.qty).toLocaleString()}`;
@@ -757,7 +741,7 @@ async function sendOrderToLINE() {
         return str;
     }).join("\n");
 
-    // 🟢 2. สร้างรายการแบบสั้นส่งเข้า Google Sheet (เน้นชื่อเมนูชัดๆ)
+    // 2. สร้างรายการแบบสั้นสำหรับ Google Sheet
     const itemNamesForSheet = cartForSend.map(i => {
         let str = `${i.name} ×${i.qty}`;
         if (i.addonText) str += ` [${i.addonText}]`;
@@ -772,6 +756,7 @@ async function sendOrderToLINE() {
     const yyyy = targetObj.getFullYear();
     const systemDeliveryDate = `${dd}/${mm}/${yyyy}`; 
 
+    // 3. ยืนยันการชำระเงิน
     const confirmResult = await SwalBase.fire({
         title: '💳 ยืนยันการชำระเงิน',
         html: `
@@ -800,16 +785,16 @@ async function sendOrderToLINE() {
     btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึกออเดอร์...`;
     btn.disabled = true;
 
-    // 🟢 3. เตรียมข้อมูลส่งเข้า GAS (แก้บั๊กเบอร์โทรและชื่อเมนู)
+    // 4. เตรียมข้อมูลส่งเข้า GAS
     const payload = {
         customerName: name,
-        phone: "'" + tel, // ✨ เติม ' เพื่อให้ Google Sheet ไม่ตัดเลข 0
+        phone: "'" + tel,
         address: landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
         latitude: lat,
         longitude: lng,
         deliverySlot: slot,
         deliveryDate: systemDeliveryDate, 
-        orderDetails: itemNamesForSheet, // ✨ ใช้รายการที่ตรวจสอบชื่อแล้ว
+        orderDetails: itemNamesForSheet,
         totalAmount: total,
         note: note,
         source: "web",
@@ -822,7 +807,7 @@ async function sendOrderToLINE() {
             body: JSON.stringify(payload),
         });
 
-        // 🟢 4. ข้อความสำหรับส่งเข้าแชท LINE
+        // 5. สร้างข้อความสำหรับส่งเข้าแชท LINE
         const lineMsg = [
             `🛒 ออเดอร์ใหม่ — Clean Food CR`,
             `──────────────────────`,
@@ -843,8 +828,56 @@ async function sendOrderToLINE() {
             `📎 รบกวนแนบสลิปโอนเงินด้วยนะคะ`
         ].filter(Boolean).join("\n");
 
+        const encodedMsg = encodeURIComponent(lineMsg);
+        const lineOA = "282ovoyd"; // ไม่ใส่ @ ใน URL
+
+        // ✅ Deep link ที่ถูกต้องสำหรับเปิดแอป LINE ตรงหน้าโปรไฟล์ร้าน
+        const lineAppUrl = `line://ti/p/@${lineOA}`;
+        // ✅ Web fallback กรณีไม่มีแอป LINE (เปิดหน้าโปรไฟล์บนเว็บ)
+        const lineWebUrl = `https://line.me/R/ti/p/@${lineOA}`;
+
+        // 6. แจ้งให้ลูกค้าเพิ่มเพื่อนก่อน (สำคัญมาก! ถ้ายังไม่เป็นเพื่อน LINE จะไม่รับข้อความ)
+        const addFriendResult = await SwalBase.fire({
+            title: '📲 เพิ่มเพื่อน LINE ร้านก่อนนะคะ',
+            html: `
+                <div style="font-size:13px; line-height:1.8; text-align:left">
+                    <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+                        <b style="color:#15803d;">⚠️ สำคัญ!</b><br>
+                        ถ้ายังไม่ได้เป็นเพื่อนกับร้าน<br>
+                        LINE จะ<b>ไม่ส่งข้อความออเดอร์</b>ให้อัตโนมัติ<br><br>
+                        กรุณาเพิ่มเพื่อนก่อน แล้วกลับมากด<br>
+                        <b>"เพิ่มเพื่อนแล้ว → ส่งออเดอร์"</b> ค่ะ
+                    </div>
+                    <div style="background:#fafafa; border-radius:10px; padding:10px; font-size:12px; color:#64748b; border:1px solid #e2e8f0; text-align:center;">
+                        🪪 LINE OA: <b>@${lineOA}</b>
+                    </div>
+                </div>`,
+            confirmButtonText: '✅ เพิ่มเพื่อนแล้ว → ส่งออเดอร์',
+            cancelButtonText: '➕ เปิด LINE เพิ่มเพื่อนก่อน',
+            showCancelButton: true,
+            reverseButtons: false,
+            allowOutsideClick: false,
+        });
+
+        if (!addFriendResult.isConfirmed) {
+            // 🔴 กดปุ่ม "เปิด LINE เพิ่มเพื่อนก่อน"
+            // → เปิดแอป LINE ตรงหน้าโปรไฟล์ร้าน (กด Add Friend ได้เลย)
+            // → ลูกค้ากลับมาเว็บแล้วกด "เพิ่มเพื่อนแล้ว" เพื่อส่งออเดอร์
+            btn.innerHTML = originalHTML;
+            btn.disabled = false;
+            window.location.href = lineAppUrl;
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.open(lineWebUrl, '_blank');
+                }
+            }, 1500);
+            return;
+        }
+
+        // 7. ลูกค้ายืนยันว่าเพิ่มเพื่อนแล้ว → แสดง success แล้วเปิด LINE พร้อมข้อความออเดอร์
         await SwalBase.fire({
-            icon: 'success', title: 'บันทึกออเดอร์แล้ว!',
+            icon: 'success',
+            title: 'บันทึกออเดอร์แล้ว!',
             html: `<div style="font-size:13px; color:#475569">ระบบกำลังพาไปที่ LINE ร้าน<br>เพื่อส่งสลิปยืนยันการโอนค่ะ 📲</div>`,
             timer: 2000, showConfirmButton: false, timerProgressBar: true,
         });
@@ -855,13 +888,22 @@ async function sendOrderToLINE() {
         checkoutTotal = 0;
         clearLocal();
         isCheckoutMode = false;
-        updateCartUI(); // วาดตะกร้าใหม่ให้ว่างเปล่า
-        
-        window.location.href = `https://line.me/R/oaMessage/@282ovoyd/?${encodeURIComponent(lineMsg)}`;
+        updateCartUI();
+
+        // ✅ เปิดแอป LINE ตรงห้องแชทร้านพร้อมข้อความออเดอร์
+        // line://ti/p/@OA_ID  → เปิดแอปตรงหน้าแชทได้เลย (ต้องเป็นเพื่อนแล้ว)
+        window.location.href = `line://ti/p/@${lineOA}`;
+        setTimeout(() => {
+            if (document.hasFocus()) {
+                // Fallback: เปิดเว็บ LINE พร้อมข้อความ (กรณีไม่มีแอปหรือเปิดไม่ขึ้น)
+                window.open(`https://line.me/R/oaMessage/@${lineOA}/?text=${encodedMsg}`, '_blank');
+            }
+        }, 1500);
 
     } catch (err) {
         console.error(err);
-        btn.innerHTML = originalHTML; btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        btn.disabled = false;
         SwalError("เกิดข้อผิดพลาด", "ไม่สามารถบันทึกออเดอร์ได้ กรุณาลองใหม่อีกครั้งนะคะ");
     }
 }
@@ -951,11 +993,7 @@ updateCartUI();
 function openGrab() {
     const appUrl = "grab://open?screenType=SEARCH&searchKeyword=Clean%20Food%20Chiang%20Rai";
     const webUrl = "https://food.grab.com/th/th/search/?search=Clean%20Food%20Chiang%20Rai";
-
-    // ลองเปิดแอป
     window.location.href = appUrl;
-
-    // ถ้าผ่านไป 500ms แล้วยังอยู่ที่เดิม (เปิดแอปไม่ขึ้น) ให้วาร์ปไปเว็บแทน
     setTimeout(() => {
         if (document.hasFocus()) {
             window.location.href = webUrl;
@@ -963,24 +1001,23 @@ function openGrab() {
     }, 500);
 }
 
-window.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "visible" && isCheckoutMode) {
-        location.reload();
-    }
-});
+// ✅ แก้ไข: ลบ visibilitychange ที่ทำให้รีโหลดหน้าเมื่อกลับจาก LINE ออก
+// เดิมจะ reload ทันทีที่กลับมา ทำให้ออเดอร์ที่เพิ่งส่งหาย
+// window.addEventListener("visibilitychange", function () {
+//     if (document.visibilityState === "visible" && isCheckoutMode) {
+//         location.reload();
+//     }
+// });
 
 // 🕒 เช็คว่าร้านเปิดอยู่ไหม (10:00 - 20:00)
 function isShopOpen() {
     const hr = new Date().getHours();
-
-    // 👇 เลือกใช้บรรทัดใดบรรทัดหนึ่ง (เปิดอันที่จะใช้ ปิดอันที่จะซ่อน)
     // return hr >= 10 && hr < 20; // <--- [ใช้งานจริง] 10:00-20:00
     return hr >= 0 && hr < 24;    // <--- [ทดสอบตอนนี้] เปิด 24 ชม.
 }
 
-// ฟังก์ชันอัปเดตหน้าตาเว็บ
 function updateShopStatusUI() {
-    const openStatus = isShopOpen(); // เรียกใช้จากข้างบน
+    const openStatus = isShopOpen();
     const banner = document.getElementById("shop-close-banner");
     const checkoutBtn = document.getElementById("checkout-btn");
 
@@ -996,7 +1033,6 @@ function updateShopStatusUI() {
         checkFormValidity();
     }
 }
-// รันทุกๆ 1 นาที เพื่ออัปเดตสถานะถ้าร้านปิดขณะลูกค้าเล่นเว็บอยู่
 setInterval(updateShopStatusUI, 60000);
 
 
@@ -1018,13 +1054,10 @@ function saveToLocal() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-
-// 🧹 ล้างข้อมูลเมื่อสั่งซื้อสำเร็จ (ใส่ใน sendOrderToLINE ตอนส่งสำเร็จ)
 function clearLocal() {
     localStorage.removeItem(STORAGE_KEY);
 }
 
-// 1. ฟังก์ชันบันทึกข้อมูลฟอร์ม
 function saveCustomerInfo() {
     const customerData = {
         name: document.getElementById("cust-name")?.value,
@@ -1036,13 +1069,11 @@ function saveCustomerInfo() {
     localStorage.setItem("CF_CUSTOMER_INFO", JSON.stringify(customerData));
 }
 
-// 2. ดักจับการพิมพ์ (ใส่ไว้ท้ายไฟล์ script.js)
 ["cust-name", "cust-tel", "cust-landmark", "cust-zone", "cust-slot"].forEach(id => {
     document.getElementById(id)?.addEventListener("input", saveCustomerInfo);
     document.getElementById(id)?.addEventListener("change", saveCustomerInfo);
 });
 
-// 3. ฟังก์ชันโหลดข้อมูลกลับมา (เรียกใช้ตอน Render ครั้งแรก)
 function loadSavedData() {
     const saved = localStorage.getItem("CF_CUSTOMER_INFO");
     if (saved) {
@@ -1053,23 +1084,13 @@ function loadSavedData() {
         if (data.zone) document.getElementById("cust-zone").value = data.zone;
         if (data.slot) document.getElementById("cust-slot").value = data.slot;
     }
-    // อย่าลืมโหลดตะกร้าด้วยถ้า G อยากทำ (Cart logic คล้ายกันค่ะ)
 }
-
 
 function openGrabSearch() {
     const searchTerm = encodeURIComponent("Clean Food Chiang Rai");
-
-    // 📱 Deep Link สำหรับแอป Grab (Android/iOS)
     const appUrl = `grab://open?screenType=SEARCH&searchKeyword=${searchTerm}`;
-
-    // 💻 Web URL สำหรับคอมพิวเตอร์ หรือกรณีไม่มีแอป
     const webUrl = `https://food.grab.com/th/th/search/?search=${searchTerm}`;
-
-    // ลองเปิดแอปก่อน
     window.location.href = appUrl;
-
-    // ถ้าผ่านไป 500ms แล้วเว็บยังอยู่หน้าเดิม (เปิดแอปไม่ขึ้น) ให้ไป Web แทน
     setTimeout(() => {
         if (document.hasFocus()) {
             window.open(webUrl, '_blank');
@@ -1079,13 +1100,10 @@ function openGrabSearch() {
 
 function getNextDeliveryDate() {
     let targetDate = new Date();
-    // 1. เริ่มนับที่วันพรุ่งนี้เสมอ (+1 วัน)
     targetDate.setDate(targetDate.getDate() + 1);
 
     while (true) {
-        const dayOfWeek = targetDate.getDay(); // 0 = อาทิตย์, 1 = จันทร์...
-        
-        // 💡 สร้าง String วันที่แบบ YYYY-MM-DD ตามเวลาท้องถิ่น (ไม่ใช้ toISOString เพื่อเลี่ยง Bug เวลา)
+        const dayOfWeek = targetDate.getDay();
         const y = targetDate.getFullYear();
         const m = String(targetDate.getMonth() + 1).padStart(2, '0');
         const d = String(targetDate.getDate()).padStart(2, '0');
@@ -1095,17 +1113,14 @@ function getNextDeliveryDate() {
         const isManualHoliday = CONFIG.HOLIDAYS && CONFIG.HOLIDAYS.includes(dateStr);
 
         if (isSunday || isManualHoliday) {
-            // ถ้าติดวันอาทิตย์ หรือ วันในลิสต์ CONFIG.HOLIDAYS ให้บวกไปอีก 1 วัน แล้วเช็คใหม่
             targetDate.setDate(targetDate.getDate() + 1);
         } else {
-            // ถ้าไม่ติดเงื่อนไขอะไรแล้ว คือวันที่ส่งได้จริง!
             break; 
         }
     }
     return targetDate;
 }
 
-// ส่วนการแสดงผล (ไม่ต้องแก้ แต่จะเห็นผลลัพธ์เปลี่ยนไปทันที)
 function getDeliveryDateThai() {
     const d = getNextDeliveryDate();
     return d.toLocaleDateString("th-TH", {
@@ -1121,17 +1136,14 @@ function updateHolidayWarning() {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     
-    // เช็คว่า "วันส่งจริง" ตรงกับ "วันพรุ่งนี้ตามปกติ" ไหม
     const isSkipped = nextDate.getDate() !== tomorrow.getDate();
     const banner = document.getElementById("delivery-date-banner");
 
     if (isSkipped && banner) {
-        // ถ้ามีการข้ามวัน (ติดวันหยุด) ให้เปลี่ยนสีแบนเนอร์เป็นสีเหลือง/แดง เพื่อแจ้งเตือน
         banner.style.background = "linear-gradient(135deg, #fff7ed, #ffedd5)";
         banner.style.borderColor = "#fb923c";
         banner.style.color = "#9a3412";
         
-        // เพิ่มข้อความหมายเหตุ
         const note = document.createElement("div");
         note.className = "text-[10px] mt-1 font-bold opacity-80";
         note.innerHTML = `<i class="fa-solid fa-circle-info"></i> เนื่องจากร้านหยุดวันที่ ${CONFIG.HOLIDAYS.join(", ")} หรือวันอาทิตย์ค่ะ`;
@@ -1140,20 +1152,18 @@ function updateHolidayWarning() {
 }
 
 function updateHolidayAlerts() {
-    const nextDelivery = getNextDeliveryDate(); // วันส่งจริงจาก Logic ที่เราทำไว้
+    const nextDelivery = getNextDeliveryDate();
     const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1); // วันพรุ่งนี้ตามปกติ
+    tomorrow.setDate(tomorrow.getDate() + 1);
     
-    // เช็คว่า "วันส่งจริง" ไม่ใช่ "วันพรุ่งนี้" (แสดงว่าติดวันหยุด)
     const isSkipped = nextDelivery.toDateString() !== tomorrow.toDateString();
     
     const annBar = document.getElementById("top-announcement");
     const annText = document.getElementById("announcement-text");
 
     if (isSkipped && annBar && annText) {
-        // 🔴 กรณีติดวันหยุด: เปลี่ยนเป็นสีแดง/ชมพู ให้สะดุดตา
-        annBar.style.backgroundColor = "#fff1f2"; // rose-50
-        annBar.style.borderColor = "#fecdd3"; // rose-200
+        annBar.style.backgroundColor = "#fff1f2";
+        annBar.style.borderColor = "#fecdd3";
         
         annText.innerHTML = `
             <span class="flex items-center justify-center gap-2 text-rose-700">
@@ -1161,36 +1171,27 @@ function updateHolidayAlerts() {
                 <span>ขออภัย ร้านหยุดชั่วคราว: ออเดอร์ช่วงนี้จะเริ่มจัดส่งใน <b>${getDeliveryDateThai()}</b> ค่ะ</span>
             </span>
         `;
-    } else {
-        // 🟢 กรณีปกติ: กลับไปใช้ข้อความ Grab เดิม (หรือข้อความมาตรฐาน)
     }
 }
 
-// เรียกใช้งานฟังก์ชันนี้ตอนโหลดหน้าเว็บ
 window.addEventListener('DOMContentLoaded', updateHolidayAlerts);
-
-
 
 
 // ═══════════════════════════════════════════════════════════
 //  ITEM MODAL (รวมร่างกับระบบ Add-on)
 // ═══════════════════════════════════════════════════════════
-
-// อย่าลืมว่าต้องมีตัวแปร ADDONS ที่เราเคยคุยกันวางไว้บนสุดของไฟล์ด้วยนะจ๊ะ!
-let currentAddonTotal = 0; // เก็บราคาท็อปปิ้ง
+let currentAddonTotal = 0;
 
 function openModal(id) {
     currentModalItem = menuData.find(i => i.id === id);
     if (!currentModalItem) return;
     
-    // 🧹 ล้างค่าเก่า
     tempQty = 1;
     currentAddonTotal = 0;
     document.getElementById("modal-qty").innerText = 1;
     document.getElementById("modal-special-note").value = "";
     document.getElementById("modal-note-section").classList.remove("hidden");
 
-    // โหลดข้อมูลพื้นฐาน
     document.getElementById("modal-img").src = currentModalItem.image;
     document.getElementById("modal-badge").innerText = currentModalItem.badge || "Clean Food";
     document.getElementById("modal-category-label").innerText = getCategoryLabel(currentModalItem.category);
@@ -1204,13 +1205,9 @@ function openModal(id) {
     document.getElementById("ingredients-title").innerHTML = `<i class="fa-solid fa-basket-wheat text-emerald-500 mr-1"></i> ส่วนประกอบหลัก`;
     document.getElementById("modal-ingredients").innerHTML = currentModalItem.ingredients.map(ing => `<span class="ing-tag">${ing}</span>`).join("");
     
-    // 🟢 วาด Add-on แทรกเข้าไปในหน้าต่างนี้เลย!
     renderModalAddons();
-    
-    // 💰 คำนวณราคาแรกเริ่ม (เผื่อมีค่า Default ของ Add-on)
     calculateModalPrice();
 
-    // Animation เปิดหน้าต่าง
     gsap.set(".progress-bar-fill", { width: 0 });
     document.getElementById("modal-container").classList.remove("hidden");
     gsap.to("#modal-backdrop", { opacity: 1, duration: 0.25 });
@@ -1223,12 +1220,10 @@ function openModal(id) {
     }, 250);
 }
 
-// 🟢 ฟังก์ชันวาด UI Add-on ลงในช่องที่เราเจาะไว้
 function renderModalAddons() {
     const container = document.getElementById("modal-addon-section");
     container.innerHTML = "";
     
-    // ถ้าเมนูนี้คือ Subscription (ผูกปิ่นโต) ให้ซ่อน Add-on ไปเลย
     if (!currentModalItem.macros || typeof ADDONS === 'undefined') {
         document.getElementById("modal-note-section").classList.add("hidden");
         return;
@@ -1268,7 +1263,6 @@ function renderModalAddons() {
     }
 }
 
-// 🟢 คำนวณราคาแบบ Real-time (ราคาอาหาร + ราคาท็อปปิ้ง) * จำนวน
 function calculateModalPrice() {
     if (!currentModalItem) return;
     let extraPrice = 0;
@@ -1281,18 +1275,17 @@ function calculateModalPrice() {
 }
 
 function updateQty(change) {
-    tempQty = Math.max(1, Math.min(tempQty + change, 10)); // ล็อกไว้ไม่เกิน 10 กล่อง
+    tempQty = Math.max(1, Math.min(tempQty + change, 10));
     document.getElementById("modal-qty").innerText = tempQty;
-    calculateModalPrice(); // 💡 ให้ไปคำนวณผ่านฟังก์ชันที่มี Add-on แทน
+    calculateModalPrice();
 }
 
 // ═══════════════════════════════════════════════════════════
-//  6. CART (ตอนกดยืนยันลงตะกร้า)
+//  CART (ตอนกดยืนยันลงตะกร้า)
 // ═══════════════════════════════════════════════════════════
 function confirmAddToCart() {
     if (!currentModalItem) return;
 
-    // 🛑 ด่านตรวจ 1: เช็กว่าเลือกของที่ "บังคับ" ครบหรือยัง? (ยกเว้นเมนูผูกปิ่นโต)
     let missingRequired = false;
     let missingLabel = "";
     if (currentModalItem.id !== "SUB_WEEKLY" && typeof ADDONS !== 'undefined') {
@@ -1310,7 +1303,6 @@ function confirmAddToCart() {
         return;
     }
 
-    // 🛒 ด่าน 2: กวาดข้อมูลท็อปปิ้ง
     let selectedAddons = [];
     document.querySelectorAll('#modal-addon-section input:checked').forEach(input => {
         const name = input.getAttribute('data-name');
@@ -1327,13 +1319,12 @@ function confirmAddToCart() {
         else itemNote = specialNote;
     }
 
-    // 📦 ด่าน 3: สร้างก้อนข้อมูลออเดอร์
     const cartItem = {
         cartItemId: "item_" + Date.now().toString(), 
         id: currentModalItem.id,
         name: currentModalItem.name,
         price: currentModalItem.price,
-        priceWithAddon: currentModalItem.price + currentAddonTotal, // 💡 ราคาสุทธิที่บวกท็อปปิ้งแล้ว
+        priceWithAddon: currentModalItem.price + currentAddonTotal,
         qty: tempQty,
         addonText: addonText,
         allergyText: allergyText,
@@ -1341,7 +1332,6 @@ function confirmAddToCart() {
         image: currentModalItem.image
     };
 
-    // 📥 ด่าน 4: โยนลงตะกร้า (เช็กว่าออเดอร์หน้าตาเหมือนกันเป๊ะไหม)
     if (isCheckoutMode) {
         SwalWarning("กำลังอยู่ในขั้นตอนชำระเงิน", "กรุณากดย้อนกลับก่อนแก้ไขรายการ");
         return;
@@ -1366,11 +1356,7 @@ function confirmAddToCart() {
 // ═══════════════════════════════════════════════════════════
 //  12. SMART LOCAL STORAGE (ระบบจดจำข้อมูล 12 ชม.)
 // ═══════════════════════════════════════════════════════════
-
-
-// 💾 บันทึกทุกอย่างลง LocalStorage
 function saveToLocal() {
-    // ป้องกันไม่ให้เซฟตอนกำลังจ่ายเงิน (เดี๋ยวตะกร้าที่ล็อกไว้เพี้ยน)
     if (isCheckoutMode) return; 
 
     const data = {
@@ -1390,14 +1376,12 @@ function saveToLocal() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// 📂 ดึงข้อมูลกลับมา
 function loadFromLocal() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return;
 
     try {
         const data = JSON.parse(saved);
-        // เช็กเวลาว่าเกิน 12 ชั่วโมงหรือยัง
         if (Date.now() - data.timestamp > EXPIRY_TIME) {
             clearLocal();
             return;
@@ -1426,12 +1410,6 @@ function loadFromLocal() {
     }
 }   
 
-// 🧹 ล้างข้อมูล (ใช้อันนี้แทรกไปใน sendOrderToLINE ตอนที่ส่งออเดอร์เสร็จแล้วด้วยนะ)
-function clearLocal() {
-    localStorage.removeItem(STORAGE_KEY);
-}
-
-// 🎯 ดักจับการพิมพ์ฟอร์ม เพื่อสั่งเซฟอัตโนมัติ
 ["cust-name", "cust-tel", "cust-landmark", "cust-zone", "cust-slot"].forEach(id => {
     const el = document.getElementById(id);
     if(el) {
