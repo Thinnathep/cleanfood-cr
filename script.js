@@ -6,7 +6,7 @@ const CONFIG = {
     CHIANG_RAI: [19.9071, 99.8310],
     //วันหยุดอัพเดทเอง
     HOLIDAYS: [
-        // "2026-03-05", // 🚩 ใส่พรุ่งนี้ (5 มี.ค.) เข้าไปเพื่อทดสอบระบบ!
+        "2026-03-05", // 🚩 ใส่พรุ่งนี้ (5 มี.ค.) เข้าไปเพื่อทดสอบระบบ!
         // "2026-03-13", 
     ],
 };
@@ -474,7 +474,7 @@ function updateCartUI() {
             </div>
             <div class="bg-amber-50 border border-amber-100 text-amber-800 text-[11px] px-3 py-2 rounded-xl font-medium flex items-start gap-2">
                 <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5 shrink-0"></i>
-                <span>หิวด่วน? สั่งผ่าน <a href="https://grab.com" target="_blank" class="underline font-bold text-emerald-600">Grab</a> ได้ทันที (10:00–19:00 น.)</span>
+                <span>หิวด่วน? สั่งผ่าน <a href="javascript:void(0)" onclick="openGrabSearch()" class="underline font-bold text-emerald-600 cursor-pointer">Grab</a> ได้ทันที (10:00–19:00 น.)</span>
             </div>`;
 
         cart.forEach((item, index) => {
@@ -831,50 +831,15 @@ async function sendOrderToLINE() {
         const encodedMsg = encodeURIComponent(lineMsg);
         const lineOA = "282ovoyd"; // ไม่ใส่ @ ใน URL
 
-        // ✅ Deep link ที่ถูกต้องสำหรับเปิดแอป LINE ตรงหน้าโปรไฟล์ร้าน
-        const lineAppUrl = `line://ti/p/@${lineOA}`;
-        // ✅ Web fallback กรณีไม่มีแอป LINE (เปิดหน้าโปรไฟล์บนเว็บ)
-        const lineWebUrl = `https://line.me/R/ti/p/@${lineOA}`;
+        // ✅ Deep link ที่ถูกต้อง:
+        // - line://oaMessage/@ID?text=...  → เปิดแอป LINE พร้อมข้อความในช่องพิมพ์
+        //   ถ้าเป็นเพื่อนแล้ว: เปิดห้องแชทพร้อมข้อความรอส่ง
+        //   ถ้ายังไม่เป็นเพื่อน: LINE พาไปหน้า Add Friend ก่อนอัตโนมัติ แล้วค่อยส่งข้อความ
+        // - https://line.me/R/oaMessage/@ID/?text=...  → Web fallback กรณีไม่มีแอป
+        const lineAppUrl = `line://oaMessage/@${lineOA}?text=${encodedMsg}`;
+        const lineWebUrl = `https://line.me/R/oaMessage/@${lineOA}/?text=${encodedMsg}`;
 
-        // 6. แจ้งให้ลูกค้าเพิ่มเพื่อนก่อน (สำคัญมาก! ถ้ายังไม่เป็นเพื่อน LINE จะไม่รับข้อความ)
-        const addFriendResult = await SwalBase.fire({
-            title: '📲 เพิ่มเพื่อน LINE ร้านก่อนนะคะ',
-            html: `
-                <div style="font-size:13px; line-height:1.8; text-align:left">
-                    <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:12px;">
-                        <b style="color:#15803d;">⚠️ สำคัญ!</b><br>
-                        ถ้ายังไม่ได้เป็นเพื่อนกับร้าน<br>
-                        LINE จะ<b>ไม่ส่งข้อความออเดอร์</b>ให้อัตโนมัติ<br><br>
-                        กรุณาเพิ่มเพื่อนก่อน แล้วกลับมากด<br>
-                        <b>"เพิ่มเพื่อนแล้ว → ส่งออเดอร์"</b> ค่ะ
-                    </div>
-                    <div style="background:#fafafa; border-radius:10px; padding:10px; font-size:12px; color:#64748b; border:1px solid #e2e8f0; text-align:center;">
-                        🪪 LINE OA: <b>@${lineOA}</b>
-                    </div>
-                </div>`,
-            confirmButtonText: '✅ เพิ่มเพื่อนแล้ว → ส่งออเดอร์',
-            cancelButtonText: '➕ เปิด LINE เพิ่มเพื่อนก่อน',
-            showCancelButton: true,
-            reverseButtons: false,
-            allowOutsideClick: false,
-        });
-
-        if (!addFriendResult.isConfirmed) {
-            // 🔴 กดปุ่ม "เปิด LINE เพิ่มเพื่อนก่อน"
-            // → เปิดแอป LINE ตรงหน้าโปรไฟล์ร้าน (กด Add Friend ได้เลย)
-            // → ลูกค้ากลับมาเว็บแล้วกด "เพิ่มเพื่อนแล้ว" เพื่อส่งออเดอร์
-            btn.innerHTML = originalHTML;
-            btn.disabled = false;
-            window.location.href = lineAppUrl;
-            setTimeout(() => {
-                if (document.hasFocus()) {
-                    window.open(lineWebUrl, '_blank');
-                }
-            }, 1500);
-            return;
-        }
-
-        // 7. ลูกค้ายืนยันว่าเพิ่มเพื่อนแล้ว → แสดง success แล้วเปิด LINE พร้อมข้อความออเดอร์
+        // 6. แสดง success แล้วเปิด LINE พร้อมข้อความออเดอร์ทันที
         await SwalBase.fire({
             icon: 'success',
             title: 'บันทึกออเดอร์แล้ว!',
@@ -890,13 +855,13 @@ async function sendOrderToLINE() {
         isCheckoutMode = false;
         updateCartUI();
 
-        // ✅ เปิดแอป LINE ตรงห้องแชทร้านพร้อมข้อความออเดอร์
-        // line://ti/p/@OA_ID  → เปิดแอปตรงหน้าแชทได้เลย (ต้องเป็นเพื่อนแล้ว)
-        window.location.href = `line://ti/p/@${lineOA}`;
+        // ✅ เปิดแอป LINE พร้อมข้อความออเดอร์ในช่องพิมพ์ทันที
+        // ถ้ายังไม่เป็นเพื่อน LINE จะพาไปหน้า Add Friend ก่อนอัตโนมัติ
+        window.location.href = lineAppUrl;
         setTimeout(() => {
             if (document.hasFocus()) {
                 // Fallback: เปิดเว็บ LINE พร้อมข้อความ (กรณีไม่มีแอปหรือเปิดไม่ขึ้น)
-                window.open(`https://line.me/R/oaMessage/@${lineOA}/?text=${encodedMsg}`, '_blank');
+                window.open(lineWebUrl, '_blank');
             }
         }, 1500);
 
@@ -991,14 +956,25 @@ renderMenu();
 updateCartUI();
 
 function openGrab() {
-    const appUrl = "grab://open?screenType=SEARCH&searchKeyword=Clean%20Food%20Chiang%20Rai";
-    const webUrl = "https://food.grab.com/th/th/search/?search=Clean%20Food%20Chiang%20Rai";
-    window.location.href = appUrl;
-    setTimeout(() => {
-        if (document.hasFocus()) {
-            window.location.href = webUrl;
-        }
-    }, 500);
+    const searchTerm = encodeURIComponent("Clean Food Chiang Rai");
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // 📱 มือถือ: เปิดแอป Grab ตรงเลย
+        window.location.href = `grab://open?screenType=SEARCH&searchKeyword=${searchTerm}`;
+    } else {
+        // 💻 คอม: แจ้งเตือนให้ใช้มือถือแทน
+        SwalBase.fire({
+            title: '📱 ใช้งานบนมือถือได้เลยค่ะ',
+            html: `<div style="font-size:13px; line-height:1.8; text-align:center; color:#475569">
+                    แอป Grab ใช้งานได้บน<b>มือถือ</b>เท่านั้นค่ะ<br>
+                    กรุณาเปิดเว็บนี้บนมือถือ แล้วกดปุ่มอีกครั้ง<br><br>
+                    <span style="font-size:11px; color:#94a3b8">หรือค้นหา "Clean Food Chiang Rai" ใน Grab บนมือถือได้เลยค่ะ</span>
+                   </div>`,
+            confirmButtonText: 'รับทราบ',
+            icon: 'info',
+        });
+    }
 }
 
 // ✅ แก้ไข: ลบ visibilitychange ที่ทำให้รีโหลดหน้าเมื่อกลับจาก LINE ออก
@@ -1037,65 +1013,33 @@ setInterval(updateShopStatusUI, 60000);
 
 
 // 💾 บันทึกทุกอย่างลง LocalStorage
-function saveToLocal() {
-    const data = {
-        cart: cart,
-        customer: {
-            name: document.getElementById("cust-name")?.value,
-            tel: document.getElementById("cust-tel")?.value,
-            zone: document.getElementById("cust-zone")?.value,
-            slot: document.getElementById("cust-slot")?.value,
-            landmark: document.getElementById("cust-landmark")?.value,
-            address: document.getElementById("cust-address")?.value,
-            lat: document.getElementById("cust-lat")?.value,
-            lng: document.getElementById("cust-lng")?.value
-        }
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-}
+// saveToLocal ใช้ฟังก์ชันด้านล่างที่อัปเดตแล้ว
 
 function clearLocal() {
     localStorage.removeItem(STORAGE_KEY);
 }
 
-function saveCustomerInfo() {
-    const customerData = {
-        name: document.getElementById("cust-name")?.value,
-        tel: document.getElementById("cust-tel")?.value,
-        landmark: document.getElementById("cust-landmark")?.value,
-        zone: document.getElementById("cust-zone")?.value,
-        slot: document.getElementById("cust-slot")?.value
-    };
-    localStorage.setItem("CF_CUSTOMER_INFO", JSON.stringify(customerData));
-}
-
-["cust-name", "cust-tel", "cust-landmark", "cust-zone", "cust-slot"].forEach(id => {
-    document.getElementById(id)?.addEventListener("input", saveCustomerInfo);
-    document.getElementById(id)?.addEventListener("change", saveCustomerInfo);
-});
-
-function loadSavedData() {
-    const saved = localStorage.getItem("CF_CUSTOMER_INFO");
-    if (saved) {
-        const data = JSON.parse(saved);
-        if (data.name) document.getElementById("cust-name").value = data.name;
-        if (data.tel) document.getElementById("cust-tel").value = data.tel;
-        if (data.landmark) document.getElementById("cust-landmark").value = data.landmark;
-        if (data.zone) document.getElementById("cust-zone").value = data.zone;
-        if (data.slot) document.getElementById("cust-slot").value = data.slot;
-    }
-}
 
 function openGrabSearch() {
     const searchTerm = encodeURIComponent("Clean Food Chiang Rai");
-    const appUrl = `grab://open?screenType=SEARCH&searchKeyword=${searchTerm}`;
-    const webUrl = `https://food.grab.com/th/th/search/?search=${searchTerm}`;
-    window.location.href = appUrl;
-    setTimeout(() => {
-        if (document.hasFocus()) {
-            window.open(webUrl, '_blank');
-        }
-    }, 500);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isMobile) {
+        // 📱 มือถือ: เปิดแอป Grab ตรงเลย
+        window.location.href = `grab://open?screenType=SEARCH&searchKeyword=${searchTerm}`;
+    } else {
+        // 💻 คอม: แจ้งเตือนให้ใช้มือถือแทน
+        SwalBase.fire({
+            title: '📱 ใช้งานบนมือถือได้เลยค่ะ',
+            html: `<div style="font-size:13px; line-height:1.8; text-align:center; color:#475569">
+                    แอป Grab ใช้งานได้บน<b>มือถือ</b>เท่านั้นค่ะ<br>
+                    กรุณาเปิดเว็บนี้บนมือถือ แล้วกดปุ่มอีกครั้ง<br><br>
+                    <span style="font-size:11px; color:#94a3b8">หรือค้นหา "Clean Food Chiang Rai" ใน Grab บนมือถือได้เลยค่ะ</span>
+                   </div>`,
+            confirmButtonText: 'รับทราบ',
+            icon: 'info',
+        });
+    }
 }
 
 function getNextDeliveryDate() {
@@ -1357,21 +1301,12 @@ function confirmAddToCart() {
 //  12. SMART LOCAL STORAGE (ระบบจดจำข้อมูล 12 ชม.)
 // ═══════════════════════════════════════════════════════════
 function saveToLocal() {
-    if (isCheckoutMode) return; 
+    if (isCheckoutMode) return;
 
+    // 💾 เก็บแค่ตะกร้าเท่านั้น ไม่เก็บข้อมูลส่วนตัว/ที่อยู่/หมายเหตุ
     const data = {
         timestamp: Date.now(),
         cart: cart,
-        customer: {
-            name: document.getElementById("cust-name")?.value || "",
-            tel: document.getElementById("cust-tel")?.value || "",
-            zone: document.getElementById("cust-zone")?.value || "5",
-            slot: document.getElementById("cust-slot")?.value || "",
-            landmark: document.getElementById("cust-landmark")?.value || "",
-            address: document.getElementById("cust-address")?.value || "",
-            lat: document.getElementById("cust-lat")?.value || "",
-            lng: document.getElementById("cust-lng")?.value || ""
-        }
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
@@ -1386,34 +1321,9 @@ function loadFromLocal() {
             clearLocal();
             return;
         }
-
+        // โหลดแค่ตะกร้า ไม่โหลดข้อมูลฟอร์ม
         cart = data.cart || [];
-        if (data.customer) {
-            if (data.customer.name) document.getElementById("cust-name").value = data.customer.name;
-            if (data.customer.tel) document.getElementById("cust-tel").value = data.customer.tel;
-            if (data.customer.zone) document.getElementById("cust-zone").value = data.customer.zone;
-            if (data.customer.slot) document.getElementById("cust-slot").value = data.customer.slot;
-            if (data.customer.landmark) document.getElementById("cust-landmark").value = data.customer.landmark;
-            if (data.customer.address) document.getElementById("cust-address").value = data.customer.address;
-            if (data.customer.lat) document.getElementById("cust-lat").value = data.customer.lat;
-            if (data.customer.lng) document.getElementById("cust-lng").value = data.customer.lng;
-            
-            if (data.customer.lat && data.customer.lng) {
-                const gpsCoordsEl = document.getElementById("gps-coords-text");
-                const gpsDv = document.getElementById("gps-display");
-                if (gpsCoordsEl) gpsCoordsEl.innerText = `${data.customer.lat}, ${data.customer.lng}`;
-                if (gpsDv) gpsDv.classList.remove("hidden");
-            }
-        }
     } catch (e) {
         clearLocal();
     }
-}   
-
-["cust-name", "cust-tel", "cust-landmark", "cust-zone", "cust-slot"].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) {
-        el.addEventListener("input", saveToLocal);
-        el.addEventListener("change", saveToLocal);
-    }
-});
+}
