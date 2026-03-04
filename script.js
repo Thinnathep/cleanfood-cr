@@ -1277,7 +1277,7 @@ function updateQty(change) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  6. CART (ตอนกดยืนยันลงตะกร้า)
+//  6. CART (ตอนกดยืนยันลงตะกร้า - เพิ่มฟีเจอร์รีเฟรชหน้าจอ)
 // ═══════════════════════════════════════════════════════════
 function confirmAddToCart() {
     if (!currentModalItem) return;
@@ -1323,7 +1323,7 @@ function confirmAddToCart() {
         id: currentModalItem.id,
         name: currentModalItem.name,
         price: currentModalItem.price,
-        priceWithAddon: currentModalItem.price + currentAddonTotal, // 💡 ราคาสุทธิที่บวกท็อปปิ้งแล้ว
+        priceWithAddon: currentModalItem.price + currentAddonTotal,
         qty: tempQty,
         addonText: addonText,
         allergyText: allergyText,
@@ -1331,7 +1331,7 @@ function confirmAddToCart() {
         image: currentModalItem.image
     };
 
-    // 📥 ด่าน 4: โยนลงตะกร้า (เช็กว่าออเดอร์หน้าตาเหมือนกันเป๊ะไหม)
+    // 📥 ด่าน 4: โยนลงตะกร้า 
     if (isCheckoutMode) {
         SwalWarning("กำลังอยู่ในขั้นตอนชำระเงิน", "กรุณากดย้อนกลับก่อนแก้ไขรายการ");
         return;
@@ -1350,76 +1350,64 @@ function confirmAddToCart() {
 
     updateCartUI();
     closeModal();
+    
+    // โชว์แจ้งเตือนว่าสำเร็จ
     SwalToast(`เพิ่ม "${cartItem.name}" ลงตะกร้าแล้ว ✓`, 'success');
+
+    // 🔄 🟢 ฟีเจอร์สั่งหน่วงเวลา 1.5 วิ แล้วรีเฟรชหน้าเว็บ (แก้บั๊กเมนูหาย)
+    setTimeout(() => {
+        window.location.reload();
+    }, 1500);
 }
 
 // ═══════════════════════════════════════════════════════════
-//  12. SMART LOCAL STORAGE (ระบบจดจำข้อมูล 12 ชม.)
+//  12. SMART LOCAL STORAGE (จำเฉพาะเมนูในตะกร้า ไม่จำข้อมูลส่วนตัว)
 // ═══════════════════════════════════════════════════════════
 
-
-// 💾 บันทึกทุกอย่างลง LocalStorage
+// 💾 บันทึก "เฉพาะตะกร้าอาหาร" ลง LocalStorage
 function saveToLocal() {
-    // ป้องกันไม่ให้เซฟตอนกำลังจ่ายเงิน (เดี๋ยวตะกร้าที่ล็อกไว้เพี้ยน)
+    // ป้องกันไม่ให้เซฟตอนกำลังจ่ายเงิน
     if (isCheckoutMode) return; 
 
+    // 🟢 ตัดข้อมูล customer ทิ้งทั้งหมด จำแค่ cart อย่างเดียว!
     const data = {
         timestamp: Date.now(),
-        cart: cart,
-        customer: {
-            name: document.getElementById("cust-name")?.value || "",
-            tel: document.getElementById("cust-tel")?.value || "",
-            zone: document.getElementById("cust-zone")?.value || "5",
-            slot: document.getElementById("cust-slot")?.value || "",
-            landmark: document.getElementById("cust-landmark")?.value || "",
-            address: document.getElementById("cust-address")?.value || "",
-            lat: document.getElementById("cust-lat")?.value || "",
-            lng: document.getElementById("cust-lng")?.value || ""
-        }
+        cart: cart 
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// 📂 ดึงข้อมูลกลับมา
+// 📂 ดึงข้อมูลตะกร้ากลับมา (ไม่ดึงที่อยู่)
 function loadFromLocal() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return;
 
     try {
         const data = JSON.parse(saved);
-        // เช็กเวลาว่าเกิน 12 ชั่วโมงหรือยัง
+        
+        // เช็กเวลาว่าเกิน 12 ชั่วโมงหรือยัง (ถ้าเกินให้เคลียร์ทิ้ง)
         if (Date.now() - data.timestamp > EXPIRY_TIME) {
             clearLocal();
             return;
         }
 
+        // 🟢 โหลดกลับมาเฉพาะรายการอาหารในตะกร้า
         cart = data.cart || [];
-        if (data.customer) {
-            if (data.customer.name) document.getElementById("cust-name").value = data.customer.name;
-            if (data.customer.tel) document.getElementById("cust-tel").value = data.customer.tel;
-            if (data.customer.zone) document.getElementById("cust-zone").value = data.customer.zone;
-            if (data.customer.slot) document.getElementById("cust-slot").value = data.customer.slot;
-            if (data.customer.landmark) document.getElementById("cust-landmark").value = data.customer.landmark;
-            if (data.customer.address) document.getElementById("cust-address").value = data.customer.address;
-            if (data.customer.lat) document.getElementById("cust-lat").value = data.customer.lat;
-            if (data.customer.lng) document.getElementById("cust-lng").value = data.customer.lng;
-            
-            if (data.customer.lat && data.customer.lng) {
-                const gpsCoordsEl = document.getElementById("gps-coords-text");
-                const gpsDv = document.getElementById("gps-display");
-                if (gpsCoordsEl) gpsCoordsEl.innerText = `${data.customer.lat}, ${data.customer.lng}`;
-                if (gpsDv) gpsDv.classList.remove("hidden");
-            }
-        }
+        
+        // (ส่วนโค้ดที่เคยใช้ดึงค่ากลับลงฟอร์มที่อยู่ ถูกลบทิ้งไปแล้วจ้ะ)
+
     } catch (e) {
         clearLocal();
     }
 }   
 
-// 🧹 ล้างข้อมูล (ใช้อันนี้แทรกไปใน sendOrderToLINE ตอนที่ส่งออเดอร์เสร็จแล้วด้วยนะ)
+// 🧹 ล้างข้อมูลตะกร้า (ใช้ตอนสั่งออเดอร์สำเร็จ หรือหมดอายุ)
 function clearLocal() {
     localStorage.removeItem(STORAGE_KEY);
 }
+
+// 🎯 ดักจับเฉพาะโซน/ค่าจัดส่ง เพื่อให้คำนวณราคาถูก (ไม่ต้องดักจับชื่อ/เบอร์แล้ว)
+document.getElementById("cust-zone")?.addEventListener("change", saveToLocal);
 
 // 🎯 ดักจับการพิมพ์ฟอร์ม เพื่อสั่งเซฟอัตโนมัติ
 ["cust-name", "cust-tel", "cust-landmark", "cust-zone", "cust-slot"].forEach(id => {
