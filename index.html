@@ -23,6 +23,7 @@
 
 <body class="flex flex-col min-h-screen">
 
+
     <header class="glass-header sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 sm:h-20">
@@ -70,14 +71,15 @@
         </div>
     </header>
 
-<div id="top-announcement" class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center transition-all duration-500">
-    <p id="announcement-text" class="text-[11px] text-amber-800 font-medium">
-        🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวจนทนไม่ไหว?
-        <a href="https://food.grab.com/th/th/search/?search=Clean%20Food%20Chiang%20Rai" target="_blank"
-            class="underline font-bold text-emerald-600"> สั่งเลย Grab  </a> 📦
-         | ส่งในเขตเมืองเชียงราย
-    </p>
-</div>
+    <div id="top-announcement"
+        class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center transition-all duration-500">
+        <p id="announcement-text" class="text-[11px] text-amber-800 font-medium">
+            🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวจนทนไม่ไหว?
+            <a href="https://food.grab.com/th/th/search/?search=Clean%20Food%20Chiang%20Rai" target="_blank"
+                class="underline font-bold text-emerald-600"> สั่งเลย Grab </a> 📦
+            | ส่งในเขตเมืองเชียงราย
+        </p>
+    </div>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
@@ -129,155 +131,170 @@
             <div id="cart-items" class="p-4 flex flex-col gap-3"></div>
 
             <div id="checkout-form-container" class="hidden px-4 pb-4">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-3">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex flex-col gap-4">
 
-                    <div class="section-label mb-1">
-                        <i class="fa-solid fa-motorcycle mr-1"></i> ข้อมูลจัดส่ง (จัดส่งวันพรุ่งนี้)
+                    <div class="flex items-center gap-2 text-slate-800 font-bold text-sm">
+                        <div
+                            class="w-6 h-6 bg-emerald-100 text-emerald-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-motorcycle text-[10px]"></i>
+                        </div>
+                        ข้อมูลจัดส่ง
                     </div>
 
                     <input type="hidden" id="cust-address">
                     <input type="hidden" id="cust-lat">
                     <input type="hidden" id="cust-lng">
 
-                    <div id="map" class="h-44 w-full border border-slate-200 mb-0"></div>
-                    <p class="text-[10px] text-slate-400 text-center -mt-1">📍 ลากหมุด หรือ แตะบนแผนที่เพื่อเลือกจุดส่ง
-                    </p>
+                    <div class="space-y-2">
+                        <div id="map"
+                            class="h-40 w-full border border-slate-200 rounded-xl overflow-hidden shadow-inner"></div>
+                        <p class="text-[10px] text-slate-400 text-center font-normal">
+                            <i class="fa-solid fa-circle-info mr-1"></i>ลากหมุดหรือแตะบนแผนที่เพื่อระบุจุดส่ง
+                        </p>
 
-                    <div id="gps-display"
-                        class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 text-[11px] text-emerald-700 hidden">
-                        <i class="fa-solid fa-location-dot mr-1"></i>
-                        <span id="gps-coords-text">กำลังรอพิกัด...</span>
+                        <div id="gps-display"
+                            class="bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 text-[11px] text-emerald-700 hidden font-medium">
+                            <i class="fa-solid fa-location-dot mr-1"></i>
+                            พิกัด: <span id="gps-coords-text" class="font-mono">กำลังรอพิกัด...</span>
+                        </div>
                     </div>
 
-                    <textarea id="cust-landmark" placeholder="รายละเอียดเพิ่มเติม เช่น สีบ้าน, เลขที่, จุดสังเกต"
-                        class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all h-20 resize-none"></textarea>
+                    <div class="flex flex-col gap-1.5">
+                        <textarea id="cust-landmark" placeholder="รายละเอียดเพิ่มเติม เช่น สีบ้าน, เลขที่, จุดสังเกต..."
+                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-600 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-50 focus:bg-white transition-all h-20 resize-none placeholder:text-slate-300"></textarea>
+                    </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="flex flex-col gap-1">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1.5">
                             <input type="text" id="cust-name" placeholder="ชื่อ-นามสกุล"
-                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
-                            <span id="cust-name-err" class="hidden text-[10px] text-rose-500 px-1">
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-600 outline-none focus:border-emerald-400 transition-all placeholder:text-slate-300">
+                            <span id="cust-name-err" class="hidden text-[10px] text-rose-500 px-1 font-medium">
                                 <i class="fa-solid fa-circle-exclamation mr-1"></i>กรุณากรอกชื่อ-นามสกุล
                             </span>
                         </div>
-                        <div class="flex flex-col gap-1">
-                            <input type="tel" id="cust-tel" placeholder="เบอร์โทร (0XXXXXXXXX)"
-                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
-                            <span id="cust-tel-err" class="hidden text-[10px] text-rose-500 px-1">
+                        <div class="flex flex-col gap-1.5">
+                            <input type="tel" id="cust-tel" placeholder="เบอร์โทรศัพท์"
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-600 outline-none focus:border-emerald-400 transition-all placeholder:text-slate-300">
+                            <span id="cust-tel-err" class="hidden text-[10px] text-rose-500 px-1 font-medium">
                                 <i class="fa-solid fa-circle-exclamation mr-1"></i>เบอร์โทรไม่ถูกต้อง
                             </span>
                         </div>
                     </div>
 
-                    <div class="flex flex-col gap-1">
+                    <div class="flex flex-col gap-3">
+                        <div class="flex flex-col gap-1.5">
+                            <select id="cust-zone" onchange="updateCartUI()"
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-emerald-700 outline-none focus:border-emerald-400 transition-colors cursor-pointer appearance-none">
+                                <option value="5">🛵 ค่าจัดส่งในเขตเมืองเชียงราย (+5฿)</option>
+                            </select>
+                            <p class="text-[10px] text-slate-400 px-1 font-normal">*ตรวจสอบพื้นที่จัดส่งกับแอดมินได้ทาง
+                                LINE</p>
+                        </div>
 
-                        <select id="cust-zone" onchange="updateCartUI()"
-                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors font-bold text-emerald-700">
-                            <option value="5">🛵 ในเขตเมืองเชียงราย (+5฿)</option>
-                            <!-- <option value="15">🛵 นอกเขตเมือง/รอบนอก (+15฿)</option> -->
-                        </select>
-                        <p class="text-[10px] text-slate-400 px-1">*ตรวจสอบพื้นที่จัดส่งกับแอดมินได้ทาง LINE</p>
+                        <div class="flex flex-col gap-1.5">
+                            <select id="cust-slot"
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-600 outline-none focus:border-emerald-400 transition-colors cursor-pointer">
+                                <option value="">-- เลือกรอบจัดส่ง (วันพรุ่งนี้) --</option>
+                                <option value="11:00-13:00">🌞 รอบเที่ยง (11:00–13:00 น.)</option>
+                                <option value="16:00-18:00">🌅 รอบเย็น (16:00–18:00 น.)</option>
+                            </select>
+                            <span id="cust-slot-err" class="hidden text-[10px] text-rose-500 px-1 font-medium">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>กรุณาเลือกรอบจัดส่ง
+                            </span>
+                        </div>
+                    </div>
 
-                        <select id="cust-slot"
-                            class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-colors">
-                            <option value="">-- เลือกรอบจัดส่ง (วันพรุ่งนี้) --</option>
-                            <option value="11:00-13:00">🌞 รอบเที่ยง (11:00–13:00 น.)</option>
-                            <option value="16:00-18:00">🌅 รอบเย็น (16:00–18:00 น.)</option>
-                        </select>
-                        <span id="cust-slot-err" class="hidden text-[10px] text-rose-500 px-1">
-                            <i class="fa-solid fa-circle-exclamation mr-1"></i>กรุณาเลือกรอบจัดส่ง
+                    <textarea id="cust-note" placeholder="หมายเหตุเพิ่มเติม (เช่น ไม่เผ็ด, แพ้อาหาร...)"
+                        class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-600 outline-none focus:border-emerald-400 transition-all h-16 resize-none placeholder:text-slate-300"></textarea>
+
+                    <label
+                        class="flex items-start gap-3 p-2 rounded-xl border border-transparent hover:bg-white/50 transition-colors cursor-pointer group">
+                        <input type="checkbox" id="pdpa-consent"
+                            class="accent-emerald-500 w-4 h-4 mt-0.5 shrink-0 rounded">
+                        <span class="text-[11px] text-slate-500 leading-snug font-normal group-hover:text-slate-600">
+                            ข้าพเจ้ายินยอมให้ Clean Food Chiang Rai เก็บข้อมูลส่วนบุคคลเพื่อการจัดส่งเท่านั้น
+                            <a href="javascript:void(0)" onclick="openPDPAModal()"
+                                class="text-emerald-600 font-bold underline ml-1">นโยบายความเป็นส่วนตัว</a>
                         </span>
-                    </div>
-
-                    <textarea id="cust-note" placeholder="หมายเหตุเพิ่มเติม เช่น ขอไม่ใส่พริก, แพ้อาหาร (ถ้ามี)"
-                        class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm outline-none focus:border-emerald-400 transition-all h-16 resize-none"></textarea>
+                    </label>
                 </div>
-
-                <label class="flex items-start gap-2 text-[11px] text-slate-500 mt-3 cursor-pointer">
-                    <input type="checkbox" id="pdpa-consent" class="accent-emerald-500 w-4 h-4 mt-0.5 shrink-0">
-                    <span class="leading-relaxed">
-                        ข้าพเจ้ายินยอมให้ Clean Food Chiang Rai เก็บและใช้ข้อมูลส่วนบุคคลเพื่อการจัดส่งเท่านั้น
-                        <a href="javascript:void(0)" onclick="openPDPAModal()"
-                            class="text-emerald-600 font-bold underline">(นโยบายความเป็นส่วนตัว)</a>
-                    </span>
-                </label>
-            </div>
-        </div>
-
-        <div class="p-4 border-t border-slate-100 bg-white shadow-[0_-8px_20px_-4px_rgba(0,0,0,0.06)]">
-            <div class="flex justify-between items-center mb-3">
-                <div>
-                    <span class="text-slate-500 text-sm font-medium">ยอดรวม</span>
-                    <div class="text-[10px] text-slate-400" id="cart-items-summary"></div>
-                </div>
-                <span class="text-2xl font-extrabold text-emerald-600" id="cart-total-price">฿0</span>
             </div>
 
-            <!-- ── QR PAYMENT AREA ── -->
-            <div id="qr-container" class="hidden flex-col items-center mb-4 p-4 gap-3">
-
-                <!-- Back button (mobile/tablet) -->
-                <button id="back-to-cart-btn" onclick="backToCart()"
-                    class="self-start flex items-center gap-2 text-slate-500 hover:text-emerald-600 text-xs font-semibold px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors"
-                    style="display:none;">
-                    <i class="fa-solid fa-arrow-left text-[10px]"></i> ย้อนกลับแก้ไข
-                </button>
-
-                <p class="text-sm font-extrabold text-emerald-800 flex items-center gap-2">
-                    <i class="fa-solid fa-qrcode"></i> สแกนจ่ายผ่าน Make by KBank
-                </p>
-
-                <div
-                    class="bg-rose-50 text-rose-600 px-5 py-2 rounded-full font-extrabold text-sm border border-rose-200 shadow-sm text-center">
-                    กรุณาระบุยอดเงิน: <span id="qr-total-amount" class="text-xl">0</span> บาท
-                </div>
-
-                <div
-                    class="bg-white p-2 rounded-2xl shadow-sm border border-emerald-100 w-48 h-48 flex items-center justify-center overflow-hidden">
-                    <img id="make-qr" src="Img/make-qr.jpg" alt="Make QR" class="w-full h-full object-cover">
-                </div>
-
-                <!-- Step guide -->
-                <div
-                    class="w-full bg-slate-50 rounded-2xl p-3 border border-slate-100 text-[11px] text-slate-600 space-y-1.5">
-                    <div class="flex items-center gap-2"><span
-                            class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">1</span>
-                        เปิดแอปธนาคาร แล้วสแกน QR ด้านบน</div>
-                    <div class="flex items-center gap-2"><span
-                            class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">2</span>
-                        โอนเงินตามยอดที่แสดง แล้วบันทึกสลิป</div>
-                    <div class="flex items-center gap-2"><span
-                            class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">3</span>
-                        กดปุ่มด้านล่าง เพื่อส่งสลิปยืนยันที่ LINE</div>
-                </div>
-
-                <button id="submit-order-btn" onclick="sendOrderToLINE()"
-                    class="line-btn w-full text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shadow-lg">
-                    <i class="fa-brands fa-line text-lg"></i> โอนแล้ว → ส่งสลิปยืนยันที่ LINE
-                </button>
-            </div>
-
-            <div id="shop-close-banner" class="hidden mb-4 p-4 bg-rose-50 border-2 border-rose-200 rounded-2xl">
-                <div class="flex items-center gap-3 text-rose-600">
-                    <div
-                        class="w-10 h-10 bg-rose-500 text-white rounded-full flex items-center justify-center shrink-0 shadow-sm">
-                        <i class="fa-solid fa-moon"></i>
-                    </div>
+            <div class="p-4 border-t border-slate-100 bg-white shadow-[0_-8px_20px_-4px_rgba(0,0,0,0.06)]">
+                <div class="flex justify-between items-center mb-3">
                     <div>
-                        <h4 class="font-extrabold text-sm">ขณะนี้ร้านปิดรับออเดอร์แล้ว</h4>
-                        <p class="text-[11px] leading-relaxed opacity-80">ร้านเปิดรับออเดอร์เวลา 10:00 – 20:00 น.
-                            <br>แวะมาดูเมนูไว้ก่อน แล้วพรุ่งนี้มาสั่งกันใหม่นะคะ 😊
-                        </p>
+                        <span class="text-slate-500 text-sm font-medium">ยอดรวม</span>
+                        <div class="text-[10px] text-slate-400" id="cart-items-summary"></div>
+                    </div>
+                    <span class="text-2xl font-extrabold text-emerald-600" id="cart-total-price">฿0</span>
+                </div>
+
+                <!-- ── QR PAYMENT AREA ── -->
+                <div id="qr-container" class="hidden flex-col items-center mb-4 p-4 gap-3">
+
+                    <!-- Back button (mobile/tablet) -->
+                    <button id="back-to-cart-btn" onclick="backToCart()"
+                        class="self-start flex items-center gap-2 text-slate-500 hover:text-emerald-600 text-xs font-semibold px-3 py-1.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors"
+                        style="display:none;">
+                        <i class="fa-solid fa-arrow-left text-[10px]"></i> ย้อนกลับแก้ไข
+                    </button>
+
+                    <p class="text-sm font-extrabold text-emerald-800 flex items-center gap-2">
+                        <i class="fa-solid fa-qrcode"></i> สแกนจ่ายผ่าน Make by KBank
+                    </p>
+
+                    <div
+                        class="bg-rose-50 text-rose-600 px-5 py-2 rounded-full font-extrabold text-sm border border-rose-200 shadow-sm text-center">
+                        กรุณาระบุยอดเงิน: <span id="qr-total-amount" class="text-xl">0</span> บาท
+                    </div>
+
+                    <div
+                        class="bg-white p-2 rounded-2xl shadow-sm border border-emerald-100 w-48 h-48 flex items-center justify-center overflow-hidden">
+                        <img id="make-qr" src="Img/make-qr.jpg" alt="Make QR" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Step guide -->
+                    <div
+                        class="w-full bg-slate-50 rounded-2xl p-3 border border-slate-100 text-[11px] text-slate-600 space-y-1.5">
+                        <div class="flex items-center gap-2"><span
+                                class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">1</span>
+                            เปิดแอปธนาคาร แล้วสแกน QR ด้านบน</div>
+                        <div class="flex items-center gap-2"><span
+                                class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">2</span>
+                            โอนเงินตามยอดที่แสดง แล้วบันทึกสลิป</div>
+                        <div class="flex items-center gap-2"><span
+                                class="w-5 h-5 bg-emerald-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold shrink-0">3</span>
+                            กดปุ่มด้านล่าง เพื่อส่งสลิปยืนยันที่ LINE</div>
+                    </div>
+
+                    <button id="submit-order-btn" onclick="sendOrderToLINE()"
+                        class="line-btn w-full text-white py-3.5 rounded-xl text-sm font-bold transition-all flex justify-center items-center gap-2 shadow-lg">
+                        <i class="fa-brands fa-line text-lg"></i> โอนแล้ว → ส่งสลิปยืนยันที่ LINE
+                    </button>
+                </div>
+
+                <div id="shop-close-banner" class="hidden mb-4 p-4 bg-rose-50 border-2 border-rose-200 rounded-2xl">
+                    <div class="flex items-center gap-3 text-rose-600">
+                        <div
+                            class="w-10 h-10 bg-rose-500 text-white rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                            <i class="fa-solid fa-moon"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-extrabold text-sm">ขณะนี้ร้านปิดรับออเดอร์แล้ว</h4>
+                            <p class="text-[11px] leading-relaxed opacity-80">ร้านเปิดรับออเดอร์เวลา 10:00 – 20:00 น.
+                                <br>แวะมาดูเมนูไว้ก่อน แล้วพรุ่งนี้มาสั่งกันใหม่นะคะ 😊
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- ── CHECKOUT BUTTON ── -->
-            <button id="checkout-btn" onclick="generateQR()"
-                class="w-full btn-primary text-white py-4 rounded-xl font-bold text-sm flex justify-center items-center gap-2 opacity-40 cursor-not-allowed transition-all"
-                disabled>
-                <i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR
-            </button>
+                <!-- ── CHECKOUT BUTTON ── -->
+                <button id="checkout-btn" onclick="generateQR()"
+                    class="w-full btn-primary text-white py-4 rounded-xl font-bold text-sm flex justify-center items-center gap-2 opacity-40 cursor-not-allowed transition-all"
+                    disabled>
+                    <i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR
+                </button>
+            </div>
         </div>
     </div>
 
@@ -285,14 +302,16 @@
     <div id="modal-container" class="fixed inset-0 z-50 flex items-center justify-center hidden">
         <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 opacity-0 cursor-pointer"
             onclick="closeModal()"></div>
+
         <div id="modal-content"
             class="bg-white rounded-3xl shadow-2xl w-[92%] max-w-3xl max-h-[92vh] overflow-hidden flex flex-col md:flex-row relative opacity-0 scale-95 transform">
+
             <button onclick="closeModal()"
                 class="absolute top-4 right-4 z-20 w-9 h-9 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-slate-700 hover:bg-rose-500 hover:text-white transition-colors shadow-sm">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <div
-                class="w-full md:w-2/5 h-56 md:h-auto relative overflow-hidden rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none">
+
+            <div class="w-full md:w-2/5 h-56 md:h-auto relative overflow-hidden shrink-0">
                 <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
                 <div id="modal-badge"
@@ -304,66 +323,87 @@
                     <span id="modal-kcal-val"></span> Kcal
                 </div>
             </div>
-            <div class="w-full md:w-3/5 p-5 md:p-7 flex flex-col overflow-y-auto">
-                <div class="section-label mb-1" id="modal-category-label"></div>
-                <h2 id="modal-title" class="text-2xl font-extrabold text-slate-800 leading-tight mb-1"></h2>
-                <div class="text-2xl font-extrabold text-emerald-600 mb-3" id="modal-price"></div>
-                <p id="modal-desc" class="text-sm text-slate-500 leading-relaxed mb-5"></p>
-                <div class="bg-slate-50 rounded-2xl p-4 mb-5 border border-slate-100" id="nutrition-box">
-                    <div class="flex justify-between items-center mb-3">
-                        <span class="font-bold text-slate-700 text-sm">โภชนาการต่อ 1 เสิร์ฟ</span>
-                        <span
-                            class="text-[10px] text-slate-400 bg-white border border-slate-100 px-2 py-1 rounded-full">%ต่อ
-                            2000 Kcal</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1.5"><span
-                                    class="font-semibold text-slate-600">โปรตีน</span><span id="modal-pro"
-                                    class="text-blue-600 font-bold"></span></div>
-                            <div class="progress-bar-bg">
-                                <div id="bar-pro" class="progress-bar-fill bg-blue-500" style="width:0%"></div>
+
+            <div class="w-full md:w-3/5 flex flex-col flex-1 min-h-0">
+
+                <div class="p-5 md:p-7 flex-1 overflow-y-auto">
+                    <div class="section-label mb-1" id="modal-category-label"></div>
+                    <h2 id="modal-title" class="text-2xl font-extrabold text-slate-800 leading-tight mb-1"></h2>
+                    <div class="text-2xl font-extrabold text-emerald-600 mb-3" id="modal-price"></div>
+                    <p id="modal-desc" class="text-sm text-slate-500 leading-relaxed mb-5"></p>
+
+                    <div class="bg-slate-50 rounded-2xl p-4 mb-5 border border-slate-100" id="nutrition-box">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="font-bold text-slate-700 text-sm">โภชนาการต่อ 1 เสิร์ฟ</span>
+                            <!-- <span class="text-[10px] text-slate-400 bg-white border border-slate-100 px-2 py-1 rounded-full">%ต่อ 2000 Kcal</span> -->
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5"><span
+                                        class="font-semibold text-slate-600">โปรตีน</span><span id="modal-pro"
+                                        class="text-blue-600 font-bold"></span></div>
+                                <div class="progress-bar-bg">
+                                    <div id="bar-pro" class="progress-bar-fill bg-blue-500" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5"><span
+                                        class="font-semibold text-slate-600">คาร์บ</span><span id="modal-carb"
+                                        class="text-amber-600 font-bold"></span></div>
+                                <div class="progress-bar-bg">
+                                    <div id="bar-carb" class="progress-bar-fill bg-amber-500" style="width:0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-xs mb-1.5"><span
+                                        class="font-semibold text-slate-600">ไขมัน</span><span id="modal-fat"
+                                        class="text-rose-600 font-bold"></span></div>
+                                <div class="progress-bar-bg">
+                                    <div id="bar-fat" class="progress-bar-fill bg-rose-500" style="width:0%"></div>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1.5"><span
-                                    class="font-semibold text-slate-600">คาร์บ</span><span id="modal-carb"
-                                    class="text-amber-600 font-bold"></span></div>
-                            <div class="progress-bar-bg">
-                                <div id="bar-carb" class="progress-bar-fill bg-amber-500" style="width:0%"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1.5"><span
-                                    class="font-semibold text-slate-600">ไขมัน</span><span id="modal-fat"
-                                    class="text-rose-600 font-bold"></span></div>
-                            <div class="progress-bar-bg">
-                                <div id="bar-fat" class="progress-bar-fill bg-rose-500" style="width:0%"></div>
-                            </div>
-                        </div>
+                    </div>
+
+                    <div class="mb-2">
+                        <h4 class="font-bold text-slate-700 text-sm mb-2" id="ingredients-title">
+                            <i class="fa-solid fa-basket-wheat text-emerald-500 mr-1"></i> ส่วนประกอบหลัก
+                        </h4>
+                        <div id="modal-ingredients" class="flex flex-wrap gap-1.5"></div>
+                    </div>
+
+                    <div id="modal-addon-section" class="mt-5 space-y-4 empty:hidden"></div>
+
+                    <div id="modal-note-section" class="mt-4 hidden border-t border-slate-100 pt-4">
+                        <label class="block text-[11px] font-bold text-rose-500 mb-1">
+                            <i class="fa-solid fa-triangle-exclamation"></i> แพ้อาหาร / หมายเหตุ (ถ้ามี)
+                        </label>
+                        <input type="text" id="modal-special-note" placeholder="เช่น แพ้กุ้ง, ไม่ใส่แครอท..."
+                            class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
                     </div>
                 </div>
-                <div class="mb-auto">
-                    <h4 class="font-bold text-slate-700 text-sm mb-2" id="ingredients-title">
-                        <i class="fa-solid fa-basket-wheat text-emerald-500 mr-1"></i> ส่วนประกอบหลัก
-                    </h4>
-                    <div id="modal-ingredients" class="flex flex-wrap gap-1.5"></div>
-                </div>
-                <div class="mt-6 flex gap-3">
-                    <div class="flex items-center bg-slate-100 rounded-xl px-1">
-                        <button onclick="updateQty(-1)"
-                            class="w-9 h-9 text-slate-600 hover:text-rose-500 transition-colors flex items-center justify-center"><i
-                                class="fa-solid fa-minus text-xs"></i></button>
-                        <span id="modal-qty" class="w-8 text-center font-extrabold text-slate-800">1</span>
-                        <button onclick="updateQty(1)"
-                            class="w-9 h-9 text-slate-600 hover:text-emerald-500 transition-colors flex items-center justify-center"><i
-                                class="fa-solid fa-plus text-xs"></i></button>
+
+                <div
+                    class="p-4 md:px-7 md:py-5 border-t border-slate-100 bg-white shrink-0 shadow-[0_-4px_10px_rgba(0,0,0,0.02)] z-10">
+                    <div class="flex gap-3">
+                        <div class="flex items-center bg-slate-100 rounded-xl px-1 shrink-0">
+                            <button onclick="updateQty(-1)"
+                                class="w-9 h-9 text-slate-600 hover:text-rose-500 transition-colors flex items-center justify-center">
+                                <i class="fa-solid fa-minus text-xs"></i>
+                            </button>
+                            <span id="modal-qty" class="w-8 text-center font-extrabold text-slate-800">1</span>
+                            <button onclick="updateQty(1)"
+                                class="w-9 h-9 text-slate-600 hover:text-emerald-500 transition-colors flex items-center justify-center">
+                                <i class="fa-solid fa-plus text-xs"></i>
+                            </button>
+                        </div>
+                        <button onclick="confirmAddToCart()"
+                            class="flex-1 btn-dark text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-lg hover:-translate-y-0.5 transition-transform active:scale-95">
+                            <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
+                        </button>
                     </div>
-                    <button onclick="confirmAddToCart()"
-                        class="flex-1 btn-dark text-white py-3 rounded-xl font-bold text-sm flex justify-center items-center gap-2 shadow-lg">
-                        <i class="fa-solid fa-cart-plus"></i> เพิ่มลงตะกร้า
-                    </button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -444,6 +484,55 @@
         <span id="toast-msg" class="font-medium text-sm">เพิ่มลงตะกร้าแล้ว</span>
     </div>
 
+    <!-- Add-ON -->
+    <div id="addon-modal"
+        class="hidden fixed inset-0 z-[60] flex items-end md:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity">
+
+        <div
+            class="bg-white w-full md:w-[500px] h-[85vh] md:h-auto md:max-h-[90vh] rounded-t-3xl md:rounded-3xl flex flex-col shadow-2xl relative animate-slide-up">
+
+            <div class="flex items-center justify-between p-4 md:p-5 border-b border-slate-100 shrink-0">
+                <div>
+                    <h2 id="addon-modal-title" class="text-lg font-extrabold text-slate-800">ชื่อเมนูอาหาร</h2>
+                    <p id="addon-modal-desc" class="text-xs text-slate-500 mt-0.5 line-clamp-1">รายละเอียดเมนู...</p>
+                </div>
+                <button onclick="closeAddonModal()"
+                    class="w-8 h-8 flex items-center justify-center bg-slate-100 hover:bg-rose-100 text-slate-500 hover:text-rose-600 rounded-full transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="addon-options-container" class="flex-1 overflow-y-auto p-4 md:p-5 bg-slate-50 space-y-4">
+            </div>
+
+            <div class="px-4 md:px-5 py-3 bg-white border-t border-slate-100 shrink-0">
+                <label class="block text-[11px] font-bold text-rose-500 mb-1"><i
+                        class="fa-solid fa-triangle-exclamation"></i> แพ้อาหาร / หมายเหตุ (ถ้ามี)</label>
+                <input type="text" id="addon-special-note" placeholder="เช่น แพ้กุ้ง, ไม่ใส่ผักชี..."
+                    class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all">
+            </div>
+
+            <div
+                class="p-4 md:p-5 border-t border-slate-100 bg-white rounded-b-3xl shrink-0 flex items-center justify-between gap-4">
+
+                <div class="flex items-center bg-slate-100 rounded-xl p-1 shrink-0">
+                    <button onclick="updateAddonQty(-1)"
+                        class="w-8 h-8 flex items-center justify-center bg-white rounded-lg text-slate-600 shadow-sm hover:text-emerald-600 font-bold">-</button>
+                    <span id="addon-modal-qty" class="w-8 text-center text-sm font-extrabold text-slate-800">1</span>
+                    <button onclick="updateAddonQty(1)"
+                        class="w-8 h-8 flex items-center justify-center bg-white rounded-lg text-slate-600 shadow-sm hover:text-emerald-600 font-bold">+</button>
+                </div>
+
+                <button onclick="confirmAddonSelection()"
+                    class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-sm shadow-lg shadow-emerald-600/30 transition-transform active:scale-95 flex items-center justify-center gap-2">
+                    เพิ่มลงตะกร้า <span id="addon-modal-total-btn"
+                        class="bg-emerald-800/40 px-2 py-0.5 rounded-md text-xs">฿0</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="bg-slate-900 text-slate-400 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -473,6 +562,9 @@
             &copy; <span id="year"></span> Clean Food Chiang Rai · Designed with ❤️ in Chiang Rai
         </div>
     </footer>
+
+
+
 
     <script src="script.js"></script>
 </body>
