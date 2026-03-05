@@ -185,12 +185,19 @@
 
                     <div class="flex flex-col gap-3">
                         <div class="flex flex-col gap-1.5">
-                            <select id="cust-zone" onchange="updateCartUI()"
-                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-emerald-700 outline-none focus:border-emerald-400 transition-colors cursor-pointer appearance-none">
-                                <option value="5">🛵 ค่าจัดส่งในเขตเมืองเชียงราย (+5฿)</option>
+                            <label class="block text-[11px] font-bold text-slate-700 mb-1">
+                                <i class="fa-solid fa-map-pin text-emerald-500 mr-1"></i> เลือกพื้นที่จัดส่ง
+                            </label>
+                            <select id="cust-zone" onchange="updateDeliveryZone()"
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-700 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-all cursor-pointer">
+                                <option value="">-- เลือกเขตจัดส่ง --</option>
+                                <option value="intown">✅ ในเมือง (สันป่าตอง, ท่าแพ, ศาลากลาง, เวียง) - 15฿</option>
+                                <option value="outtown">🚗 นอกเมือง (บ้านดู่, แม่ฟ้าหลวง, กลางเวียง) - 30฿</option>
+                                <option value="unavailable" disabled>❌ บริการไม่ถึง</option>
                             </select>
-                            <p class="text-[10px] text-slate-400 px-1 font-normal">*ตรวจสอบพื้นที่จัดส่งกับแอดมินได้ทาง
-                                LINE</p>
+                            <span id="cust-zone-err" class="hidden text-[10px] text-rose-500 px-1 font-medium mt-1">
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>กรุณาเลือกพื้นที่จัดส่ง
+                            </span>
                         </div>
 
                         <div class="flex flex-col gap-1.5">
