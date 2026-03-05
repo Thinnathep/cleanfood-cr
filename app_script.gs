@@ -28,8 +28,6 @@ var COLUMNS = [
   "DeliveryStatus", // P  สถานะการส่ง
   "Rider",          // Q  ชื่อไรเดอร์
   "UpdatedAt",      // R  อัปเดตล่าสุด
-  "DeliveryFee",    // S  ค่าจัดส่ง
-  "Zone",           // T  เขตจัดส่ง (intown/outtown)
 ];
 
 // ═══════════════════════════════════════════════════════════
@@ -75,8 +73,6 @@ function doPost(e) {
       "รอส่ง",                        // P - DeliveryStatus
       "",                             // Q - Rider
       timestamp,                      // R - UpdatedAt
-      data.deliveryFee   || 0,        // S - DeliveryFee
-      data.zone          || "",       // T - Zone
     ];
 
     sheet.appendRow(row);

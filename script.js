@@ -13,51 +13,6 @@ const CONFIG = {
 const STORAGE_KEY = "CF_CR_CART_DATA";
 const EXPIRY_TIME = 12 * 60 * 60 * 1000; // 12 ชั่วโมง
 
-// ═══════════════════════════════════════════════════════════
-//  DELIVERY ZONES - ข้อมูลพื้นที่จัดส่งเชียงราย (ยืดหยุ่นได้)
-// ═══════════════════════════════════════════════════════════
-const DELIVERY_ZONES = {
-    intown: {
-        id: "intown",
-        label: "✅ ในเมือง",
-        description: "สันป่าตอง, ท่าแพ, ศาลากลาง, ห้วยแก้ว, เวียง",
-        mapCenter: [19.9071, 99.8310],
-        fee: 15,
-        minOrder: 0,
-        maxDistance: 7, // km
-        icon: "🏙️"
-    },
-    outtown: {
-        id: "outtown",
-        label: "🚗 นอกเมือง",
-        description: "บ้านดู่, แม่ฟ้าหลวง, กลางเวียง",
-        mapCenter: [19.8, 99.8],
-        fee: 30,
-        minOrder: 0,
-        maxDistance: 15, // km
-        icon: "🌄"
-    },
-    unavailable: {
-        id: "unavailable",
-        label: "❌ บริการไม่ถึง",
-        description: "นอกเขตบริการ",
-        fee: 0,
-        minOrder: 0,
-        icon: "🚫"
-    }
-};
-
-// รอบส่ง (Delivery Slots)
-const DELIVERY_SLOTS = [
-    { id: "slot1", label: "🌅 เช้า 11:00 - 13:00 น.", time_start: "11:00", time_end: "13:00" },
-    { id: "slot2", label: "🌆 บ่ายเย็น 16:00 - 18:00 น.", time_start: "16:00", time_end: "18:00" }
-];
-
-// ─── HELPER: ได้ค่าส่งตามเขต ───
-function getDeliveryFee(zone) {
-    return DELIVERY_ZONES[zone]?.fee || 0;
-}
-
 // ─── MENU DATA ─────────────────────────────────────────────
 const menuData = [
     {
@@ -161,38 +116,7 @@ function setFieldError(id, msg) {
     }
 }
 function clearFieldErrors() {
-    ["cust-name", "cust-tel", "cust-slot", "cust-zone"].forEach(id => setFieldError(id, ""));
-}
-
-// ─── UPDATE DELIVERY ZONE ───────────────────────────────────
-function updateDeliveryZone() {
-    const zoneSelect = document.getElementById("cust-zone");
-    const zone = zoneSelect.value;
-    
-    if (!zone) {
-        setFieldError("cust-zone", "กรุณาเลือกพื้นที่จัดส่ง");
-        return;
-    }
-    
-    // ตรวจสอบเขตพิเศษ
-    if (zone === "unavailable") {
-        alert("❌ ขออภัยค่ะ บริการจัดส่งไม่ถึงพื้นที่นี้\n\nสามารถสั่งผ่าน Grab ได้ค่ะ");
-        zoneSelect.value = "";
-        return;
-    }
-    
-    // ปรับแผนที่ให้ไปยังจุดศูนย์กลางของเขต
-    const zoneData = DELIVERY_ZONES[zone];
-    if (zoneData && zoneData.mapCenter && map && marker) {
-        map.setView(zoneData.mapCenter, 13);
-        marker.setLatLng(zoneData.mapCenter);
-    }
-    
-    // Clear error
-    setFieldError("cust-zone", "");
-    
-    // Update UI + Fee
-    updateCartUI();
+    ["cust-name", "cust-tel", "cust-slot"].forEach(id => setFieldError(id, ""));
 }
 
 // ─── วันจัดส่ง (ข้ามวันอาทิตย์ + วันหยุดใน CONFIG.HOLIDAYS) ───
@@ -624,17 +548,8 @@ function updateCartUI() {
 
     cartItemsEl.innerHTML = "";
     let total = 0, totalQty = 0;
-    
-    // คำนวณค่าส่งตามเขตที่เลือก
-    const zoneSelect = document.getElementById("cust-zone");
-    const zone = zoneSelect?.value || "";
-    const deliveryFee = zone ? getDeliveryFee(zone) : 0;
-    
-    // แสดงข้อมูลเขตที่เลือก
-    let zoneLabel = "ยังไม่ได้เลือกพื้นที่";
-    if (zone && DELIVERY_ZONES[zone]) {
-        zoneLabel = DELIVERY_ZONES[zone].label;
-    }
+    const zoneEl = document.getElementById("cust-zone");
+    const deliveryFee = cart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
 
     if (cart.length === 0) {
         cartItemsEl.innerHTML = `
@@ -700,7 +615,16 @@ function updateCartUI() {
                 </div>`;
         });
 
-        if (summaryEl) summaryEl.innerText = `${totalQty} รายการ + ค่าส่ง`;
+        // cartItemsEl.innerHTML += `
+        //     <div class="flex justify-between items-center px-4 py-3 bg-emerald-50 rounded-2xl bo rder border-emerald-100 text-xs mt-2">
+        //         <span class="font-bold text-slate-600">
+        //             <i class="fa-solid fa-truck-fast text-emerald-500 mr-2"></i>
+        //             ค่าจัดส่ง (${deliveryFee === 5 ? 'ในเมือง' : 'นอกเมือง'})
+        //         </span>
+        //         <span class="font-extrabold text-emerald-700 text-sm">฿${deliveryFee}</span>
+        //     </div>`;
+
+        if (summaryEl) summaryEl.innerText = `${totalQty} รายการ (ไม่รวมค่าส่ง)`;
         if (countLabel) countLabel.innerText = `${totalQty} รายการในตะกร้า`;
 
         // ✅ อัปเดตสีแบนเนอร์วันหยุดหลังวาด HTML เสร็จ
@@ -708,19 +632,6 @@ function updateCartUI() {
     }
 
     const grandTotal = total + deliveryFee;
-    
-    // โชว์ค่าส่งแบบ Breakdown
-    if (deliveryFee > 0 && zone) {
-        cartItemsEl.innerHTML += `
-            <div class="flex justify-between items-center px-4 py-3 bg-emerald-50 rounded-2xl border border-emerald-100 text-sm mt-2">
-                <span class="font-semibold text-slate-700">
-                    <i class="fa-solid fa-truck-fast text-emerald-500 mr-2"></i>
-                    ${zoneLabel}
-                </span>
-                <span class="font-extrabold text-emerald-700">+฿${deliveryFee}</span>
-            </div>`;
-    }
-    
     totalEl.innerText = `฿${grandTotal.toLocaleString()}`;
     badge.innerText = totalQty;
     checkFormValidity();
@@ -728,31 +639,35 @@ function updateCartUI() {
 }
 
 function checkFormValidity() {
+    const shopStatus = isShopOpen();
     const name = document.getElementById("cust-name")?.value.trim() || "";
     const tel = document.getElementById("cust-tel")?.value.trim() || "";
     const address = document.getElementById("cust-address")?.value.trim() || "";
     const slot = document.getElementById("cust-slot")?.value || "";
-    const zone = document.getElementById("cust-zone")?.value || "";
     const pdpa = document.getElementById("pdpa-consent")?.checked;
     const btn = document.getElementById("checkout-btn");
     if (!btn) return;
 
     const telOk = isValidThaiPhone(tel);
-    const formFilled = cart.length > 0 && name && telOk && address && slot && zone && pdpa;
+    const formFilled = cart.length > 0 && name && telOk && address && slot && pdpa;
+    const canCheckout = formFilled && shopStatus;
 
-    btn.disabled = !formFilled;
-    btn.classList.toggle("opacity-40", !formFilled);
-    btn.classList.toggle("cursor-not-allowed", !formFilled);
+    btn.disabled = !canCheckout;
+    btn.classList.toggle("opacity-40", !canCheckout);
+    btn.classList.toggle("cursor-not-allowed", !canCheckout);
 
-    btn.innerHTML = formFilled
-        ? `<i class="fa-solid fa-qrcode"></i> สร้าง QR ชำระเงิน`
-        : `<i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR`;
-    
+    if (!shopStatus) {
+        btn.innerHTML = `<i class="fa-solid fa-moon"></i> ร้านปิดแล้ว (เปิด 10:00 - 20:00 น.)`;
+    } else {
+        btn.innerHTML = canCheckout
+            ? `<i class="fa-solid fa-qrcode"></i> สร้าง QR ชำระเงิน`
+            : `<i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR`;
+    }
     if (tel && !telOk) setFieldError("cust-tel", "กรุณากรอกเบอร์โทรให้ถูกต้อง (10 หลัก)");
     else setFieldError("cust-tel", "");
 }
 
-["cust-name", "cust-tel", "cust-slot", "cust-zone", "pdpa-consent"].forEach(id =>
+["cust-name", "cust-tel", "cust-slot", "pdpa-consent"].forEach(id =>
     document.getElementById(id)?.addEventListener("change", checkFormValidity)
 );
 document.getElementById("cust-name")?.addEventListener("input", checkFormValidity);
@@ -879,8 +794,8 @@ async function sendOrderToLINE() {
     const landmark = document.getElementById("cust-landmark").value.trim();
     const slot = document.getElementById("cust-slot").value;
     const note = document.getElementById("cust-note")?.value.trim() || "";
-    const zone = document.getElementById("cust-zone").value;
-    const deliveryFee = getDeliveryFee(zone);
+    const zoneEl = document.getElementById("cust-zone");
+    const deliveryFee = checkoutLockedCart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
     const total = checkoutTotal;
     const cartForSend = checkoutLockedCart;
 
@@ -905,9 +820,6 @@ async function sendOrderToLINE() {
     }).join("\n");
 
     const itemNamesForSheet = cartForSend.map(i => `${i.name} ×${i.qty}${i.addonText ? ` [${i.addonText}]` : ""}`).join(", ");
-    
-    // ได้ป้ายเขตจัดส่ง
-    const zoneLabel = DELIVERY_ZONES[zone]?.label || "ไม่ระบุ";
 
     // สร้างข้อความ "สะอาด" (ไม่มี text=)
     const lineMsg = [
@@ -915,7 +827,7 @@ async function sendOrderToLINE() {
         `──────────────────────`,
         `👤 ${name} | 📱 ${tel}`,
         `🕐 รอบส่ง: ${slot} (${deliveryDateThai})`,
-        `📍 ${zoneLabel} | ${gpsLink}`,
+        `📍 ${gpsLink}`,
         landmark ? `🏠 จุดสังเกต: ${landmark}` : "",
         `──────────────────────`,
         `รายการอาหาร:`,
@@ -961,9 +873,9 @@ async function sendOrderToLINE() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 customerName: name, phone: "'" + tel,
-                address: landmark ? `${landmark} | ${zoneLabel} | พิกัด: ${gpsLink}` : `${zoneLabel} | ${gpsLink}`,
+                address: landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
                 latitude: lat, longitude: lng, deliverySlot: slot, deliveryDate: systemDeliveryDate,
-                orderDetails: itemNamesForSheet, totalAmount: total, deliveryFee: deliveryFee, zone: zone, note: note, source: "web"
+                orderDetails: itemNamesForSheet, totalAmount: total, note: note, source: "web"
             }),
         });
 
