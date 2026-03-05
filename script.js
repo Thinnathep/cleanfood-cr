@@ -894,13 +894,13 @@ async function sendOrderToLINE() {
             `📎 รบกวนแนบสลิปโอนเงินด้วยนะคะ`
         ].filter(Boolean).join("\n");
 
-        // --- ส่วนที่ "ซ่อน" text= ไว้ข้างหลัง ---
         const lineOA = "282ovoyd";
-        const params = new URLSearchParams({ text: lineMsg }); // ใส่ข้อความลงใน Object
+        const encodedMsg = encodeURIComponent(lineMsg);
 
-        // ตัวลิงก์จะถูกสร้างแบบ Dynamic ไม่ต้องเขียน text= เองให้รกตา
-        const lineAppWithMsg = `line://oaMessage/@${lineOA}?${params.toString()}`;
-        const lineWebWithMsg = `https://line.me/R/oaMessage/@${lineOA}/?${params.toString()}`;
+        // ✅ ใช้ line://send?text= เพื่อให้ LINE เปิด Send dialog
+        // (ไม่ใช้ oaMessage/@OA?text= เพราะ LINE OA ไม่รองรับ text parameter)
+        const lineAppWithMsg = `line://send?text=${encodedMsg}`;
+        const lineWebWithMsg = `https://line.me/R/msg/text/${encodedMsg}`;
         const lineAddFriend = `https://line.me/R/ti/p/@${lineOA}`;
 
         // ✅ เคลียร์ตะกร้าก่อนแสดง popup
