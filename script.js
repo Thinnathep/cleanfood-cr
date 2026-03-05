@@ -842,8 +842,20 @@ async function sendOrderToLINE() {
     // --- 2. ขั้นตอนยืนยันชำระเงิน ---
     const confirmResult = await SwalBase.fire({
         title: '💳 ยืนยันการชำระเงิน',
-        html: `<div style="text-align:left; font-size:13px;">... (เนื้อหา Swal เดิม) ... 💰 ยอดที่โอน: ฿${total.toLocaleString()}</div>`,
+        html: `
+            <div style="font-size:13px; line-height:2; text-align:left">
+                <div style="background:#fef9c3; border:1px solid #fde047; border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+                    <b style="font-size:14px;">🎯 ขั้นตอนการยืนยันชำระเงิน</b><br>
+                    ✔️ ชำระเงินผ่าน QR Code สำเร็จ<br>
+                    💾 บันทึกหลักฐานการโอน (สลิป) เรียบร้อย<br>
+                    📲 ระบบจะนำท่านเข้าสู่แชทร้านเพื่อส่งสลิปค่ะ
+                </div>
+            </div>
+            <div style="margin-top:12px; background:#ecfdf5; border-radius:12px; padding:10px; font-weight:800; color:#15803d; font-size:16px; border:2px solid #86efac;">
+                💰 ยอดที่โอน: ฿${total.toLocaleString()}
+            </div>`,
         confirmButtonText: 'โอนแล้ว ส่งสลิปที่ LINE',
+        cancelButtonText: 'ยังไม่ได้โอน',
         showCancelButton: true,
         reverseButtons: true,
     });
@@ -885,8 +897,44 @@ async function sendOrderToLINE() {
         await SwalBase.fire({
             title: '✅ ออเดอร์บันทึกแล้ว!',
             html: `
-                <div style="font-size:13px; text-align:left;">
-                    ... (เนื้อหา Swal พร้อม textarea ที่ใช้ lineMsg) ...
+                <div style="font-size:13px; text-align:left; line-height:1.8;">
+                    <div style="background:#ecfdf5; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:14px;">
+                        <b>📋 ขั้นตอนการส่งออเดอร์:</b><br>
+                        <div style="font-size:11px; margin-top:8px; line-height:2;">
+                            <div>✅ <strong style="color:#15803d;">1. คัดลอกข้อความ</strong> (ด้านล่าง)</div>
+                            <div>📱 <strong>2. เปิด LINE OA</strong></div>
+                            <div>📝 <strong>3. วางข้อความ + ส่ง</strong></div>
+                        </div>
+                    </div>
+                    <textarea id="msg-box" readonly style="width:100%; height:120px; padding:10px; font-size:11px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; font-family:Prompt,monospace; resize:none; color:#475569; line-height:1.4; word-wrap:break-word; overflow-y:auto;">${lineMsg}</textarea>
+                    <div style="display:flex; gap:8px; margin-top:14px;">
+                        <button onclick="
+                            const msgBox = document.getElementById('msg-box');
+                            navigator.clipboard.writeText(msgBox.value).then(function(){
+                                var btn = event.target;
+                                btn.innerHTML = '✅ คัดลอกแล้ว!';
+                                btn.style.background = '#dcfce7';
+                                btn.style.color = '#15803d';
+                                btn.style.borderColor = '#86efac';
+                                setTimeout(function(){
+                                    btn.innerHTML = '📋 คัดลอก';
+                                    btn.style.background = '#f1f5f9';
+                                    btn.style.color = '#334155';
+                                    btn.style.borderColor = '#e2e8f0';
+                                }, 2000);
+                                document.getElementById('line-open-btn').disabled = false;
+                            }).catch(function(){
+                                alert('ไม่สามารถคัดลอกได้ กรุณา select ทั้งหมด แล้ว copy เอง');
+                            });
+                        " style="flex:1; padding:12px; background:#f1f5f9; color:#334155; border:1.5px solid #e2e8f0; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;">
+                            📋 คัดลอก
+                        </button>
+                        <button id="line-open-btn" onclick="window.open('${lineAddFriend}', '_blank'); Swal.close();"
+                            style="flex:1; padding:12px; background:#06c755; color:white; border:none; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                            📱 เปิด LINE OA
+                        </button>
+                    </div>
+                 
                 </div>`,
             showConfirmButton: false,
             showCloseButton: true,
