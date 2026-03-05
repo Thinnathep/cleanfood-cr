@@ -907,8 +907,10 @@ async function sendOrderToLINE() {
         btn.innerHTML = originalHTML;
         btn.disabled = false;
 
+        // ✅ เก็บข้อความไว้ก่อน เพื่อ copy ตรงจากตัวแปร
+        const msgForCopy = lineMsg;
+        
         // แสดง Swal ให้ผู้ใช้คัดลอกข้อความและเปิด LINE
-        let isCopied = false;
         await SwalBase.fire({
             title: '✅ ออเดอร์บันทึกแล้ว!',
             html: `
@@ -916,46 +918,52 @@ async function sendOrderToLINE() {
                     <div style="background:#ecfdf5; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:14px;">
                         <b>📋 ขั้นตอนการส่งออเดอร์:</b><br>
                         <div style="font-size:11px; margin-top:8px; line-height:2;">
-                            <div>✅ <strong style="color:#15803d;">1. คัดลอกข้อความ</strong> (ด้านล่าง)</div>
+                            <div>✅ <strong style="color:#15803d;">1. คัดลอกข้อความ</strong></div>
                             <div>📱 <strong>2. เปิด LINE OA</strong></div>
                             <div>📝 <strong>3. วางข้อความ + ส่ง</strong></div>
                         </div>
                     </div>
-                    <textarea id="msg-box" readonly style="width:100%; height:120px; padding:10px; font-size:11px; border:1px solid #e2e8f0; border-radius:10px; background:#f8fafc; font-family:Prompt,monospace; resize:none; color:#475569; line-height:1.4; word-wrap:break-word; overflow-y:auto;">${lineMsg}</textarea>
-                    <div style="display:flex; gap:8px; margin-top:14px;">
-                        <button onclick="
-                            const msgBox = document.getElementById('msg-box');
-                            navigator.clipboard.writeText(msgBox.value).then(function(){
-                                var btn = event.target;
-                                btn.innerHTML = '✅ คัดลอกแล้ว!';
-                                btn.style.background = '#dcfce7';
-                                btn.style.color = '#15803d';
-                                btn.style.borderColor = '#86efac';
-                                setTimeout(function(){
-                                    btn.innerHTML = '📋 คัดลอก';
-                                    btn.style.background = '#f1f5f9';
-                                    btn.style.color = '#334155';
-                                    btn.style.borderColor = '#e2e8f0';
-                                }, 2000);
-                                document.getElementById('line-open-btn').disabled = false;
-                            }).catch(function(){
-                                alert('ไม่สามารถคัดลอกได้ กรุณา select ทั้งหมด แล้ว copy เอง');
-                            });
-                        " style="flex:1; padding:12px; background:#f1f5f9; color:#334155; border:1.5px solid #e2e8f0; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;">
-                            📋 คัดลอก
+                    <div style="display:flex; gap:8px; margin-bottom:14px;">
+                        <button id="copy-msg-btn" style="flex:1; padding:12px; background:#f1f5f9; color:#334155; border:1.5px solid #e2e8f0; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.2s;">
+                            📋 คัดลอกข้อความ
                         </button>
                         <button id="line-open-btn" onclick="window.open('${lineAddFriend}', '_blank'); Swal.close();"
                             style="flex:1; padding:12px; background:#06c755; color:white; border:none; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
                             📱 เปิด LINE OA
                         </button>
                     </div>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; font-size:11px; color:#475569; line-height:1.5; max-height:150px; overflow-y:auto; white-space:pre-wrap; word-break:break-word; font-family:monospace; user-select:all;">
+${msgForCopy}
+                    </div>
                     <div style="background:#fef9c3; border:1px solid #fde047; border-radius:10px; padding:10px 12px; font-size:11px; color:#713f12; margin-top:12px;">
-                        <b>💡 เคล็ดลับ:</b> ถ้าปลายนิ้วไม่พอ ให้ triple-click ที่ช่องข้อความ แล้ว Ctrl+C เอง
+                        <b>💡 เคล็ดลับ:</b> ถ้าคัดลอกปุ่มไม่ได้ ลอง select text ด้านบน แล้ว Ctrl+C เอง
                     </div>
                 </div>`,
             showConfirmButton: false,
             showCloseButton: true,
             width: 450,
+            didOpen: (modal) => {
+                // ✅ จับ click button โดยตรง (ไม่ใช้ onclick inline)
+                document.getElementById('copy-msg-btn').addEventListener('click', async function() {
+                    try {
+                        await navigator.clipboard.writeText(msgForCopy);
+                        // ✅ สำเร็จ แสดง feedback
+                        const btn = this;
+                        btn.innerHTML = '✅ คัดลอกแล้ว!';
+                        btn.style.background = '#dcfce7';
+                        btn.style.color = '#15803d';
+                        btn.style.borderColor = '#86efac';
+                        setTimeout(() => {
+                            btn.innerHTML = '📋 คัดลอกข้อความ';
+                            btn.style.background = '#f1f5f9';
+                            btn.style.color = '#334155';
+                            btn.style.borderColor = '#e2e8f0';
+                        }, 2000);
+                    } catch (err) {
+                        alert('❌ ไม่สามารถคัดลอกได้\n\nกรุณา select ข้อความในช่องด้านบน แล้ว Ctrl+C เอง');
+                    }
+                });
+            }
         }).then(() => {
             window.location.reload();
         });
