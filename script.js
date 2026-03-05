@@ -913,66 +913,39 @@ async function sendOrderToLINE() {
         btn.innerHTML = originalHTML;
         btn.disabled = false;
 
-        const safeMsgEncoded = encodeURIComponent(lineMsg).replace(/'/g, "%27");
+        // เปิด LINE ทันที
+        window.open(lineAppWithMsg, '_blank');
+        setTimeout(() => {
+            if (!document.hasFocus()) {
+                window.open(lineWebWithMsg, '_blank');
+            }
+        }, 1500);
 
+        // แสดงแจ้งเตือน
         await SwalBase.fire({
-            title: '✅ บันทึกออเดอร์แล้ว!',
+            title: '✅ ส่งออเดอร์แล้ว!',
             html: `
                 <div style="font-size:13px; text-align:left; line-height:1.8;">
-
-                    <button id="cf-copy-btn"
-                        onclick="
-                            var msg = decodeURIComponent('${safeMsgEncoded}');
-                            navigator.clipboard.writeText(msg).then(function(){
-                                var b = document.getElementById('cf-copy    -btn');
-                                b.innerHTML = '✅ คัดลอกแล้ว!';
-                                b.style.background = '#dcfce7';
-                                b.style.color = '#15803d';
-                                b.style.borderColor = '#86efac';
-                                setTimeout(function(){
-                                    b.innerHTML = '📋 คัดลอกข้อความออเดอร์';
-                                    b.style.background = '#f8fafc';
-                                    b.style.color = '#334155';
-                                    b.style.borderColor = '#94a3b8';
-                                }, 3000);
-                            }).catch(function(){
-                                prompt('เบราว์เซอร์ไม่รองรับคัดลอกอัตโนมัติ รบกวนก๊อปปี้ด้านล่างนี้ค่ะ:', msg);
-                            });
-                        "
-                        style="width:100%; padding:12px; border:2px dashed #94a3b8; border-radius:12px; background:#f8fafc; color:#334155; font-size:13px; font-weight:700; cursor:pointer; margin-bottom:14px; transition:all 0.2s;">
-                        📋 คัดลอกข้อความออเดอร์
-                    </button>
-
+                    <div style="background:#ecfdf5; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+                        <b>📲 เปิด LINE แล้ว!</b><br>
+                        กรุณาส่งข้อความที่รออยู่ในแชทร้าน และแนบสลิปโอนเงินด้วยนะคะ
+                    </div>
                     <div style="background:#fef9c3; border:1px solid #fde047; border-radius:10px; padding:10px 12px; font-size:12px; color:#713f12; margin-bottom:14px;">
-                        <b>📌 วิธีส่งออเดอร์ให้ร้าน:</b><br>
-                        <b>① เป็นเพื่อนแล้ว</b> → กด "เปิด LINE ส่งเลย"<br>
-                        &nbsp;&nbsp;&nbsp;ข้อความจะรออยู่ในแชท กดส่งได้เลย<br>
-                        <b>② ยังไม่เป็นเพื่อน</b> → กด "คัดลอก" ด้านบนก่อน<br>
-                        &nbsp;&nbsp;&nbsp;→ กด "เพิ่มเพื่อน" → วางข้อความในแชท
+                        <b>📌 ถ้า LINE ไม่เปิด:</b><br>
+                        - ตรวจสอบว่าได้ติดตั้งแอป LINE แล้ว<br>
+                        - หรือกดปุ่มด้านล่างเพื่อเพิ่มเพื่อนร้าน
                     </div>
-
-                    <div style="display:flex; gap:8px;">
-                        <button onclick="
-                            window.location.href = '${lineAppWithMsg}';
-                            setTimeout(function(){ if(document.hasFocus()) window.open('${lineWebWithMsg}','_blank'); }, 1500);
-                            Swal.close();
-                        " style="flex:1; padding:12px 8px; background:#06c755; color:white; border:none; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-                            เปิด LINE ส่งเลย
-                        </button>
-                        <button onclick="
-                            window.open('${lineAddFriend}', '_blank');
-                            Swal.close();
-                        " style="flex:1; padding:12px 8px; background:#f1f5f9; color:#334155; border:1.5px solid #e2e8f0; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer;">
-                            ➕ เพิ่มเพื่อนก่อน
-                        </button>
-                    </div>
+                    <button onclick="window.open('${lineAddFriend}', '_blank'); Swal.close();"
+                        style="width:100%; padding:12px; background:#f1f5f9; color:#334155; border:1.5px solid #e2e8f0; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer;">
+                        ➕ เพิ่มเพื่อนร้าน (ถ้ายังไม่ได้เป็นเพื่อน)
+                    </button>
                 </div>`,
             showConfirmButton: false,
             showCloseButton: true,
+            timer: 10000, // ปิดอัตโนมัติใน 10 วินาที
+            timerProgressBar: true,
             width: 400,
         }).then(() => {
-            // เมื่อปิด Popup (ไม่ว่าจะกดปุ่ม LINE หรือกดกากบาท) หน้าเว็บจะรีเฟรชกลับเป็นค่าเริ่มต้น
             window.location.reload();
         });
 
