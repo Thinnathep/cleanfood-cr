@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════════════════════
 //  Clean Food Chiang Rai · Google Apps Script
-//  Version 2.0 — ปรับปรุงโครงสร้าง + ค้นหาออเดอร์ + LINE notify
+//  Version 2.0 — ปรับปรุงโครงสร้าง + ค้นหาคำสั่งซื้อ + LINE notify
 // ═══════════════════════════════════════════════════════════
 
 // ─── CONFIG ────────────────────────────────────────────────
@@ -10,10 +10,10 @@ var SHOP_NAME    = "Clean Food Chiang Rai";
 
 // คอลัมน์ใน Sheet (ตรงตามลำดับนี้เป๊ะ)
 var COLUMNS = [
-  "OrderID",        // A  รหัสออเดอร์ อัตโนมัติ
+  "OrderID",        // A  รหัสคำสั่งซื้อ อัตโนมัติ
   "Timestamp",      // B  วันเวลาที่สั่ง
   "CustomerName",   // C  ชื่อลูกค้า
-  "Phone",          // D  เบอร์โทร
+  "Phone",          // D  หมายเลขโทรศัพท์
   "DeliverySlot",   // E  รอบส่ง
   "DeliveryDate",   // F  วันที่ส่ง (อัตโนมัติ = วันถัดไป)
   "Address",        // G  ที่อยู่ + พิกัด
@@ -31,7 +31,7 @@ var COLUMNS = [
 ];
 
 // ═══════════════════════════════════════════════════════════
-//  doPost — รับออเดอร์ใหม่
+//  doPost — รับคำสั่งซื้อใหม่
 // ═══════════════════════════════════════════════════════════
 function doPost(e) {
   try {
@@ -95,7 +95,7 @@ function doPost(e) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  doGet — ค้นหาออเดอร์ (สำหรับ Order Tracker หน้าเว็บ)
+//  doGet — ค้นหาคำสั่งซื้อ (สำหรับ Order Tracker หน้าเว็บ)
 // ═══════════════════════════════════════════════════════════
 function doGet(e) {
   try {
@@ -123,7 +123,7 @@ function doGet(e) {
 //  HELPERS
 // ═══════════════════════════════════════════════════════════
 
-// ─── ค้นหาออเดอร์ด้วย OrderID หรือ Phone ─────────────────
+// ─── ค้นหาคำสั่งซื้อด้วย OrderID หรือ Phone ─────────────────
 function findOrder(query) {
   var ss    = SpreadsheetApp.getActiveSpreadsheet();
   var sheet = ss.getSheetByName(SHEET_NAME);
@@ -244,7 +244,7 @@ function sendLineNotify(data, orderId, deliveryDate) {
   try {
     var msg = [
       "",
-      "🛒 ออเดอร์ใหม่! — " + SHOP_NAME,
+      "🛒 คำสั่งซื้อใหม่! — " + SHOP_NAME,
       "ID: " + orderId,
       "👤 " + data.customerName + " (" + data.phone + ")",
       "🕐 " + data.deliverySlot + " | 📅 ส่ง " + deliveryDate,

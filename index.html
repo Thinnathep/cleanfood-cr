@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Clean Food Chiang Rai | สุขภาพดี ส่งถึงบ้าน</title>
-<link rel="icon" type="Img/png" href="Img/1000035104.png">
+    <link rel="icon" type="Img/png" href="Img/1000035104.png">
 
-<link rel="shortcut icon" type="Img/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="Img/x-icon" href="favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
@@ -26,7 +26,7 @@
 <body class="flex flex-col min-h-screen">
 
 
-    <header class="glass-header sticky top-0 z-40"> 
+    <header class="glass-header sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 sm:h-20">
                 <div class="flex flex-col justify-center">
@@ -76,17 +76,17 @@
     <div id="top-announcement"
         class="bg-amber-50 border-b border-amber-100 py-2 px-4 text-center transition-all duration-500">
         <p id="announcement-text" class="text-[11px] text-amber-800 font-medium">
-            🚀 สั่งล่วงหน้า 1 วัน | 🛵 หิวจนทนไม่ไหว?
+            🚀 สั่งล่วงหน้า 1 วัน | 🛵 หากต้องการสั่งด่วน?
             <a href="javascript:void(0)" onclick="openGrabSearch()"
                 class="underline font-bold text-emerald-600 cursor-pointer"> สั่งเลย Grab </a> 📦
-            | ส่งในเขตเมืองเชียงราย
+            <!-- | ส่งในเขตเมืองเชียงราย -->
         </p>
     </div>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
             <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold" data-filter="all">
-                <i class="fa-solid fa-border-all mr-1"></i> ทั้งหมด
+                <i class="fa-solid fa-border-all mr-1"></i> ทุกเมนู
             </button>
 
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="chicken">🍗
@@ -119,9 +119,9 @@
         <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
             <div>
                 <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-basket-shopping text-emerald-500"></i> ตะกร้าของคุณ
+                    <i class="fa-solid fa-basket-shopping text-emerald-500"></i> รายการสั่งซื้อของคุณ
                 </h2>
-                <p id="cart-item-count-label" class="text-xs text-slate-400 mt-0.5">รายการสินค้า</p>
+                <p id="cart-item-count-label" class="text-xs text-slate-400 mt-0.5">จำนวนรายการ</p>
             </div>
             <button onclick="toggleCart()"
                 class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 hover:text-rose-500 hover:bg-rose-50 flex items-center justify-center transition-colors">
@@ -175,20 +175,27 @@
                             </span>
                         </div>
                         <div class="flex flex-col gap-1.5">
-                            <input type="tel" id="cust-tel" placeholder="เบอร์โทรศัพท์"
+                            <input type="tel" id="cust-tel" placeholder="หมายเลขโทรศัพท์ศัพท์"
                                 class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-normal text-slate-600 outline-none focus:border-emerald-400 transition-all placeholder:text-slate-300">
                             <span id="cust-tel-err" class="hidden text-[10px] text-rose-500 px-1 font-medium">
-                                <i class="fa-solid fa-circle-exclamation mr-1"></i>เบอร์โทรไม่ถูกต้อง
+                                <i class="fa-solid fa-circle-exclamation mr-1"></i>หมายเลขโทรศัพท์ไม่ถูกต้อง
                             </span>
                         </div>
                     </div>
 
                     <div class="flex flex-col gap-3">
                         <div class="flex flex-col gap-1.5">
+                            <label class="text-[11px] font-bold text-slate-700 px-1">📍 เขตพื้นที่จัดส่ง</label>
                             <select id="cust-zone" onchange="updateCartUI()"
-                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-emerald-700 outline-none focus:border-emerald-400 transition-colors cursor-pointer appearance-none">
-                                <option value="5">🛵 ค่าจัดส่งในเขตเมืองเชียงราย (+5฿)</option>
+                                class="w-full px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-700 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition-colors cursor-pointer appearance-none">
+                                <option value="">-- เลือกเขตพื้นที่ --</option>
+                                <option value="inner_city">🏙️ ในเมืองเชียงราย (ตัวเมือง)</option>
+                                <option value="sankhlong_viang">🏞️ เส้นกลางเวียง</option>
+                                <option value="ban_du">🌄 บ้านดู่</option>
+                                <option value="mae_fah_luang">⛰️ แม่ฟ้าหลวง</option>
                             </select>
+                            <div class="text-[10px] text-emerald-600 px-1 font-medium" id="delivery-fee-display">ค่าส่ง:
+                                กรุณาเลือกเขต</div>
                             <p class="text-[10px] text-slate-400 px-1 font-normal">*ตรวจสอบพื้นที่จัดส่งกับแอดมินได้ทาง
                                 LINE</p>
                         </div>
@@ -282,8 +289,8 @@
                             <i class="fa-solid fa-moon"></i>
                         </div>
                         <div>
-                            <h4 class="font-extrabold text-sm">ขณะนี้ร้านปิดรับออเดอร์แล้ว</h4>
-                            <p class="text-[11px] leading-relaxed opacity-80">ร้านเปิดรับออเดอร์เวลา 10:00 – 20:00 น.
+                            <h4 class="font-extrabold text-sm">ขณะนี้ร้านปิดรับคำสั่งซื้อแล้ว</h4>
+                            <p class="text-[11px] leading-relaxed opacity-80">ร้านเปิดรับคำสั่งซื้อเวลา 10:00 – 20:00 น.
                                 <br>แวะมาดูเมนูไว้ก่อน แล้วพรุ่งนี้มาสั่งกันใหม่นะคะ 😊
                             </p>
                         </div>
@@ -294,7 +301,7 @@
                 <button id="checkout-btn" onclick="generateQR()"
                     class="w-full btn-primary text-white py-4 rounded-xl font-bold text-sm flex justify-center items-center gap-2 opacity-40 cursor-not-allowed transition-all"
                     disabled>
-                    <i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR
+                    <i class="fa-solid fa-qrcode"></i> กรุณากรอกข้อมูลให้ครบถ้วนเพื่อสร้าง QR ชำระเงิน
                 </button>
             </div>
         </div>
@@ -421,8 +428,8 @@
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
             <h3 class="text-lg font-extrabold text-slate-800 mb-1"><i
-                    class="fa-solid fa-clock-rotate-left text-emerald-500 mr-2"></i>ติดตามออเดอร์</h3>
-            <p class="text-xs text-slate-400 mb-5">กรอกเบอร์โทรหรือรหัสออเดอร์ของคุณ</p>
+                    class="fa-solid fa-clock-rotate-left text-emerald-500 mr-2"></i>ติดตามคำสั่งซื้อ</h3>
+            <p class="text-xs text-slate-400 mb-5">กรอกหมายเลขโทรศัพท์หรือรหัสคำสั่งซื้อของคุณ</p>
             <div class="flex gap-2 mb-4">
                 <input type="text" id="tracker-input" placeholder="เช่น 0812345678 หรือ CF-260303..."
                     class="flex-1 px-4 py-2.5 bg-slate-100 rounded-xl text-sm outline-none focus:bg-white focus:ring-2 focus:ring-emerald-100 border border-transparent focus:border-emerald-300 transition-all">
@@ -451,28 +458,77 @@
 
     <!-- PDPA MODAL -->
     <div id="pdpa-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-md p-6 relative z-10 transform scale-95 opacity-0 transition-all duration-300"
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
+
+        <div class="bg-white rounded-3xl shadow-2xl w-[90%] max-w-md max-h-[85vh] flex flex-col relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden"
             id="pdpa-content">
-            <button onclick="closePDPAModal()"
-                class="absolute top-4 right-4 w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-rose-500 transition-colors">
-                <i class="fa-solid fa-xmark text-sm"></i>
-            </button>
-            <h3 class="text-base font-extrabold text-slate-800 mb-4">
-                <i class="fa-solid fa-shield-halved text-emerald-500 mr-2"></i>นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)
-            </h3>
-            <div class="text-xs text-slate-600 space-y-3 h-56 overflow-y-auto pr-1 leading-relaxed">
-                <p><strong>1. วัตถุประสงค์:</strong> ร้าน Clean Food Chiang Rai
-                    เก็บข้อมูลเพื่อใช้ในการจัดส่งอาหารและติดต่อเรื่องออเดอร์เท่านั้น</p>
-                <p><strong>2. ข้อมูลที่เก็บ:</strong> ชื่อ เบอร์โทร พิกัดที่อยู่ รายละเอียดออเดอร์</p>
-                <p><strong>3. การรักษาความปลอดภัย:</strong> ข้อมูลจะถูกเก็บเป็นความลับ
-                    ไม่มีการขายหรือส่งต่อให้บุคคลที่สาม</p>
-                <p><strong>4. สิทธิของเจ้าของข้อมูล:</strong> ท่านสามารถขอดู แก้ไข หรือลบข้อมูลได้ตลอดเวลาผ่าน LINE OA
-                    ของร้าน</p>
-                <p><strong>5. ระยะเวลาเก็บข้อมูล:</strong> 1 ปี นับจากวันที่สั่งซื้อ</p>
+
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
+                <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2.5">
+                    <div
+                        class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-scale-balanced text-sm"></i>
+                    </div>
+                    ประกาศความเป็นส่วนตัว (PDPA)
+                </h3>
+                <button onclick="closePDPAModal()"
+                    class="w-8 h-8 bg-slate-50 hover:bg-rose-50 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <button onclick="closePDPAModal()"
-                class="w-full mt-4 btn-primary text-white py-3 rounded-xl font-bold text-sm">รับทราบและปิด</button>
+
+            <div class="p-5 flex-1 overflow-y-auto bg-slate-50/50">
+                <p class="text-xs text-slate-700 font-medium mb-4 leading-relaxed">
+                    ร้าน <strong class="text-emerald-700">Clean Food Chiang Rai</strong> ("ผู้ควบคุมข้อมูลส่วนบุคคล")
+                    ตระหนักถึงความสำคัญของการคุ้มครองข้อมูลส่วนบุคคลของท่าน นโยบายฉบับนี้จัดทำขึ้นเพื่อให้สอดคล้องกับ
+                    <strong>พระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA)</strong>
+                </p>
+
+                <div
+                    class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-4 text-xs text-slate-600 leading-relaxed">
+
+                    <div>
+                        <strong class="text-slate-800 block mb-1">1.ข้อมูลส่วนบุคคลที่เก็บรวบรวม</strong>
+                        ผู้ควบคุมข้อมูลฯ มีความจำเป็นต้องเก็บข้อมูลของท่าน ได้แก่ ชื่อ-นามสกุล, เบอร์โทรศัพท์,
+                        ที่อยู่จัดส่ง, พิกัด GPS และรายละเอียดคำสั่งซื้อ
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-3">
+                        <strong class="text-slate-800 block mb-1">2.วัตถุประสงค์และฐานทางกฎหมาย</strong>
+                        ประมวลผลภายใต้ <span class="text-emerald-600 font-semibold">ฐานสัญญา (Contractual Basis)</span>
+                        เพื่อจัดส่งสินค้า และ <span
+                            class="text-emerald-600 font-semibold">ฐานประโยชน์โดยชอบด้วยกฎหมาย</span> เพื่อพัฒนาบริการ
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-3">
+                        <strong class="text-slate-800 block mb-1">3.การเปิดเผยข้อมูลส่วนบุคคล</strong>
+                        เก็บรักษาเป็นความลับอย่างเคร่งครัด จะไม่เปิดเผยแก่บุคคลที่สาม <u>ยกเว้นผู้ให้บริการจัดส่ง
+                            (Rider)</u> เฉพาะข้อมูลที่จำเป็นต่อการส่งอาหารเท่านั้น
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-3">
+                        <strong class="text-slate-800 block mb-1">4.ระยะเวลาเก็บรักษา (Retention Period)</strong>
+                        เก็บรักษาไว้สูงสุด <strong>1 ปี</strong> นับจากคำสั่งซื้อล่าสุด เมื่อพ้นกำหนด
+                        ระบบจะทำลายข้อมูลของท่านอย่างถาวร
+                    </div>
+
+                    <div class="border-t border-slate-100 pt-3">
+                        <strong class="text-slate-800 block mb-1">5.สิทธิของเจ้าของข้อมูล (Data Subject
+                            Rights)</strong>
+                        ท่านมีสิทธิขอเข้าถึง แก้ไข ขอให้ลบ (Right to be Forgotten) หรือเพิกถอนความยินยอมได้ตลอดเวลา
+                        ผ่านช่องทาง <strong>LINE OA ของร้าน</strong>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t border-slate-100 shrink-0">
+                <button onclick="closePDPAModal()"
+                    class="w-full bg-slate-900 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95">
+                    ข้าพเจ้าได้อ่านและยอมรับเงื่อนไข
+                </button>
+            </div>
+
         </div>
     </div>
 
@@ -547,7 +603,7 @@
             <div>
                 <h3 class="text-white font-bold text-sm mb-3">เวลาทำการ</h3>
                 <div class="text-sm space-y-1">
-                    <p>🕙 รับออเดอร์: 10:00–20:00 น.</p>
+                    <p>🕙 รับคำสั่งซื้อ: 10:00–20:00 น.</p>
                     <p>🚀 จัดส่งรอบเที่ยง: 11:00–13:00 น.</p>
                     <p>🌅 จัดส่งรอบเย็น: 16:00–18:00 น.</p>
                 </div>
@@ -556,7 +612,7 @@
                 <h3 class="text-white font-bold text-sm mb-3">ติดต่อเรา</h3>
                 <a href="https://line.me/R/ti/p/@282ovoyd" target="_blank"
                     class="inline-flex items-center gap-2 bg-[#00B900] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#009900] transition-colors">
-                    <i class="fa-brands fa-line"></i> LINE OA: @282ovoyd
+                    <i class="fa-brands fa-line"></i> LINE Official Account: @282ovoyd
                 </a>
             </div>
         </div>

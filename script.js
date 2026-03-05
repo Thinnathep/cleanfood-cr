@@ -10,6 +10,14 @@ const CONFIG = {
     ],
 };
 
+// ─── DELIVERY ZONES ────────────────────────────────────────
+const DELIVERY_ZONES = {
+    inner_city: { name: "ในเมืองเชียงราย (ตัวเมือง)", fee: 20 },
+    sankhlong_viang: { name: "เส้นกลางเวียง", fee: 40 },
+    ban_du: { name: "บ้านดู่", fee: 60 },
+    mae_fah_luang: { name: "แม่ฟ้าหลวง", fee: 70 },
+};
+
 const STORAGE_KEY = "CF_CR_CART_DATA";
 const EXPIRY_TIME = 12 * 60 * 60 * 1000; // 12 ชั่วโมง
 
@@ -156,10 +164,10 @@ function updateDateTime() {
     const badge = document.getElementById("shop-status-badge");
     if (badge) {
         if (shopStatus) {
-            badge.innerText = "● เปิดรับออเดอร์";
+            badge.innerText = "● เปิดรับคำสั่งซื้อ";
             badge.className = "text-[9px] px-2 py-0.5 rounded-full font-bold leading-none bg-emerald-100 text-emerald-600 border border-emerald-200";
         } else {
-            badge.innerText = "● ปิดรับออเดอร์ (เปิด 10:00)";
+            badge.innerText = "● ปิดรับคำสั่งซื้อ (เปิด 10:00)";
             badge.className = "text-[9px] px-2 py-0.5 rounded-full font-bold leading-none bg-rose-100 text-rose-600 border border-rose-200";
         }
     }
@@ -549,7 +557,22 @@ function updateCartUI() {
     cartItemsEl.innerHTML = "";
     let total = 0, totalQty = 0;
     const zoneEl = document.getElementById("cust-zone");
-    const deliveryFee = cart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
+    const selectedZone = zoneEl?.value || "";
+    const deliveryFee = cart.length > 0 && selectedZone && DELIVERY_ZONES[selectedZone]
+        ? DELIVERY_ZONES[selectedZone].fee
+        : 0;
+
+    // อัปเดตข้อความแสดงค่าส่ง
+    const feeDisplayEl = document.getElementById("delivery-fee-display");
+    if (feeDisplayEl) {
+        if (!selectedZone) {
+            feeDisplayEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i>กรุณาเลือกเขตการจัดส่ง`;
+            feeDisplayEl.className = "text-[10px] text-amber-600 px-1 font-medium";
+        } else if (DELIVERY_ZONES[selectedZone]) {
+            feeDisplayEl.innerHTML = `✓ ค่าส่ง: <strong>฿${DELIVERY_ZONES[selectedZone].fee}</strong>`;
+            feeDisplayEl.className = "text-[10px] text-emerald-600 px-1 font-medium";
+        }
+    }
 
     if (cart.length === 0) {
         cartItemsEl.innerHTML = `
@@ -624,7 +647,7 @@ function updateCartUI() {
         //         <span class="font-extrabold text-emerald-700 text-sm">฿${deliveryFee}</span>
         //     </div>`;
 
-        if (summaryEl) summaryEl.innerText = `${totalQty} รายการ (ไม่รวมค่าส่ง)`;
+        if (summaryEl) summaryEl.innerText = `${totalQty} รายการ (รวมค่าจัดส่ง)`;
         if (countLabel) countLabel.innerText = `${totalQty} รายการในตะกร้า`;
 
         // ✅ อัปเดตสีแบนเนอร์วันหยุดหลังวาด HTML เสร็จ
@@ -643,13 +666,14 @@ function checkFormValidity() {
     const name = document.getElementById("cust-name")?.value.trim() || "";
     const tel = document.getElementById("cust-tel")?.value.trim() || "";
     const address = document.getElementById("cust-address")?.value.trim() || "";
+    const zone = document.getElementById("cust-zone")?.value || "";
     const slot = document.getElementById("cust-slot")?.value || "";
     const pdpa = document.getElementById("pdpa-consent")?.checked;
     const btn = document.getElementById("checkout-btn");
     if (!btn) return;
 
     const telOk = isValidThaiPhone(tel);
-    const formFilled = cart.length > 0 && name && telOk && address && slot && pdpa;
+    const formFilled = cart.length > 0 && name && telOk && address && zone && slot && pdpa;
     const canCheckout = formFilled && shopStatus;
 
     btn.disabled = !canCheckout;
@@ -660,14 +684,14 @@ function checkFormValidity() {
         btn.innerHTML = `<i class="fa-solid fa-moon"></i> ร้านปิดแล้ว (เปิด 10:00 - 20:00 น.)`;
     } else {
         btn.innerHTML = canCheckout
-            ? `<i class="fa-solid fa-qrcode"></i> สร้าง QR ชำระเงิน`
-            : `<i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ แล้วสร้าง QR`;
+            ? `<i class="fa-solid fa-qrcode"></i> ชำระเงิน`
+            : `<i class="fa-solid fa-qrcode"></i> กรอกข้อมูลให้ครบ เพื่อชำระเงิน`;
     }
-    if (tel && !telOk) setFieldError("cust-tel", "กรุณากรอกเบอร์โทรให้ถูกต้อง (10 หลัก)");
+    if (tel && !telOk) setFieldError("cust-tel", "กรุณากรอกหมายเลขโทรศัพท์ให้ถูกต้อง (10 หลัก)");
     else setFieldError("cust-tel", "");
 }
 
-["cust-name", "cust-tel", "cust-slot", "pdpa-consent"].forEach(id =>
+["cust-name", "cust-tel", "cust-zone", "cust-slot", "pdpa-consent"].forEach(id =>
     document.getElementById(id)?.addEventListener("change", checkFormValidity)
 );
 document.getElementById("cust-name")?.addEventListener("input", checkFormValidity);
@@ -716,14 +740,17 @@ function generateQR() {
     clearFieldErrors();
     let hasError = false;
     if (!name) { setFieldError("cust-name", "กรุณากรอกชื่อ-นามสกุล"); hasError = true; }
-    if (!isValidThaiPhone(tel)) { setFieldError("cust-tel", "กรุณากรอกเบอร์โทรให้ถูกต้อง (10 หลัก)"); hasError = true; }
+    if (!isValidThaiPhone(tel)) { setFieldError("cust-tel", "กรุณากรอกหมายเลขโทรศัพท์ให้ถูกต้อง (10 หลัก)"); hasError = true; }
     if (!slot) { setFieldError("cust-slot", "กรุณาเลือกรอบจัดส่ง"); hasError = true; }
     if (!address) { SwalWarning("ยังไม่ได้ปักหมุด", "กรุณาปักหมุดแผนที่ก่อน"); hasError = true; }
     if (!pdpa) { SwalWarning("ยังไม่ได้ยอมรับ PDPA", "กรุณายอมรับนโยบายก่อน"); hasError = true; }
     if (hasError) return;
 
     const zoneEl = document.getElementById("cust-zone");
-    const deliveryFee = cart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
+    const selectedZone = zoneEl?.value || "";
+    const deliveryFee = cart.length > 0 && selectedZone && DELIVERY_ZONES[selectedZone]
+        ? DELIVERY_ZONES[selectedZone].fee
+        : 0;
     let tempCart = JSON.parse(JSON.stringify(cart));
     const itemsTotal = tempCart.reduce((s, i) => s + ((i.priceWithAddon || i.price) * i.qty), 0);
     const tempTotal = itemsTotal + deliveryFee;
@@ -732,13 +759,13 @@ function generateQR() {
         const p = i.priceWithAddon || i.price;
         let line = `• <b class="text-slate-800">${i.name}</b> ×${i.qty} = ฿${(p * i.qty).toLocaleString()}`;
         if (i.addonText) line += `<br><span class="text-[10px] text-emerald-600 ml-3">↳ 🔧 ${i.addonText}</span>`;
-        if (i.allergyText) line += `<br><span class="text-[10px] text-rose-500 ml-3 font-bold">↳ 🚨 แพ้: ${i.allergyText}</span>`;
+        if (i.allergyText) line += `<br><span class="text-[10px] text-rose-500 ml-3 font-bold">↳ 🚨 แพ้อาหาร: ${i.allergyText}</span>`;
         if (i.itemNote) line += `<br><span class="text-[10px] text-slate-400 ml-3">↳ 📝 ${i.itemNote}</span>`;
         return line;
     }).join("<br><div class='my-1 border-b border-dashed border-slate-200'></div>");
 
     SwalBase.fire({
-        title: '📋 ตรวจสอบออเดอร์',
+        title: '📋 ตรวจสอบคำสั่งซื้อ',
         html: `
             <div style="text-align:left; font-size:13px; line-height:1.6">
                 <div style="background:#f0fdf4; border-radius:12px; padding:12px 14px; margin-bottom:12px; border:1px solid #86efac;">
@@ -750,7 +777,7 @@ function generateQR() {
                     ${orderSummary}
                 </div>
                 <div style="background:#fef9c3; border-radius:10px; padding:10px 12px; font-size:12px; border:1px solid #fde047;">
-                    ⚠️ กรุณาตรวจสอบท็อปปิ้งและหมายเหตุให้ถูกต้อง
+                    ⚠️ กรุณาตรวจสอบและหมายเหตุให้ถูกต้อง
                 </div>
             </div>
             <div style="margin-top:14px; background:#ecfdf5; border-radius:12px; padding:10px; font-size:18px; font-weight:800; color:#15803d; border:2px solid #86efac;">
@@ -760,7 +787,7 @@ function generateQR() {
                 💰 ยอดชำระ: ฿${tempTotal.toLocaleString()}
             </div>`,
         confirmButtonText: 'ถูกต้องและไปชำระเงิน',
-        cancelButtonText: 'แก้ไขออเดอร์',
+        cancelButtonText: 'แก้ไขคำสั่งซื้อ',
         showCancelButton: true,
         reverseButtons: true,
     }).then(result => {
@@ -795,7 +822,10 @@ async function sendOrderToLINE() {
     const slot = document.getElementById("cust-slot").value;
     const note = document.getElementById("cust-note")?.value.trim() || "";
     const zoneEl = document.getElementById("cust-zone");
-    const deliveryFee = checkoutLockedCart.length > 0 ? parseInt(zoneEl?.value || 5) : 0;
+    const selectedZone = zoneEl?.value || "";
+    const deliveryFee = checkoutLockedCart.length > 0 && selectedZone && DELIVERY_ZONES[selectedZone]
+        ? DELIVERY_ZONES[selectedZone].fee
+        : 0;
     const total = checkoutTotal;
     const cartForSend = checkoutLockedCart;
 
@@ -823,12 +853,13 @@ async function sendOrderToLINE() {
 
     // สร้างข้อความ "สะอาด" (ไม่มี text=)
     const lineMsg = [
-        `🛒 ออเดอร์ใหม่ — Clean Food CR`,
+        `🛒 คำสั่งซื้อใหม่ — Clean Food CR`,
         `──────────────────────`,
         `👤 ${name} | 📱 ${tel}`,
         `🕐 รอบส่ง: ${slot} (${deliveryDateThai})`,
         `📍 ${gpsLink}`,
         landmark ? `🏠 จุดสังเกต: ${landmark}` : "",
+        `📦 เขตการจัดส่ง: ${DELIVERY_ZONES[selectedZone]?.name || "ไม่ระบุ"}`,
         `──────────────────────`,
         `รายการอาหาร:`,
         orderItems,
@@ -864,18 +895,26 @@ async function sendOrderToLINE() {
     // --- 3. บันทึกเข้า GAS ---
     const btn = document.getElementById("submit-order-btn");
     const originalHTML = btn.innerHTML;
-    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึกออเดอร์...`;
+    btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> กำลังบันทึกคำสั่งซื้อ...`;
     btn.disabled = true;
-
+    const zoneNameForSheet = DELIVERY_ZONES[selectedZone]?.name || "ไม่ระบุโซน";
+    const fullAddress = `[${zoneNameForSheet}] ${landmark ? landmark + " | " : ""}พิกัด: ${gpsLink}`;
     try {
-        await fetch(CONFIG.GAS_URL, {
+      await fetch(CONFIG.GAS_URL, {
             method: "POST", mode: "no-cors",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                customerName: name, phone: "'" + tel,
-                address: landmark ? `${landmark} | พิกัด: ${gpsLink}` : gpsLink,
-                latitude: lat, longitude: lng, deliverySlot: slot, deliveryDate: systemDeliveryDate,
-                orderDetails: itemNamesForSheet, totalAmount: total, note: note, source: "web"
+                customerName: name, 
+                phone: "'" + tel,
+                address: fullAddress, 
+                latitude: lat, 
+                longitude: lng, 
+                deliverySlot: slot, 
+                deliveryDate: systemDeliveryDate,
+                orderDetails: itemNamesForSheet, 
+                totalAmount: total, 
+                note: note, 
+                source: "web"
             }),
         });
 
@@ -895,14 +934,14 @@ async function sendOrderToLINE() {
 
         // แสดง Swal แจ้งความสำเร็จ พร้อมช่องให้คัดลอก (ใช้ lineMsg ที่สะอาด)
         await SwalBase.fire({
-            title: '✅ ออเดอร์บันทึกแล้ว!',
+            title: '✅ คำสั่งซื้อบันทึกแล้ว!',
             html: `
                 <div style="font-size:13px; text-align:left; line-height:1.8;">
                     <div style="background:#ecfdf5; border:1px solid #86efac; border-radius:12px; padding:12px 14px; margin-bottom:14px;">
-                        <b>📋 ขั้นตอนการส่งออเดอร์:</b><br>
+                        <b>📋 ขั้นตอนการส่งคำสั่งซื้อ:</b><br>
                         <div style="font-size:11px; margin-top:8px; line-height:2;">
                             <div>✅ <strong style="color:#15803d;">1. คัดลอกข้อความ</strong> (ด้านล่าง)</div>
-                            <div>📱 <strong>2. เปิด LINE OA</strong></div>
+                            <div>📱 <strong>2. เปิด LINE Official Account</strong></div>
                             <div>📝 <strong>3. วางข้อความ + ส่ง</strong></div>
                         </div>
                     </div>
@@ -931,7 +970,7 @@ async function sendOrderToLINE() {
                         </button>
                         <button id="line-open-btn" onclick="window.open('${lineAddFriend}', '_blank'); Swal.close();"
                             style="flex:1; padding:12px; background:#06c755; color:white; border:none; border-radius:12px; font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-                            📱 เปิด LINE OA
+                            📱 เปิด LINE Official Account
                         </button>
                     </div>
                  
@@ -968,7 +1007,7 @@ async function checkOrderStatus() {
     const query = document.getElementById("tracker-input").value.trim();
     const resultEl = document.getElementById("tracker-result");
     const cardEl = document.getElementById("tracker-order-card");
-    if (!query) { SwalWarning("ยังไม่ได้กรอก", "กรุณากรอกรหัสออเดอร์หรือเบอร์โทรก่อนนะคะ"); return; }
+    if (!query) { SwalWarning("ยังไม่ได้กรอก", "กรุณากรอกรหัสคำสั่งซื้อหรือหมายเลขโทรศัพท์ก่อนนะคะ"); return; }
     resultEl.innerHTML = `<div class="flex items-center justify-center gap-2 text-slate-400 py-4"><i class="fa-solid fa-spinner fa-spin"></i> กำลังค้นหา...</div>`;
     resultEl.classList.remove("hidden");
     cardEl.classList.add("hidden");
@@ -997,7 +1036,7 @@ async function checkOrderStatus() {
             resultEl.classList.add("hidden");
             cardEl.classList.remove("hidden");
         } else {
-            resultEl.innerHTML = `<div class="text-2xl mb-2">🔍</div><p class="font-semibold text-sm">ไม่พบออเดอร์นี้</p><p class="text-xs mt-1 text-slate-400">ตรวจสอบรหัสออเดอร์หรือเบอร์โทรอีกครั้ง</p>`;
+            resultEl.innerHTML = `<div class="text-2xl mb-2">🔍</div><p class="font-semibold text-sm">ไม่พบคำสั่งซื้อนี้</p><p class="text-xs mt-1 text-slate-400">ตรวจสอบรหัสคำสั่งซื้อหรือหมายเลขโทรศัพท์อีกครั้ง</p>`;
         }
     } catch {
         resultEl.innerHTML = `<div class="text-2xl mb-2">⚠️</div><p class="text-sm">ไม่สามารถเชื่อมต่อได้ในขณะนี้</p>`;
@@ -1040,7 +1079,7 @@ function updateShopStatusUI() {
         if (checkoutBtn) {
             checkoutBtn.disabled = true;
             checkoutBtn.classList.add("opacity-50", "cursor-not-allowed");
-            checkoutBtn.innerHTML = `<i class="fa-solid fa-clock"></i> ร้านเปิดรับออเดอร์ 10:00 น.`;
+            checkoutBtn.innerHTML = `<i class="fa-solid fa-clock"></i> ร้านเปิดรับคำสั่งซื้อ 10:00 น.`;
         }
     } else {
         banner?.classList.add("hidden");
@@ -1069,7 +1108,7 @@ function updateHolidayBanner() {
             const note = document.createElement("div");
             note.className = "holiday-note";
             note.style.cssText = "font-size:10px; margin-top:4px; font-weight:700; opacity:0.8;";
-            note.innerHTML = `<i class="fa-solid fa-circle-info"></i> เนื่องจากร้านหยุด ขออภัยในความไม่สะดวกค่ะ`;
+            note.innerHTML = `<i class="fa-solid fa-circle-info"></i> เนื่องจากหยุดให้บริการ ขออภัยในความไม่สะดวกค่ะ`;
             banner.appendChild(note);
         }
     }
@@ -1089,7 +1128,7 @@ function updateHolidayAlerts() {
         annText.innerHTML = `
             <span class="flex items-center justify-center gap-2 text-rose-700">
                 <i class="fa-solid fa-circle-exclamation animate-pulse"></i>
-                <span>ขออภัย ร้านหยุดชั่วคราว: ออเดอร์จะเริ่มจัดส่งใน <b>${getDeliveryDateThai()}</b> ค่ะ</span>
+                <span>ขออภัย ทางร้านหยุดให้บริการชั่วคราว: คำสั่งซื้อจะเริ่มจัดส่งใน <b>${getDeliveryDateThai()}</b> ค่ะ</span>
             </span>`;
     }
 }
@@ -1105,11 +1144,11 @@ function openGrabSearch() {
         window.location.href = `grab://open?screenType=SEARCH&searchKeyword=${searchTerm}`;
     } else {
         SwalBase.fire({
-            title: '📱 ใช้งานบนมือถือได้เลยค่ะ',
+            title: '📱 ใช้งานบนอุปกรณ์มือถือได้เลยค่ะ',
             html: `<div style="font-size:13px; line-height:1.8; text-align:center; color:#475569">
-                    แอป Grab ใช้งานได้บน<b>มือถือ</b>เท่านั้นค่ะ<br>
-                    กรุณาเปิดเว็บนี้บนมือถือ แล้วกดปุ่มอีกครั้ง<br><br>
-                    <span style="font-size:11px; color:#94a3b8">หรือค้นหา "Clean Food Chiang Rai" ใน Grab บนมือถือได้เลยค่ะ</span>
+                    แอปพลิเคชัน Grab ใช้งานได้บน<b>อุปกรณ์มือถือ</b>เท่านั้นค่ะ<br>
+                    กรุณาเปิดเว็บนี้บนอุปกรณ์มือถือ แล้วกดปุ่มอีกครั้ง<br><br>
+                    <span style="font-size:11px; color:#94a3b8">หรือค้นหา "Clean Food Chiang Rai" ใน Grab บนอุปกรณ์มือถือได้เลยค่ะ</span>
                    </div>`,
             confirmButtonText: 'รับทราบ', icon: 'info',
         });
