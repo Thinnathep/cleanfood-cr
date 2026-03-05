@@ -156,10 +156,10 @@ function updateDateTime() {
     const badge = document.getElementById("shop-status-badge");
     if (badge) {
         if (shopStatus) {
-            badge.innerText = "● เปิดรับออเดอร์"; 
+            badge.innerText = "● เปิดรับออเดอร์";
             badge.className = "text-[9px] px-2 py-0.5 rounded-full font-bold leading-none bg-emerald-100 text-emerald-600 border border-emerald-200";
         } else {
-            badge.innerText = "● ปิดรับออเดอร์ (เปิด 10:00)"; 
+            badge.innerText = "● ปิดรับออเดอร์ (เปิด 10:00)";
             badge.className = "text-[9px] px-2 py-0.5 rounded-full font-bold leading-none bg-rose-100 text-rose-600 border border-rose-200";
         }
     }
@@ -876,31 +876,31 @@ async function sendOrderToLINE() {
             body: JSON.stringify(payload),
         });
 
-        // 4. สร้างข้อความ LINE
+        // 4. สร้างข้อความ LINE (ฉบับ Clean & Genius)
         const lineMsg = [
             `🛒 ออเดอร์ใหม่ — Clean Food CR`,
             `──────────────────────`,
-            `👤 ${name}`,
-            `📱 ${tel}`,
-            `🕐 รอบส่ง: ${slot}`,
-            `📅 วันที่ส่ง: ${deliveryDateThai}`,
+            `👤 ${name} | 📱 ${tel}`,
+            `🕐 รอบส่ง: ${slot} (${deliveryDateThai})`,
             `📍 ${gpsLink}`,
             landmark ? `🏠 จุดสังเกต: ${landmark}` : "",
             `──────────────────────`,
             `รายการอาหาร:`,
             orderItems,
             `──────────────────────`,
-            `🛵 ค่าจัดส่ง: ฿${deliveryFee}`,
-            `💰 ยอดรวมทั้งสิ้น: ฿${total.toLocaleString()}`,
-            note ? `📝 หมายเหตุร้าน: ${note}` : "",
+            `🛵 ค่าส่ง: ฿${deliveryFee} | 💰 รวม: ฿${total.toLocaleString()}`,
+            note ? `📝 หมายเหตุ: ${note}` : "",
             `──────────────────────`,
             `📎 รบกวนแนบสลิปโอนเงินด้วยนะคะ`
         ].filter(Boolean).join("\n");
 
-        const encodedMsg = encodeURIComponent(lineMsg);
+        // --- ส่วนที่ "ซ่อน" text= ไว้ข้างหลัง ---
         const lineOA = "282ovoyd";
-        const lineAppWithMsg = `line://oaMessage/@${lineOA}?text=${encodedMsg}`;
-        const lineWebWithMsg = `https://line.me/R/oaMessage/@${lineOA}/?text=${encodedMsg}`;
+        const params = new URLSearchParams({ text: lineMsg }); // ใส่ข้อความลงใน Object
+
+        // ตัวลิงก์จะถูกสร้างแบบ Dynamic ไม่ต้องเขียน text= เองให้รกตา
+        const lineAppWithMsg = `line://oaMessage/@${lineOA}?${params.toString()}`;
+        const lineWebWithMsg = `https://line.me/R/oaMessage/@${lineOA}/?${params.toString()}`;
         const lineAddFriend = `https://line.me/R/ti/p/@${lineOA}`;
 
         // ✅ เคลียร์ตะกร้าก่อนแสดง popup
