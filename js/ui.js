@@ -18,6 +18,7 @@ function updateDateTime() {
         }
     }
 }
+document.addEventListener('DOMContentLoaded', () => { updateDateTime(); });
 setInterval(updateDateTime, 60000);
 
 function isShopOpen() {
@@ -39,9 +40,10 @@ function updateShopStatusUI() {
         }
     } else {
         banner?.classList.add("hidden");
-        if(typeof checkFormValidity === 'function') checkFormValidity();
+        if (typeof checkFormValidity === 'function') checkFormValidity();
     }
 }
+document.addEventListener('DOMContentLoaded', () => { updateShopStatusUI(); });
 setInterval(updateShopStatusUI, 60000);
 
 // ═══════════════════════════════════════════════════════════
@@ -126,3 +128,5 @@ function openGrabSearch() {
     }
 }
 const openGrab = openGrabSearch;
+
+document.getElementById('year').textContent = new Date().getFullYear();

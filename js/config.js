@@ -1,7 +1,7 @@
 // ─── CONFIG ────────────────────────────────────────────────
 const CONFIG = {
     LINE_OA: "@282ovoyd",
-    GAS_URL: "https://script.google.com/macros/s/AKfycbz0OmeBxY8Hzz4okOzOwDbssI3FNSEk7m9mb580hxdFN4xzUe8JkAQspY0i9Cse2UJ2/exec",
+    GAS_URL: "https://script.google.com/macros/s/AKfycbyJxy1kvyyr7_WM5gyVF_VC3Y9MbCiKCcoCkyVya8rn10bamPKXyurI-Xw-OKLhTIam/exec",
     CHIANG_RAI: [19.9071, 99.8310],
     // วันหยุด — ใส่วันที่ YYYY-MM-DD
     HOLIDAYS: [
@@ -36,6 +36,21 @@ const menuData = [
         desc: "อกไก่ชิ้นโตหมักพริกไทยดำจนเข้าเนื้อ เสิร์ฟพร้อมผักสด ผักนึ่ง และไข่ต้ม",
         kcal: 330, macros: { pro: 40, carb: 12, fat: 6 },
         ingredients: ["อกไก่", "ข้าวไรซ์เบอร์รี่", "บร็อคโคลี่", "เห็ดเข็มทอง", "แครอท", "ฟักทอง", "ไข่ต้ม"],
+    },
+    // ══ เมนูเซ็ต ═══════════════════════════════════════
+    {
+        id: 201, category: "set", name: "เซ็ตอกไก่ + ปลาดอรี่", price: 219, badge: "🍽️ Value Set",
+        // image: "Img/DSC04962.JPG",
+        desc: "เซ็ตคู่อกไก่สมุนไพร + ปลาดอรี่อบ + ข้าวไรซ์เบอร์รี่ + ผักนึ่งหลากชนิด + ไข่ต้ม ประหยัดกว่าซื้อแยก 15%",
+        kcal: 520, macros: { pro: 65, carb: 20, fat: 10 },
+        ingredients: ["อกไก่", "ปลาดอรี่", "ข้าวไรซ์เบอร์รี่", "บร็อคโคลี่", "แครอท", "ฟักทอง", "ไข่ต้ม"],
+    },
+    {
+        id: 202, category: "set", name: "เซ็ตโปรตีนสูง (3 โปรตีน)", price: 279, badge: "💪 ไฮโปรตีน",
+        // image: "Img/DSC04968.JPG",
+        desc: "อกไก่ + เนื้อวัวอบ + ไข่ต้ม 3 ฟอง พร้อมผักนึ่งหลากชนิดและข้าวกล้องพรีเมียม เหมาะสำหรับผู้ออกกำลังกาย",
+        kcal: 580, macros: { pro: 80, carb: 22, fat: 12 },
+        ingredients: ["อกไก่", "เนื้อวัว", "ไข่ต้ม", "ข้าวกล้องพรีเมียม", "บร็อคโคลี่", "หน่อไม้ฝรั่ง"],
     },
     // เพิ่มเมนูใหม่ได้ที่นี่ ↓
 ];

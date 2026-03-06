@@ -118,6 +118,9 @@ function updateCartUI() {
     const summaryEl = document.getElementById("cart-items-summary");
     const countLabel = document.getElementById("cart-item-count-label");
 
+    // Guard: ถ้า element ไม่มีให้หยุดทันที (กรณี DOM ยังไม่พร้อม)
+    if (!cartItemsEl || !totalEl || !checkoutBtn || !badge) return;
+
     cartItemsEl.innerHTML = "";
     let total = 0, totalQty = 0;
     const zoneEl = document.getElementById("cust-zone");
@@ -205,13 +208,13 @@ function updateCartUI() {
         if (summaryEl) summaryEl.innerText = `${totalQty} รายการ (รวมค่าจัดส่ง)`;
         if (countLabel) countLabel.innerText = `${totalQty} รายการในตะกร้า`;
 
-        if(typeof updateHolidayBanner === 'function') updateHolidayBanner();
+        if (typeof updateHolidayBanner === 'function') updateHolidayBanner();
     }
 
     const grandTotal = total + deliveryFee;
     totalEl.innerText = `฿${grandTotal.toLocaleString()}`;
     badge.innerText = totalQty;
-    if(typeof checkFormValidity === 'function') checkFormValidity();
+    if (typeof checkFormValidity === 'function') checkFormValidity();
     saveToLocal();
 }
 
@@ -220,7 +223,7 @@ function toggleCart() {
     const overlay = document.getElementById("cart-overlay");
     if (drawer.classList.contains("open")) {
         drawer.classList.remove("open");
-        if(typeof gsap !== 'undefined') {
+        if (typeof gsap !== 'undefined') {
             gsap.to(overlay, { opacity: 0, duration: 0.3, onComplete: () => overlay.classList.add("hidden") });
         } else {
             overlay.classList.add("hidden");
@@ -228,10 +231,10 @@ function toggleCart() {
         document.body.style.overflow = "";
     } else {
         overlay.classList.remove("hidden");
-        if(typeof gsap !== 'undefined') gsap.to(overlay, { opacity: 1, duration: 0.3 });
+        if (typeof gsap !== 'undefined') gsap.to(overlay, { opacity: 1, duration: 0.3 });
         drawer.classList.add("open");
         document.body.style.overflow = "hidden";
-        if(typeof initMap === 'function') setTimeout(initMap, 450);
+        if (typeof initMap === 'function') setTimeout(initMap, 450);
     }
 }
 

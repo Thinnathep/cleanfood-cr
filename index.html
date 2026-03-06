@@ -37,12 +37,15 @@
                         Clean Food <span class="text-emerald-600 hidden sm:inline">Chiang Rai</span>
                     </h1>
 
-                    <div class="flex items-center gap-2 mt-1 hidden sm:flex">
-                        <span id="datetime-display" class="text-[10px] text-slate-400 font-mono leading-none">
-                            <i class="fa-regular fa-clock"></i> Loading...
-                        </span>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                        <!-- Mobile: แสดงแค่ status badge -->
                         <span id="shop-status-badge"
                             class="text-[9px] px-2 py-0.5 rounded-full font-bold leading-none"></span>
+                        <!-- Desktop: แสดงเวลาด้วย -->
+                        <span id="datetime-display"
+                            class="hidden sm:inline text-[10px] text-slate-400 font-mono leading-none">
+                            <i class="fa-regular fa-clock"></i> Loading...
+                        </span>
                     </div>
                 </div>
 
@@ -53,6 +56,14 @@
                 </div>
 
                 <div class="flex items-center gap-2">
+                    <!-- About Button -->
+                    <button onclick="openAboutModal()" title="วัตถุประสงค์ร้าน"
+                        class="p-2.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors group cursor-pointer flex items-center gap-1.5">
+                        <i
+                            class="fa-solid fa-seedling text-slate-500 group-hover:text-emerald-600 text-base transition-colors"></i>
+                        <span
+                            class="text-[11px] font-semibold text-slate-500 group-hover:text-emerald-600 hidden md:inline">วัตถุประสงค์</span>
+                    </button>
                     <button onclick="toggleCart()"
                         class="relative p-2.5 bg-slate-100 hover:bg-emerald-50 rounded-xl transition-colors group cursor-pointer">
                         <i
@@ -83,6 +94,74 @@
         </p>
     </div>
 
+    <!-- PROMOTION CAROUSEL -->
+    <div id="promo-carousel" class="relative overflow-hidden bg-white border-b border-slate-100">
+        <div id="promo-track" class="flex transition-transform duration-500 ease-in-out">
+            <!-- Slide 1 -->
+            <div
+                class="promo-slide min-w-full px-4 py-3 flex items-center justify-between gap-4 bg-gradient-to-r from-emerald-50 to-teal-50">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                        <span class="text-lg">🎁</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-extrabold text-emerald-800">โปรโมชั่นพิเศษ — เร็วๆ นี้!</p>
+                        <p class="text-[11px] text-emerald-600">ติดตามร้านเพื่อรับข่าวสารก่อนใคร</p>
+                    </div>
+                </div>
+                <span class="text-[10px] bg-emerald-500 text-white px-3 py-1.5 rounded-full font-bold shrink-0">เร็วๆ
+                    นี้</span>
+            </div>
+            <!-- Slide 2 -->
+            <div
+                class="promo-slide min-w-full px-4 py-3 flex items-center justify-between gap-4 bg-gradient-to-r from-amber-50 to-orange-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                        <span class="text-lg">⭐</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-extrabold text-amber-800">เมนูใหม่ — เร็วๆ นี้!</p>
+                        <p class="text-[11px] text-amber-600">กำลังพัฒนาเมนูอร่อยๆ ให้กับคุณ</p>
+                    </div>
+                </div>
+                <span class="text-[10px] bg-amber-500 text-white px-3 py-1.5 rounded-full font-bold shrink-0">เร็วๆ
+                    นี้</span>
+            </div>
+            <!-- Slide 3 -->
+            <div
+                class="promo-slide min-w-full px-4 py-3 flex items-center justify-between gap-4 bg-gradient-to-r from-rose-50 to-pink-50">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+                        <span class="text-lg">🚀</span>
+                    </div>
+                    <div>
+                        <p class="text-sm font-extrabold text-rose-800">ฟีเจอร์ใหม่ — เร็วๆ นี้!</p>
+                        <p class="text-[11px] text-rose-600">อัปเดตใหม่กำลังมา อย่าพลาด!</p>
+                    </div>
+                </div>
+                <span class="text-[10px] bg-rose-500 text-white px-3 py-1.5 rounded-full font-bold shrink-0">เร็วๆ
+                    นี้</span>
+            </div>
+        </div>
+        <!-- Nav Buttons -->
+        <button onclick="promoSlide(-1)"
+            class="absolute left-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 backdrop-blur rounded-full shadow flex items-center justify-center text-slate-500 hover:text-emerald-600 z-10 transition-colors">
+            <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        <button onclick="promoSlide(1)"
+            class="absolute right-1 top-1/2 -translate-y-1/2 w-7 h-7 bg-white/80 backdrop-blur rounded-full shadow flex items-center justify-center text-slate-500 hover:text-emerald-600 z-10 transition-colors">
+            <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+        <!-- Dots -->
+        <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex gap-1.5">
+            <span class="promo-dot w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span class="promo-dot w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+            <span class="promo-dot w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+        </div>
+    </div>
+
+
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         <div class="flex flex-wrap justify-center gap-2 mb-8" id="filter-container">
             <button class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold" data-filter="all">
@@ -95,12 +174,9 @@
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="shrimp">🦐
                 กุ้ง</button>
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="beef">🥩 เนื้อ</button>
-
             <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="salad">🥗 สลัด</button>
-            <!-- <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="snack">🥨
-                ทานเล่น</button>
-            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="drink">🥤
-                เครื่องดื่ม</button> -->
+            <button class="filter-btn px-5 py-2 rounded-full text-sm font-semibold" data-filter="set">🍱
+                เมนูเซ็ต</button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="menu-grid"></div>
@@ -456,7 +532,78 @@
         </div>
     </div>
 
-    <!-- PDPA MODAL -->
+    <!-- ABOUT MODAL -->
+    <div id="about-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm cursor-pointer" onclick="closeAboutModal()"></div>
+        <div id="about-content"
+            class="bg-white rounded-3xl shadow-2xl w-[90%] max-w-md flex flex-col relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden">
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                        <i class="fa-solid fa-seedling text-sm"></i>
+                    </div>
+                    วัตถุประสงค์ของเรา
+                </h3>
+                <button onclick="closeAboutModal()"
+                    class="w-8 h-8 bg-slate-50 hover:bg-rose-50 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 bg-slate-50/50 space-y-4 text-sm text-slate-600">
+                <div class="flex items-start gap-3">
+                    <div
+                        class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800 mb-0.5">สุขภาพดีเริ่มที่อาหาร</p>
+                        <p class="text-xs leading-relaxed">เราเชื่อว่าอาหารไม่ใช่แค่เชื้อเพลิง
+                            แต่คือพื้นฐานของชีวิตที่ดีกว่า</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div
+                        class="w-9 h-9 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-microscope"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800 mb-0.5">วัตถุดิบคัดเลือกทุกส่วนประกอบ</p>
+                        <p class="text-xs leading-relaxed">คัดเลือกวัตถุดิบคุณภาพสูง ปรุงรสด้วยสมุนไพรเป็นหลัก
+                            ใส่ใจพลังงานทุกจาน</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div
+                        class="w-9 h-9 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800 mb-0.5">คำนวณโภชนาการทุกมื้อ</p>
+                        <p class="text-xs leading-relaxed">แต่ละเมนูมีข้อมูลเคลอรี โปรตีน คาร์บ ไขมันที่ชัดเจน
+                            ดูแลตั้งแต่การดูแลร่างกายของคุณ</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-3">
+                    <div
+                        class="w-9 h-9 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+                    <div>
+                        <p class="font-bold text-slate-800 mb-0.5">ส่งตรงถึงบ้าน สดใหม่ทุกมื้อ</p>
+                        <p class="text-xs leading-relaxed">ปรุงสดใหม่ทุกวัน จัดส่ง 2 รอบ/วัน
+                            ให้คุณได้ทานที่หน้าบ้านอย่างสะดวก</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-white border-t border-slate-100">
+                <button onclick="closeAboutModal()"
+                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-md">
+                    รับทราบ — ดูเมนูเลย!
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="pdpa-modal" class="fixed inset-0 z-[60] flex items-center justify-center hidden">
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm cursor-pointer" onclick="closePDPAModal()"></div>
 
@@ -608,16 +755,29 @@
                     <p>🌅 จัดส่งรอบเย็น: 16:00–18:00 น.</p>
                 </div>
             </div>
-            <div>
-                <h3 class="text-white font-bold text-sm mb-3">ติดต่อเรา</h3>
+            <div class="flex flex-col gap-2.5">
+                <h3 class="text-white font-bold text-xs mb-1 opacity-70 uppercase tracking-wider">Contact Us</h3>
+
                 <a href="https://line.me/R/ti/p/@282ovoyd" target="_blank"
-                    class="inline-flex items-center gap-2 bg-[#00B900] text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#009900] transition-colors">
-                    <i class="fa-brands fa-line"></i> LINE Official Account: @282ovoyd
+                    class="flex items-center gap-3 bg-[#06C755] text-white px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-[1.02] active:scale-95 shadow-sm">
+                    <i class="fa-brands fa-line text-lg"></i> LINE: @282ovoyd
                 </a>
+
+                <a href="https://www.facebook.com/people/CLEAN-FOOD-Chiang-RAI/61588001261392/" target="_blank"
+                    class="flex items-center gap-3 bg-[#1877F2] text-white px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-[1.02] active:scale-95 shadow-sm">
+                    <i class="fa-brands fa-facebook text-lg"></i> Facebook Page
+                </a>
+
+                <button onclick="openGrabSearch()"
+                    class="flex items-center gap-3 bg-white text-emerald-600 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:scale-[1.02] active:scale-95 shadow-sm border border-emerald-100">
+                    <i class="fa-solid fa-motorcycle text-lg text-emerald-500"></i> สั่งผ่านแอป Grab
+                </button>
             </div>
+
         </div>
-        <div class="border-t border-slate-800 py-4 text-center text-xs text-slate-600">
-            &copy; <span id="year"></span> Clean Food Chiang Rai · Designed with ❤️ in Chiang Rai
+        <div class="border-t border-slate-800 py-6 text-center text-[10px] text-slate-500 tracking-wide uppercase">
+            <p>&copy; <span id="year"></span> Clean Food Chiang Rai. All rights reserved.</p>
+            <p class="mt-1 opacity-60 font-medium">Handcrafted with ❤️ in Chiang Rai</p>
         </div>
     </footer>
 

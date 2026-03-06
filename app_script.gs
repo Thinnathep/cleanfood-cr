@@ -4,9 +4,10 @@
 // ═══════════════════════════════════════════════════════════
 
 // ─── CONFIG ────────────────────────────────────────────────
-var SHEET_NAME   = "Orders";
-var LINE_TOKEN   = ""; // ← ใส่ LINE Notify Token ถ้ามี (optional)
-var SHOP_NAME    = "Clean Food Chiang Rai";
+var SHEET_NAME        = "Orders";
+var REVIEW_SHEET_NAME = "Reviews";
+var LINE_TOKEN        = ""; // ← ใส่ LINE Notify Token ถ้ามี (optional)
+var SHOP_NAME         = "Clean Food Chiang Rai";
 
 // คอลัมน์ใน Sheet (ตรงตามลำดับนี้เป๊ะ)
 var COLUMNS = [
@@ -35,33 +36,62 @@ var COLUMNS = [
 // ═══════════════════════════════════════════════════════════
 function doPost(e) {
   try {
-    var ss    = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = getOrCreateSheet(ss);
+    var ss   = SpreadsheetApp.getActiveSpreadsheet();
+    var data = JSON.parse(e.postData.contents);
+    var now  = new Date();
+    var timestamp = Utilities.formatDate(now, "GMT+7", "dd/MM/yyyy HH:mm:ss");
 
-    var data  = JSON.parse(e.postData.contents);
+    // ══ Reviews: กดหัวใจ ══════════════════════════
+    if (data.action === "like" || data.action === "rate") {
+      var reviewSheet = getOrCreateReviewSheet(ss);
+      var rows = reviewSheet.getDataRange().getValues();
+      var foundRow = -1;
+      var currentVal = 0;
+      var menuIdStr = String(data.menuId).trim();
+      var addVal = Number(data.value) || 1;
 
-    var now       = new Date();
+      // ค้นหาว่ามี MenuID และ Action นี้อยู่แล้วหรือไม่ (วนเช็คจากบนลงล่าง ข้าม Header)
+      for (var i = 1; i < rows.length; i++) {
+        var rowMenuId = String(rows[i][0]).trim();
+        var rowAction = String(rows[i][1]).trim();
+        
+        if (rowMenuId === menuIdStr && rowAction === String(data.action).trim()) {
+          foundRow = i + 1; // getRange เริ่มที่ 1, อาเรย์เริ่ม 0
+          currentVal = Number(rows[i][2]) || 0;
+          break;
+        }
+      }
 
+      if (foundRow > -1) {
+        // อัปเดตค่า (บวกเพิ่ม) และเวลาใหม่ให้บรรทัดเดิม
+        var cell = reviewSheet.getRange(foundRow, 3); // คอลัมน์ C (Value)
+        cell.setValue(currentVal + addVal);
+        reviewSheet.getRange(foundRow, 4).setValue(timestamp); // คอลัมน์ D (Timestamp)
+      } else {
+        // ถ้ายังไม่เคยมี ให้เพิ่มแถวใหม่
+        reviewSheet.appendRow([
+          data.menuId   || "",   // A - MenuID
+          data.action,           // B - Action
+          addVal,                // C - Value
+          timestamp,             // D - Timestamp
+        ]);
+      }
+      return jsonResponse({ status: "success", action: data.action });
+    }
 
+    // ══ Order: รับออเดอร์ปกติ ════════════════════════════════
+    var sheet        = getOrCreateSheet(ss);
     var orderId      = "CF-" + Utilities.formatDate(now, "GMT+7", "yyMMddHHmmss");
-    var timestamp    = Utilities.formatDate(now,      "GMT+7", "dd/MM/yyyy HH:mm:ss");
-    
-    // 🟢 สั่งให้ดึงค่าวันที่ ที่หน้าเว็บคำนวณเสร็จแล้วมาใช้ตรงๆ!
     var deliveryDate = data.deliveryDate || "";
 
-    // เตรียมข้อมูลตามลำดับ COLUMNS (ต้องตรงทุก index)
-    // A=OrderID, B=Timestamp, C=CustomerName, D=Phone, E=DeliverySlot,
-    // F=DeliveryDate, G=Address, H=Latitude, I=Longitude, J=OrderDetails,
-    // K=TotalAmount, L=Note, M=Source, N=PaymentStatus, O=KitchenStatus,
-    // P=DeliveryStatus, Q=Rider, R=UpdatedAt
     var row = [
       orderId,                        // A - OrderID
       timestamp,                      // B - Timestamp
       data.customerName  || "",       // C - CustomerName
       data.phone         || "",       // D - Phone
       data.deliverySlot  || "",       // E - DeliverySlot
-      deliveryDate,                   // F - DeliveryDate (auto = วันถัดไป)
-      data.address       || "",       // G - Address (landmark + google maps link)
+      deliveryDate,                   // F - DeliveryDate
+      data.address       || "",       // G - Address
       data.latitude      || "",       // H - Latitude
       data.longitude     || "",       // I - Longitude
       data.orderDetails  || "",       // J - OrderDetails
@@ -76,15 +106,9 @@ function doPost(e) {
     ];
 
     sheet.appendRow(row);
+    formatNewRow(sheet, sheet.getLastRow());
 
-    // Auto-format row ใหม่
-    var lastRow = sheet.getLastRow();
-    formatNewRow(sheet, lastRow);
-
-    // LINE Notify (optional)
-    if (LINE_TOKEN) {
-      sendLineNotify(data, orderId, deliveryDate);
-    }
+    if (LINE_TOKEN) sendLineNotify(data, orderId, deliveryDate);
 
     return jsonResponse({ status: "success", orderId: orderId, deliveryDate: deliveryDate });
 
@@ -102,16 +126,21 @@ function doGet(e) {
     var action = e.parameter.action || "";
     var query  = (e.parameter.query  || "").trim();
 
+    // ── ค้นหาออเดอร์ ──────────────────────────────────────────
     if (action === "search" && query) {
       var order = findOrder(query);
-      if (order) {
-        return jsonResponse({ status: "found", order: order });
-      } else {
-        return jsonResponse({ status: "notfound" });
-      }
+      return order
+        ? jsonResponse({ status: "found",    order: order })
+        : jsonResponse({ status: "notfound" });
     }
 
-    // Health check
+    // ── ดึงสรุปรีวิว (likes + avgRating ต่อ MenuID) ─────────
+    if (action === "getReviews") {
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      return jsonResponse({ status: "ok", reviews: summarizeReviews(ss) });
+    }
+
+    // ── Health check ─────────────────────────────────────────
     return jsonResponse({ status: "ok", service: SHOP_NAME });
 
   } catch (err) {
@@ -156,6 +185,60 @@ function findOrder(query) {
     }
   }
   return null;
+}
+
+// ─── สร้าง Reviews Sheet ถ้ายังไม่มี ─────────────────────────
+function getOrCreateReviewSheet(ss) {
+  var sheet = ss.getSheetByName(REVIEW_SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(REVIEW_SHEET_NAME);
+    setupReviewSheetHeaders(sheet);
+  }
+  return sheet;
+}
+
+// ─── ตั้งค่า Header Reviews Sheet ────────────────────────────
+function setupReviewSheetHeaders(sheet) {
+  var headers = ["MenuID", "Action", "Value", "Timestamp"];
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  var headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setBackground("#064e3b");
+  headerRange.setFontColor("#ffffff");
+  headerRange.setFontWeight("bold");
+  headerRange.setFontSize(11);
+  headerRange.setHorizontalAlignment("center");
+  sheet.setRowHeight(1, 36);
+  sheet.setFrozenRows(1);
+  [80, 80, 80, 160].forEach(function(w, i) { sheet.setColumnWidth(i + 1, w); });
+  Logger.log("Reviews sheet created.");
+}
+
+// ─── สรุปยอด like + avgRating แต่ละเมนู ─────────────────────
+function summarizeReviews(ss) {
+  var sheet = ss.getSheetByName(REVIEW_SHEET_NAME);
+  if (!sheet) return {};
+  var rows = sheet.getDataRange().getValues();
+  var summary = {}; // { menuId: { likes: N, ratingSum: N, ratingCount: N } }
+  for (var i = 1; i < rows.length; i++) {
+    var menuId = String(rows[i][0]);
+    var action = rows[i][1];
+    var value  = Number(rows[i][2]) || 0;
+    if (!summary[menuId]) summary[menuId] = { likes: 0, ratingSum: 0, ratingCount: 0 };
+    if (action === "like") {
+      summary[menuId].likes += value;
+    } else if (action === "rate") {
+      summary[menuId].ratingSum   += value;
+      summary[menuId].ratingCount += 1;
+    }
+  }
+  // คำนวณ avgRating
+  Object.keys(summary).forEach(function(id) {
+    var s = summary[id];
+    s.avgRating = s.ratingCount > 0
+      ? Math.round((s.ratingSum / s.ratingCount) * 10) / 10
+      : 0;
+  });
+  return summary;
 }
 
 // ─── สร้าง Sheet ถ้ายังไม่มี + ใส่ Header ──────────────────
@@ -307,11 +390,16 @@ function onEdit(e) {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  MANUAL SETUP — รันครั้งแรกเพื่อ setup Sheet
+//  MANUAL SETUP — รันครั้งแรกเพื่อ setup Sheets
 //  ไปที่ Apps Script Editor → เลือก setupNewSheet → Run
 // ═══════════════════════════════════════════════════════════
 function setupNewSheet() {
-  var ss    = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = getOrCreateSheet(ss);
-  SpreadsheetApp.getUi().alert("✅ ตั้งค่า Sheet เรียบร้อย!\n\nคอลัมน์ที่มีทั้งหมด:\n" + COLUMNS.join(", "));
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  getOrCreateSheet(ss);
+  getOrCreateReviewSheet(ss);
+  SpreadsheetApp.getUi().alert(
+    "✅ ตั้งค่า Sheets เรียบร้อย!\n\n" +
+    "📋 Orders: " + COLUMNS.join(", ") + "\n\n" +
+    "⭐ Reviews: MenuID, Action, Value, Timestamp"
+  );
 }

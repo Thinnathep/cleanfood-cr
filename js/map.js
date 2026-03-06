@@ -6,6 +6,7 @@ function initMap() {
     map = L.map("map").setView(CONFIG.CHIANG_RAI, 14);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19 }).addTo(map);
     const icon = L.divIcon({
+        className: '', // เพิ่มคำสั่งนี้เพื่อลบกรอบสี่เหลี่ยม (leaflet-div-icon default style) ทิ้ง
         html: `<div style="background:#16a34a;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
         iconSize: [32, 32], iconAnchor: [16, 32],
     });
@@ -20,7 +21,7 @@ function initMap() {
         const gpsDv = document.getElementById("gps-display");
         if (gpsCoordsEl) gpsCoordsEl.innerText = `${lat}, ${lng}`;
         gpsDv?.classList.remove("hidden");
-        if(typeof checkFormValidity === 'function') checkFormValidity();
+        if (typeof checkFormValidity === 'function') checkFormValidity();
     };
     marker.on("dragend", updateCoords);
     map.on("click", e => { marker.setLatLng(e.latlng); updateCoords(); });
