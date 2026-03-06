@@ -537,68 +537,65 @@
         <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm cursor-pointer" onclick="closeAboutModal()"></div>
         <div id="about-content"
             class="bg-white rounded-3xl shadow-2xl w-[90%] max-w-md flex flex-col relative z-10 transform scale-95 opacity-0 transition-all duration-300 overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+
+            <div class="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
                 <h3 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
                     <div class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                        <i class="fa-solid fa-seedling text-sm"></i>
+                        <i class="fa-solid fa-heart-circle-check text-sm"></i>
                     </div>
-                    วัตถุประสงค์ของเรา
+                    ทำไมเราถึงตั้งใจทำร้านนี้?
                 </h3>
                 <button onclick="closeAboutModal()"
                     class="w-8 h-8 bg-slate-50 hover:bg-rose-50 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 transition-colors">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-5 bg-slate-50/50 space-y-4 text-sm text-slate-600">
-                <div class="flex items-start gap-3">
+
+            <div class="p-6 bg-slate-50/50 space-y-5 text-sm text-slate-600">
+
+                <div class="flex items-start gap-4">
                     <div
-                        class="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-heart-pulse"></i>
+                        class="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <i class="fa-solid fa-leaf text-lg"></i>
                     </div>
                     <div>
-                        <p class="font-bold text-slate-800 mb-0.5">สุขภาพดีเริ่มที่อาหาร</p>
-                        <p class="text-xs leading-relaxed">เราเชื่อว่าอาหารไม่ใช่แค่เชื้อเพลิง
-                            แต่คือพื้นฐานของชีวิตที่ดีกว่า</p>
+                        <p class="font-bold text-slate-800 mb-1">สุขภาพที่ดี...ต้องอร่อยและยั่งยืน</p>
+                        <p class="text-[12px] leading-relaxed">เราเชื่อว่าการกินอาหารที่ดีไม่ใช่เรื่องยาก
+                            และเราตั้งใจทำอาหารคลีนที่รสชาติถูกปาก เพื่อให้คุณมีความสุขกับการดูแลตัวเองได้ในทุกวัน</p>
                     </div>
                 </div>
-                <div class="flex items-start gap-3">
+
+                <div class="flex items-start gap-4">
                     <div
-                        class="w-9 h-9 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-microscope"></i>
+                        class="w-10 h-10 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <i class="fa-solid fa-hand-holding-heart text-lg"></i>
                     </div>
                     <div>
-                        <p class="font-bold text-slate-800 mb-0.5">วัตถุดิบคัดเลือกทุกส่วนประกอบ</p>
-                        <p class="text-xs leading-relaxed">คัดเลือกวัตถุดิบคุณภาพสูง ปรุงรสด้วยสมุนไพรเป็นหลัก
-                            ใส่ใจพลังงานทุกจาน</p>
+                        <p class="font-bold text-slate-800 mb-1">คัดสรรวัตถุดิบเหมือนทำทานเอง</p>
+                        <p class="text-[12px] leading-relaxed">เลือกใช้เฉพาะวัตถุดิบคุณภาพสูง
+                            ลดโซเดียม และปราศจากสารกันเสีย 100% เพื่อความปลอดภัยของคุณ</p>
                     </div>
                 </div>
-                <div class="flex items-start gap-3">
+
+                <div class="flex items-start gap-4">
                     <div
-                        class="w-9 h-9 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-calculator"></i>
+                        class="w-10 h-10 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <i class="fa-solid fa-truck-ramp-box text-lg"></i>
                     </div>
                     <div>
-                        <p class="font-bold text-slate-800 mb-0.5">คำนวณโภชนาการทุกมื้อ</p>
-                        <p class="text-xs leading-relaxed">แต่ละเมนูมีข้อมูลเคลอรี โปรตีน คาร์บ ไขมันที่ชัดเจน
-                            ดูแลตั้งแต่การดูแลร่างกายของคุณ</p>
+                        <p class="font-bold text-slate-800 mb-1">ปรุงสดใหม่ ส่งความใส่ใจถึงมือ</p>
+                        <p class="text-[12px] leading-relaxed">เพราะความสดคือหัวใจสำคัญ
+                            เราจึงปรุงใหม่ทุกรอบและจัดส่งถึงที่ 2 รอบต่อวัน เพื่อคงคุณค่าทางอาหารที่ดีที่สุดจนถึงมือคุณ
+                        </p>
                     </div>
                 </div>
-                <div class="flex items-start gap-3">
-                    <div
-                        class="w-9 h-9 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                        <i class="fa-solid fa-truck-fast"></i>
-                    </div>
-                    <div>
-                        <p class="font-bold text-slate-800 mb-0.5">ส่งตรงถึงบ้าน สดใหม่ทุกมื้อ</p>
-                        <p class="text-xs leading-relaxed">ปรุงสดใหม่ทุกวัน จัดส่ง 2 รอบ/วัน
-                            ให้คุณได้ทานที่หน้าบ้านอย่างสะดวก</p>
-                    </div>
-                </div>
+
             </div>
-            <div class="p-4 bg-white border-t border-slate-100">
+
+            <div class="p-4 bg-white border-t border-slate-100 shrink-0">
                 <button onclick="closeAboutModal()"
-                    class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-sm transition-all shadow-md">
-                    รับทราบ — ดูเมนูเลย!
+                    class="w-full bg-slate-900 hover:bg-emerald-600 text-white py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg active:scale-95">
+                    เริ่มต้นดูแลตัวเองวันนี้ — ดูเมนูเลย!
                 </button>
             </div>
         </div>
